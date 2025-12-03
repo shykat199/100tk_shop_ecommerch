@@ -490,7 +490,7 @@
                 </li>
             @endif
             @if (auth()->user()->can('browse_website_setting') || auth()->user()->hasRole('super-admin'))
-                <li class="@if (Request::is('admin/popup_setting','admin/contact-infos', 'admin/website_setting/header', 'admin/website_setting/pages', 'admin/website_setting/pages/*', 'admin/website_setting/appearance', 'admin/website_setting/announcements', 'admin/website_setting/announcements/*', 'admin/website_setting/currency', 'admin/website_setting/currency/*', 'admin/website_setting/language', 'admin/website_setting/notice/*')) active @endif">
+                <li class="@if (Request::is('admin/popup_setting','admin/contact-infos', 'admin/tag-manager/manage','admin/pixels/manage', 'admin/website_setting/header', 'admin/website_setting/pages', 'admin/website_setting/pages/*', 'admin/website_setting/appearance', 'admin/website_setting/announcements', 'admin/website_setting/announcements/*', 'admin/website_setting/currency', 'admin/website_setting/currency/*', 'admin/website_setting/language', 'admin/website_setting/notice/*')) active @endif">
                     <a href="#"><span class="icon"><svg viewBox="0 0 20 21" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M19.653 12.4416L17.7652 11.0041C17.8238 10.5024 17.8238 9.99586 17.7652 9.49414L19.6547 8.05583C20.0088 7.77813 20.1034 7.29118 19.8781 6.90665L17.9141 3.60084C17.6879 3.21389 17.2062 3.0449 16.7786 3.20252L14.5537 4.0742C14.1356 3.77881 13.6877 3.52557 13.217 3.31838L12.8755 1.01671C12.814 0.574834 12.4247 0.246397 11.9667 0.25003H8.03036C7.57625 0.247374 7.19008 0.572138 7.1267 1.01003L6.78442 3.31834C6.31514 3.52752 5.86801 3.78096 5.44947 4.07502L3.21852 3.20166C2.79533 3.0392 2.31402 3.20615 2.09151 3.59248L0.12587 6.90415C-0.10554 7.28931 -0.0102724 7.78161 0.349218 8.05833L2.23696 9.49582C2.17788 9.9975 2.17788 10.5041 2.23696 11.0058L0.347493 12.4433C-0.00718373 12.7206 -0.102251 13.2078 0.123303 13.5925L2.08638 16.8992C2.31229 17.2864 2.79433 17.4555 3.22193 17.2975L5.44686 16.4258C5.86532 16.7213 6.31346 16.9749 6.78438 17.1825L7.12666 19.4825C7.18691 19.9232 7.5738 20.2518 8.03032 20.25H11.9667C12.4217 20.2535 12.8091 19.9286 12.8729 19.49L13.2152 17.1817C13.6845 16.9724 14.1315 16.719 14.5502 16.425L16.7836 17.2992C17.2068 17.4612 17.6879 17.2944 17.9106 16.9083L19.8823 13.5834C20.103 13.1994 20.006 12.7163 19.653 12.4416ZM9.99853 14.4166C7.63549 14.4166 5.71983 12.5512 5.71983 10.25C5.71983 7.94876 7.63545 6.08329 9.99853 6.08329C12.3616 6.08329 14.2772 7.94876 14.2772 10.25C14.2744 12.55 12.3604 14.4139 9.99853 14.4166Z" />
                             </svg></span>
@@ -559,6 +559,12 @@
                                 <a class="@if (Request::is('admin/popup_setting')) active @endif" href="{{ route('backend.website_setting.popup') }}">{{ __('Popup') }}</a>
                             </li>
                         @endif
+                        <li>
+                            <a class="@if (Request::is('admin/tag-manager/manage')) active @endif" href="{{ route('backend.tagmanagers.index') }}">{{ __('Manage GMT') }}</a>
+                        </li>
+                        <li>
+                            <a class="@if (Request::is('admin/pixels/manage')) active @endif" href="{{ route('backend.pixels.index') }}">{{ __('Manage Pixel') }}</a>
+                        </li>
                     </ul>
                     <!-- Sub Manu End -->
                 </li>

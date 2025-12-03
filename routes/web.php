@@ -11,6 +11,8 @@ use App\Http\Controllers\Backend\Auth\SellerRegisterController;
 use App\Http\Controllers\PopUpController;
 use App\Http\Controllers\Backend\CampaignController;
 //use App\Http\Controllers\Backend\ShippingArieaController;
+use App\Http\Controllers\Backend\GoogleTagManagerController;
+use App\Http\Controllers\Backend\EcomPixelController;
 
 Route::get('/test', function () {
     return menubars();
@@ -83,6 +85,27 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Backend', 'as' => 'backend.']
         Route::post('campaign/active', [CampaignController::class,'active'])->name('campaign.active');
         Route::post('campaign/destroy', [CampaignController::class,'destroy'])->name('campaign.destroy');
         Route::get('campaign/image/destroy', [CampaignController::class,'imgdestroy'])->name('campaign.image.destroy');
+
+
+        Route::get('tag-manager/manage', [GoogleTagManagerController::class,'index'])->name('tagmanagers.index');
+        Route::get('tag-manager/{id}/show', [GoogleTagManagerController::class,'show'])->name('tagmanagers.show');
+        Route::get('tag-manager/create', [GoogleTagManagerController::class,'create'])->name('tagmanagers.create');
+        Route::post('tag-manager/save', [GoogleTagManagerController::class,'store'])->name('tagmanagers.store');
+        Route::get('tag-manager/{id}/edit', [GoogleTagManagerController::class,'edit'])->name('tagmanagers.edit');
+        Route::post('tag-manager/update', [GoogleTagManagerController::class,'update'])->name('tagmanagers.update');
+        Route::post('tag-manager/inactive', [GoogleTagManagerController::class,'inactive'])->name('tagmanagers.inactive');
+        Route::post('tag-manager/active', [GoogleTagManagerController::class,'active'])->name('tagmanagers.active');
+        Route::post('tag-manager/destroy', [GoogleTagManagerController::class,'destroy'])->name('tagmanagers.destroy');
+
+        Route::get('pixels/manage', [EcomPixelController::class,'index'])->name('pixels.index');
+        Route::get('pixels/{id}/show', [EcomPixelController::class,'show'])->name('pixels.show');
+        Route::get('pixels/create', [EcomPixelController::class,'create'])->name('pixels.create');
+        Route::post('pixels/save', [EcomPixelController::class,'store'])->name('pixels.store');
+        Route::get('pixels/{id}/edit', [EcomPixelController::class,'edit'])->name('pixels.edit');
+        Route::post('pixels/update', [EcomPixelController::class,'update'])->name('pixels.update');
+        Route::post('pixels/inactive', [EcomPixelController::class,'inactive'])->name('pixels.inactive');
+        Route::post('pixels/active', [EcomPixelController::class,'active'])->name('pixels.active');
+        Route::post('pixels/destroy', [EcomPixelController::class,'destroy'])->name('pixels.destroy');
 
         Route::group(['middleware' => ['check_permission']], function () {
             Route::get('/', 'HomeController@index')->name('home');
