@@ -48,5 +48,6 @@
 @include('backend.includes.layout_js')
 
 @yield('script')
+@stack('custom-script')
 </body>
 </html>

@@ -9,7 +9,7 @@ use App\Http\Controllers\Backend\LanguageController;
 use App\Http\Controllers\Backend\BlogCategoryController;
 use App\Http\Controllers\Backend\Auth\SellerRegisterController;
 use App\Http\Controllers\PopUpController;
-
+use App\Http\Controllers\Backend\CampaignController;
 //use App\Http\Controllers\Backend\ShippingArieaController;
 
 Route::get('/test', function () {
@@ -72,6 +72,18 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Backend', 'as' => 'backend.']
         Route::patch('website_setting/notice/{id}/update',[NoticeController::class,'update'])->name('notice.update');
         Route::delete('website_setting/notice/destroy/{id}',[NoticeController::class,'destroy'])->name('notice.destroy');
 
+        Route::get('campaign/manage', [CampaignController::class,'index'])->name('campaign.index');
+        Route::get('campaign_list', 'CampaignController@campaignList')->name('campaign.list');
+        Route::get('campaign/{id}/show', [CampaignController::class,'show'])->name('campaign.show');
+        Route::get('campaign/create', [CampaignController::class,'create'])->name('campaign.create');
+        Route::post('campaign/save', [CampaignController::class,'store'])->name('campaign.store');
+        Route::get('campaign/{id}/edit', [CampaignController::class,'edit'])->name('campaign.edit');
+        Route::post('campaign/update', [CampaignController::class,'update'])->name('campaign.update');
+        Route::post('campaign/inactive', [CampaignController::class,'inactive'])->name('campaign.inactive');
+        Route::post('campaign/active', [CampaignController::class,'active'])->name('campaign.active');
+        Route::post('campaign/destroy', [CampaignController::class,'destroy'])->name('campaign.destroy');
+        Route::get('campaign/image/destroy', [CampaignController::class,'imgdestroy'])->name('campaign.image.destroy');
+
         Route::group(['middleware' => ['check_permission']], function () {
             Route::get('/', 'HomeController@index')->name('home');
             Route::resource('roles', 'RoleController')->except(['show']);
@@ -117,7 +129,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Backend', 'as' => 'backend.']
             Route::post('popup_setting', [PopUpController::class, 'store'])->name('website_setting.popup.create');
             Route::put('popup_setting/{id}', [PopUpController::class, 'update'])->name('website_setting.popup.update');
 
-            
+
             // Route::resource('payment_gateway', PaymentGatewayController::class)->except(['create','store','show','destroy']);
             Route::resource('website_setting/currency', CurrencyController::class, ['names' => 'currency']);
             Route::get('currency/changeStatus', 'CurrencyController@changeStatus');

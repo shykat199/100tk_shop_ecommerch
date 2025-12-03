@@ -2,6 +2,7 @@
 
 namespace App\Models\Backend;
 
+use App\Models\Productimage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -20,5 +21,10 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function image()
+    {
+        return $this->hasOne(\App\Models\Backend\ProductImage::class, 'product_id')->select('id','image','product_id');
     }
 }

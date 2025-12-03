@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Models\Backend\Campaign;
 use App\Models\PopUp;
+use App\Models\ShippingCharge;
 use Illuminate\Http\Request;
 use App\Models\Frontend\Menu;
 use App\Models\Frontend\Size;
@@ -849,4 +851,141 @@ class FrontController extends Controller
 
         return view('frontend.pages.new_arrival', compact('newArrivals', 'categories', 'brands', 'prices', 'colors', 'sizes', 'populars'));
     }
+
+    public function campaign($slug)
+    {
+        $campaign_data = Campaign::where('slug', $slug)->with('images')->first();
+
+        $products = \App\Models\Backend\Product::whereIn('id', function($query) use ($campaign_data) {
+            $query->select('product_id')
+                ->from('campaign_products')
+                ->where('campaign_id', $campaign_data->id);
+        })->orWhere('id', $campaign_data->product_id)
+            ->with('image')
+            ->get();
+
+
+//        Cart::instance('shopping')->destroy();
+//        $cart_count = Cart::instance('shopping')->count();
+//        $product = $products->first();
+//        if ($cart_count == 0) {
+//            Cart::instance('shopping')->add([
+//                'id' => $product->id,
+//                'name' => $product->name,
+//                'qty' => 1,
+//                'price' => $product->new_price,
+//                'options' => [
+//                    'slug' => $product->slug,
+//                    'image' => $product->image->image,
+//                    'old_price' => $product->old_price,
+//                    'purchase_price' => $product->purchase_price,
+//                ],
+//            ]);
+//        }
+        //return $products;
+//        $shippingcharge = ShippingCharge::where('status', 1)->get();
+//        $select_charge = ShippingCharge::where('status', 1)->first();
+//        Session::put('shipping', $select_charge->amount);
+        return view('frontend.campaign', compact('campaign_data', 'products'));
+    }
+
+    public function shipping_charge(Request $request)
+    {
+        dd($request->all());
+
+//        $shipping = ShippingCharge::where(['id' => $request->id])->first();
+//        Session::put('shipping', $shipping->amount);
+//        return view('frontEnd.layouts.ajax.cart');
+    }
+
+    public function cart_remove(Request $request)
+    {
+        dd($request->all());
+//        $remove = Cart::instance('shopping')->update($request->id, 0);
+//        $data = Cart::instance('shopping')->content();
+//        return view('frontEnd.layouts.ajax.cart', compact('data'));
+    }
+
+    public function cart_increment(Request $request)
+    {
+        dd($request->all());
+//        $item = Cart::instance('shopping')->get($request->id);
+//        $qty = $item->qty + 1;
+//        $increment = Cart::instance('shopping')->update($request->id, $qty);
+//        $data = Cart::instance('shopping')->content();
+//        return view('frontEnd.layouts.ajax.cart', compact('data'));
+    }
+
+    public function cart_decrement(Request $request)
+    {
+        dd($request->all());
+//        $item = Cart::instance('shopping')->get($request->id);
+//        $qty = $item->qty - 1;
+//        $decrement = Cart::instance('shopping')->update($request->id, $qty);
+//        $data = Cart::instance('shopping')->content();
+//        return view('frontEnd.layouts.ajax.cart', compact('data'));
+    }
+
+    public function cart_update(Request $request)
+    {
+        dd($request->all());
+        // Get the row ID of the cart item
+//        $rowId = $request->id;
+//        // Fetch the current cart item using the row ID
+//        $cartItem = Cart::instance('shopping')->get($rowId);
+//        if ($cartItem) {
+//            // Update the options for the cart item
+//            Cart::instance('shopping')->update($rowId, [
+//                'options' => [
+//                    'product_size' => $request->product_size ?: $cartItem->options->product_size, // Use new size or keep existing
+//                    'product_color' => $request->product_color ?: $cartItem->options->product_color, // Use new color or keep existing
+//                    'slug' => $cartItem->options->slug, // Keep existing slug
+//                    'image' => $cartItem->options->image, // Keep existing image
+//                    'old_price' => $cartItem->options->old_price, // Keep existing old price
+//                    'purchase_price' => $cartItem->options->purchase_price, // Keep existing purchase price
+//                    'pro_unit' => $cartItem->options->pro_unit, // Keep existing pro unit
+//                ],
+//            ]);
+//        }
+//
+//        $data = Cart::instance('shopping')->content();
+//        return view('frontEnd.layouts.ajax.cart', compact('data'));
+    }
+    public function changeProduct(Request $request)
+    {
+
+        dd($request->all());
+
+
+        // Get the selected product
+//        $productId = $request->input('id');
+//        $product = \App\Models\Product::find($productId); // Fetch the product by ID
+
+
+
+//        if ($product) {
+//            // Clear existing items in the cart if necessary
+//            Cart::instance('shopping')->destroy(); // Or adjust this logic as needed
+//
+//            // Add the selected product to the cart
+//            Cart::instance('shopping')->add([
+//                'id' => $product->id,
+//                'name' => $product->name,
+//                'qty' => 1, // Adjust quantity as needed
+//                'price' => $product->new_price,
+//                'options' => [
+//                    'slug' => $product->slug,
+//                    'image' => $product->image->image,
+//                    'old_price' => $product->old_price,
+//                    'purchase_price' => $product->purchase_price,
+//                ],
+//            ]);
+//            $data = Cart::instance('shopping')->content();
+//            return view('frontEnd.layouts.ajax.cart', compact('data'));
+//
+//        }
+//
+//        return response()->json(['success' => false, 'message' => 'Product not found.']);
+    }
+
 }

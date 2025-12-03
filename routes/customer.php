@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/home',[OrderController::class,'index']);
 
+Route::post('/order-save', [OrderController::class, 'order_save'])->name('customer.ordersave');
+
 Route::get('profile',[CustomerController::class,'profile'])->name('customer.profile');
 Route::post('profile/{id}/update',[CustomerController::class,'update'])->name('profile.update');
 Route::post('profile/billing',[CustomerController::class,'billing'])->name('profile.billing');

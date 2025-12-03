@@ -424,6 +424,35 @@
                     <!-- Sub Manu End -->
                 </li>
             @endif
+            <li class="@if (Request::is('admin/campaign/manage', 'admin/campaign/create', 'admin/campaign*')) active @endif">
+                    <a href="#">
+                        <span class="icon">
+                            <svg viewBox="0 0 22 25" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11.3101 11.4708L11.4114 24.1705L22.0005 18.6209V6.125L11.3101 11.4708Z" />
+                                <path d="M17.6499 3.52539L7.1084 8.97609L10.9468 10.9257L21.5181 5.56315L17.6499 3.52539Z" />
+                                <path d="M14.7189 1.98175L10.958 0L0.405762 5.57106L4.06777 7.43126L14.7189 1.98175Z" />
+                                <path d="M6.72817 14.531L5.11108 13.4121L3.73112 13.5312V8.01856L0 6.125V18.5911L10.5713 24.1705V11.4875L6.75916 9.55463L6.72817 14.531Z" />
+                            </svg>
+                        </span>
+                        <span class="title">{{ __('Landing Page') }}</span>
+                        <span class="arrow">
+                            <svg viewBox="0 0 13 8" xmlns="http://www.w3.org/2000/svg">
+                                <line x1="1.47082" y1="2" x2="6.32702" y2="6.8562" stroke-linecap="round" />
+                                <line x1="0.75" y1="-0.75" x2="7.61771" y2="-0.75" transform="matrix(-0.707107 0.707107 0.707107 0.707107 12.3281 2)" stroke-linecap="round" />
+                            </svg>
+                        </span>
+                    </a>
+                    <!-- Sub Manu Start -->
+                    <ul>
+                        <li>
+                            <a class="@if (Request::is('admin/campaign/create')) active @endif" href="{{ route('backend.campaign.create') }}">{{ __('Create Page') }}</a>
+                        </li>
+                        <li>
+                            <a class="@if (Request::is('admin/campaign/manage')) active @endif" href="{{ route('backend.campaign.index') }}">{{ __('Campaign List') }}</a>
+                        </li>
+                    </ul>
+                    <!-- Sub Manu End -->
+                </li>
             @if (auth()->user()->can('browse_user_permission') || auth()->user()->hasRole('super-admin'))
                 <li class="@if (Request::is('admin/permissions', 'admin/permissions/*', 'admin/users', 'admin/users/*', 'admin/roles', 'admin/roles/*')) active @endif">
                     <a href="#"><span class="icon"><svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">

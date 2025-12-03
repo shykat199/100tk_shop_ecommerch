@@ -67,6 +67,15 @@ Route::get('/blog-details/{slug}',[BlogController::class,'blogDetails'])->name('
 Route::post('/blog/comment',[BlogController::class,'blogComment'])->name('frontend.blog.comment');
 /** blog routs end */
 
+Route::get('/campaign/{slug}', [FrontController::class, 'campaign'])->name('campaign');
+Route::get('/shipping-charge', [FrontController::class, 'shipping_charge'])->name('shipping.charge');
+Route::get('cart/remove', [FrontController::class, 'cart_remove'])->name('cart.remove');
+Route::get('cart/increment', [FrontController::class, 'cart_increment'])->name('cart.increment');
+Route::get('cart/decrement', [FrontController::class, 'cart_decrement'])->name('cart.decrement');
+Route::get('cart/update', [FrontController::class, 'cart_update'])->name('cart.update');
+Route::get('/cart/change-product', [FrontController::class, 'changeProduct'])->name('cart.changeProduct');
+
+
 
 Route::fallback(function(){
     /** Display custom 404 page from custom location */
