@@ -3,47 +3,47 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{ $campaign_data->name }}</title>
-{{--    <link rel="shortcut icon" href="{{asset($generalsetting->favicon)}}" type="image/x-icon" />--}}
+    <title><?php echo e($campaign_data->name); ?></title>
+
     <!-- fot awesome -->
-    <link rel="stylesheet" href="{{ asset('frontend/campaign/css/all.css') }}" />
+    <link rel="stylesheet" href="<?php echo e(asset('frontend/campaign/css/all.css')); ?>" />
     <!-- core css -->
-    <link rel="stylesheet" href="{{ asset('frontend/campaign/css') }}/bootstrap.min.css" />
-    <link rel="stylesheet" href="{{ asset('frontend/campaign/css') }}/animate.css" />
+    <link rel="stylesheet" href="<?php echo e(asset('frontend/campaign/css')); ?>/bootstrap.min.css" />
+    <link rel="stylesheet" href="<?php echo e(asset('frontend/campaign/css')); ?>/animate.css" />
     <!-- owl carousel -->
-    <link rel="stylesheet" href="{{ asset('frontend/campaign/css') }}/owl.theme.default.css" />
-    <link rel="stylesheet" href="{{ asset('frontend/campaign/css') }}/owl.carousel.min.css" />
+    <link rel="stylesheet" href="<?php echo e(asset('frontend/campaign/css')); ?>/owl.theme.default.css" />
+    <link rel="stylesheet" href="<?php echo e(asset('frontend/campaign/css')); ?>/owl.carousel.min.css" />
     <!-- owl carousel -->
-    <link rel="stylesheet" href="{{ asset('frontend/campaign/css') }}/select2.min.css" />
+    <link rel="stylesheet" href="<?php echo e(asset('frontend/campaign/css')); ?>/select2.min.css" />
     <!-- common css -->
-    <link rel="stylesheet" href="{{ asset('frontend/campaign/css') }}/style.css" />
-    <link rel="stylesheet" href="{{ asset('frontend/campaign/css') }}/responsive.css" />
-    @php
+    <link rel="stylesheet" href="<?php echo e(asset('frontend/campaign/css')); ?>/style.css" />
+    <link rel="stylesheet" href="<?php echo e(asset('frontend/campaign/css')); ?>/responsive.css" />
+    <?php
         $pixelCount = isset($pixels) ? count($pixels) : 0;
         $pixelsExists = isset($pixels);
-    @endphp
+    ?>
     <script>
         console.log('[Facebook Pixel] ==========================================');
         console.log('[Facebook Pixel] Debug Info:');
-        console.log('[Facebook Pixel] $pixels variable exists:', {{ $pixelsExists ? 'true' : 'false' }});
-        console.log('[Facebook Pixel] Pixel count: {{ $pixelCount }}');
-        @if(isset($pixels) && count($pixels) > 0)
+        console.log('[Facebook Pixel] $pixels variable exists:', <?php echo e($pixelsExists ? 'true' : 'false'); ?>);
+        console.log('[Facebook Pixel] Pixel count: <?php echo e($pixelCount); ?>');
+        <?php if(isset($pixels) && count($pixels) > 0): ?>
         console.log('[Facebook Pixel] Pixels found! Initializing...');
-        @else
+        <?php else: ?>
         console.error('[Facebook Pixel] ✗ No pixels found!');
-        console.error('[Facebook Pixel] $pixels is:', '{{ isset($pixels) ? "defined but empty" : "not defined" }}');
-        @endif
+        console.error('[Facebook Pixel] $pixels is:', '<?php echo e(isset($pixels) ? "defined but empty" : "not defined"); ?>');
+        <?php endif; ?>
     </script>
 
-    @if(isset($pixels) && count($pixels) > 0)
+    <?php if(isset($pixels) && count($pixels) > 0): ?>
         <!-- Facebook Pixel Code -->
         <script>
             console.log('[Facebook Pixel] ==========================================');
             console.log('[Facebook Pixel] Initializing Facebook Pixel...');
-            console.log('[Facebook Pixel] Pixel count: {{ count($pixels) }}');
-            @foreach($pixels as $pixel)
-            console.log('[Facebook Pixel] Pixel ID: {{ $pixel->code }}');
-            @endforeach
+            console.log('[Facebook Pixel] Pixel count: <?php echo e(count($pixels)); ?>');
+            <?php $__currentLoopData = $pixels; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pixel): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            console.log('[Facebook Pixel] Pixel ID: <?php echo e($pixel->code); ?>');
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
                 !function(f,b,e,v,n,t,s)
             {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -62,15 +62,15 @@
                     console.log('[Facebook Pixel] ✓ Pixel script loaded successfully');
                     console.log('[Facebook Pixel] fbq function type:', typeof fbq);
 
-                    @foreach($pixels as $pixel)
-                    console.log('[Facebook Pixel] Initializing pixel: {{ $pixel->code }}');
+                    <?php $__currentLoopData = $pixels; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pixel): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    console.log('[Facebook Pixel] Initializing pixel: <?php echo e($pixel->code); ?>');
                     try {
-                        fbq('init', '{{ $pixel->code }}');
-                        console.log('[Facebook Pixel] ✓ Pixel {{ $pixel->code }} initialized');
+                        fbq('init', '<?php echo e($pixel->code); ?>');
+                        console.log('[Facebook Pixel] ✓ Pixel <?php echo e($pixel->code); ?> initialized');
                     } catch(e) {
-                        console.error('[Facebook Pixel] ✗ Error initializing pixel {{ $pixel->code }}:', e);
+                        console.error('[Facebook Pixel] ✗ Error initializing pixel <?php echo e($pixel->code); ?>:', e);
                     }
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
                     console.log('[Facebook Pixel] Tracking PageView event...');
                     try {
@@ -115,60 +115,60 @@
             });
         </script>
         <noscript>
-            @foreach($pixels as $pixel)
+            <?php $__currentLoopData = $pixels; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $pixel): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <img height="1" width="1" style="display:none"
-                     src="https://www.facebook.com/tr?id={{ $pixel->code }}&ev=PageView&noscript=1"/>
-            @endforeach
+                     src="https://www.facebook.com/tr?id=<?php echo e($pixel->code); ?>&ev=PageView&noscript=1"/>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </noscript>
         <!-- End Facebook Pixel Code -->
-    @else
+    <?php else: ?>
         <script>
             console.warn('[Facebook Pixel] No pixels found. Check if $pixels variable is available.');
         </script>
-    @endif
+    <?php endif; ?>
 
-    <meta name="app-url" content="{{route('campaign',$campaign_data->slug)}}" />
+    <meta name="app-url" content="<?php echo e(route('campaign',$campaign_data->slug)); ?>" />
     <meta name="robots" content="index, follow" />
-    <meta name="description" content="{{$campaign_data->description}}" />
-    <meta name="keywords" content="{{ $campaign_data->slug }}" />
+    <meta name="description" content="<?php echo e($campaign_data->description); ?>" />
+    <meta name="keywords" content="<?php echo e($campaign_data->slug); ?>" />
 
     <!-- Twitter Card data -->
     <meta name="twitter:card" content="product" />
-    <meta name="twitter:site" content="{{$campaign_data->name}}" />
-    <meta name="twitter:title" content="{{$campaign_data->name}}" />
-    <meta name="twitter:description" content="{{ $campaign_data->description}}" />
+    <meta name="twitter:site" content="<?php echo e($campaign_data->name); ?>" />
+    <meta name="twitter:title" content="<?php echo e($campaign_data->name); ?>" />
+    <meta name="twitter:description" content="<?php echo e($campaign_data->description); ?>" />
     <meta name="twitter:creator" content="hellodinajpur.com" />
-    <meta property="og:url" content="{{route('campaign',$campaign_data->slug)}}" />
-    <meta name="twitter:image" content="{{asset($campaign_data->image_one)}}" />
+    <meta property="og:url" content="<?php echo e(route('campaign',$campaign_data->slug)); ?>" />
+    <meta name="twitter:image" content="<?php echo e(asset($campaign_data->image_one)); ?>" />
 
     <!-- Open Graph data -->
-    <meta property="og:title" content="{{$campaign_data->name}}" />
+    <meta property="og:title" content="<?php echo e($campaign_data->name); ?>" />
     <meta property="og:type" content="product" />
-    <meta property="og:url" content="{{route('campaign',$campaign_data->slug)}}" />
-    <meta property="og:image" content="{{asset($campaign_data->image_one)}}" />
-    <meta property="og:description" content="{{ $campaign_data->description}}" />
-    <meta property="og:site_name" content="{{$campaign_data->name}}" />
+    <meta property="og:url" content="<?php echo e(route('campaign',$campaign_data->slug)); ?>" />
+    <meta property="og:image" content="<?php echo e(asset($campaign_data->image_one)); ?>" />
+    <meta property="og:description" content="<?php echo e($campaign_data->description); ?>" />
+    <meta property="og:site_name" content="<?php echo e($campaign_data->name); ?>" />
 
-    @if(!empty($gtm_code) && count($gtm_code) > 0)
+    <?php if(!empty($gtm_code) && count($gtm_code) > 0): ?>
         <!-- Google Tag Manager -->
         <script>
             window.dataLayer = window.dataLayer || [];
         </script>
-        @foreach($gtm_code as $gtm)
-            @php
+        <?php $__currentLoopData = $gtm_code; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $gtm): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <?php
                 // Handle GTM code format - remove GTM- prefix if already present
                 $gtmId = str_replace('GTM-', '', $gtm->code);
-            @endphp
+            ?>
             <script>
                 (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
                         new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
                     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-                })(window,document,'script','dataLayer','GTM-{{ $gtmId }}');
+                })(window,document,'script','dataLayer','GTM-<?php echo e($gtmId); ?>');
             </script>
-        @endforeach
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         <!-- End Google Tag Manager -->
-    @endif
+    <?php endif; ?>
     <style>
         /* Style for selected product card */
         .selected {
@@ -196,7 +196,7 @@
             font-size: 0.8em; /* Font size for labels */
             color:orange;
         }
-        @keyframes colorAnimation {
+        @keyframes  colorAnimation {
             0% {
                 color: pink; /* Start with pink */
             }
@@ -260,7 +260,7 @@
             animation: border-animation 3s linear infinite; /* Animation */
         }
 
-        @keyframes border-animation {
+        @keyframes  border-animation {
             0% {
                 border-color: white; /* Transparent at start */
                 transform: scale(0.95); /* Initial scale */
@@ -288,21 +288,21 @@
         }
     </style>
 
-{{--    {!! $generalsetting->header_code !!}--}}
+
 </head>
 
 <body>
-@php
+<?php
 //    $subtotal = Cart::instance('shopping')->subtotal();
 //    $subtotal=str_replace(',','',$subtotal);
 //    $subtotal=str_replace('.00', '',$subtotal);
 //    $shipping = Session::get('shipping')?Session::get('shipping'):0;
-@endphp
+?>
 <section style="background-image: radial-gradient(at center center, #139525 28%, #0E320F 79%)">
     <div class="container py-2 py-md-4">
         <div class="row gy-2">
             <div class="col-md-7">
-                <h4 class="text-light text-center py-2 py-md-4 fw-bolder">{!! $campaign_data->top_title_1  !!} <span class="text-warning"> {!! $campaign_data->top_title_2  !!}</span> </h4>
+                <h4 class="text-light text-center py-2 py-md-4 fw-bolder"><?php echo $campaign_data->top_title_1; ?> <span class="text-warning"> <?php echo $campaign_data->top_title_2; ?></span> </h4>
             </div>
             <div class="col-md-5">
                 <div class="countdown-container">
@@ -342,7 +342,7 @@
 <section>
     <div class="container py-2 py-md-4">
         <div class="py-2 py-md-4  rounded" style="border:2px dashed green">
-            <h2 class="animated-heading text-center">{!! $campaign_data->heading_1 !!}</h2>
+            <h2 class="animated-heading text-center"><?php echo $campaign_data->heading_1; ?></h2>
         </div>
     </div>
 </section>
@@ -355,55 +355,55 @@
 <section>
     <div class="container py-2 py-md-4">
         <div class="row gy-2">
-            @if($campaign_data->image_one)
+            <?php if($campaign_data->image_one): ?>
                 <div class="col-sm-6">
-                    <img class="img-fluid shadow" src="{{asset('uploads/'.$campaign_data->image_one)}}" >
+                    <img class="img-fluid shadow" src="<?php echo e(asset('uploads/'.$campaign_data->image_one)); ?>" >
                 </div>
-            @endif
-            @if($campaign_data->image_two)
+            <?php endif; ?>
+            <?php if($campaign_data->image_two): ?>
                 <div class="col-sm-6">
-                    <img class="img-fluid shadow" src="{{asset('uploads/'.$campaign_data->image_two)}}" >
+                    <img class="img-fluid shadow" src="<?php echo e(asset('uploads/'.$campaign_data->image_two)); ?>" >
                 </div>
-            @endif
+            <?php endif; ?>
         </div>
     </div>
 </section>
 <section>
     <div class="container py-2 py-md-4">
         <div class="row gy-2">
-            @if($campaign_data->feature_1)
+            <?php if($campaign_data->feature_1): ?>
                 <div class="col-sm-6">
                     <div class="py-2 py-md-4  rounded" style="border:1px dashed green">
-                        <h2 class="text-center">{!! $campaign_data->feature_1 !!}</h2>
+                        <h2 class="text-center"><?php echo $campaign_data->feature_1; ?></h2>
                     </div>
                 </div>
-            @endif
-            @if($campaign_data->feature_1)
+            <?php endif; ?>
+            <?php if($campaign_data->feature_1): ?>
                 <div class="col-sm-6">
                     <div class="py-2 py-md-4  rounded" style="border:1px dashed green">
-                        <h2 class="text-center">{!! $campaign_data->feature_2 !!}</h2>
+                        <h2 class="text-center"><?php echo $campaign_data->feature_2; ?></h2>
                     </div>
                 </div>
-            @endif
+            <?php endif; ?>
         </div>
     </div>
 </section>
 <section>
     <div class="container py-2">
         <div class="py-2 py-md-4  rounded" style="border:2px dashed green">
-            <h2 class="animated-heading text-center">{!! $campaign_data->heading_2 !!}</h2>
+            <h2 class="animated-heading text-center"><?php echo $campaign_data->heading_2; ?></h2>
         </div>
     </div>
 </section>
 <section>
     <div class="container py-2 ">
         <div class="py-2 py-md-4  rounded" style="border:2px dashed green">
-            <h2 class="animated-heading text-center">{!! $campaign_data->heading_3 !!}</h2>
+            <h2 class="animated-heading text-center"><?php echo $campaign_data->heading_3; ?></h2>
         </div>
     </div>
 </section>
 
-@if($campaign_data->video!=null)
+<?php if($campaign_data->video!=null): ?>
     <section class="camp_video_sec">
         <div class="container">
 
@@ -414,8 +414,8 @@
                 <div class="col-md-8 col-sm-12">
                     <div class="camp_vid rounded" style="border:5px solid red">
                         <iframe width="100%" height="480"
-                                src="https://www.youtube.com/embed/{{$campaign_data->video}}"
-                                title="{{$campaign_data->banner_title}}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="">
+                                src="https://www.youtube.com/embed/<?php echo e($campaign_data->video); ?>"
+                                title="<?php echo e($campaign_data->banner_title); ?>" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="">
                         </iframe>
                     </div>
                 </div>
@@ -427,17 +427,17 @@
             </div>
         </div>
     </section>
-@endif
+<?php endif; ?>
 
 <section class="py-2 py-md-4" style="background: linear-gradient(to bottom, #FAF4B3, #ECC7CF);">
     <div class="container my-2 my-md-4">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <h2 class="text-center p-2 p-md-4 rounded" style="background-color:#FBEFF7;border:2px dashed #F1ACE7">আমাদের থেকে বিস্তারিত জানতে এই নাম্বারে কল করুন {{$contact->phone ?? 'N/A'}}</h2>
+                <h2 class="text-center p-2 p-md-4 rounded" style="background-color:#FBEFF7;border:2px dashed #F1ACE7">আমাদের থেকে বিস্তারিত জানতে এই নাম্বারে কল করুন <?php echo e($contact->phone ?? 'N/A'); ?></h2>
                 <div class="row justify-content-center my-2 my-md-4 gy-2">
                     <div class="col-md-6 custom_btn">
                         <div class="shadow-lg">
-                            <a href="tel:{{$contact->phone ?? 'N/A'}}"
+                            <a href="tel:<?php echo e($contact->phone ?? 'N/A'); ?>"
                                class="btn btn-danger btn-lg d-block py-md-3 fs-2 fw-bolder button-3d button-animated-border" >
                                 <i class="fa-solid fa-phone"></i> আমাদের কল করুন </a>
                         </div>
@@ -445,7 +445,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="shadow-lg">
-                            <a href="https://wa.me/{{$contact->whatsapp ?? 'N/A'}}"
+                            <a href="https://wa.me/<?php echo e($contact->whatsapp ?? 'N/A'); ?>"
                                class="btn btn-success btn-lg d-block py-md-3 fs-2 text-light fw-bolder button-3d button-animated-border">
                                 <i class="fa-brands fa-whatsapp"></i> হোয়াটসঅ্যাপ
                             </a>
@@ -454,15 +454,15 @@
                     </div>
                 </div>
 
-                <h2 class="text-center p-2 p-md-4 rounded" style="background-color:#FBEFF7;border:2px dashed #F1ACE7">{!! $campaign_data->heading_4 !!}</h2>
+                <h2 class="text-center p-2 p-md-4 rounded" style="background-color:#FBEFF7;border:2px dashed #F1ACE7"><?php echo $campaign_data->heading_4; ?></h2>
 
             </div>
         </div>
     </div>
 </section>
 
-@if(optional($campaign_data)->short_description && strlen($campaign_data->short_description) > 15 ||
-optional($campaign_data)->description && strlen($campaign_data->description) > 15)
+<?php if(optional($campaign_data)->short_description && strlen($campaign_data->short_description) > 15 ||
+optional($campaign_data)->description && strlen($campaign_data->description) > 15): ?>
     <section class="rules_sec">
         <div class="container">
             <div class="row">
@@ -470,42 +470,44 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
                     <div class="card">
                         <div class="card-body">
                             <h2>বিস্তারিত</h2>
-                            {!! $campaign_data->short_description !!}
+                            <?php echo $campaign_data->short_description; ?>
+
                             <br>
                             <br>
-                            {!!$campaign_data->description !!}
+                            <?php echo $campaign_data->description; ?>
+
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-@endif
+<?php endif; ?>
 <section>
     <div class="container">
         <div class="row">
             <div class="col-sm-12">
                 <div class="campro_inn">
                     <div class="campro_head">
-                        <h2>{{$campaign_data->name}}</h2>
+                        <h2><?php echo e($campaign_data->name); ?></h2>
                     </div>
 
                     <div class="campro_img_slider owl-carousel">
-                        @if($campaign_data->image_one)
+                        <?php if($campaign_data->image_one): ?>
                             <div class="campro_img_item">
-                                <img src="{{asset('uploads/'.$campaign_data->image_one)}}" alt="">
+                                <img src="<?php echo e(asset('uploads/'.$campaign_data->image_one)); ?>" alt="">
                             </div>
-                        @endif
-                        @if($campaign_data->image_two)
+                        <?php endif; ?>
+                        <?php if($campaign_data->image_two): ?>
                             <div class="campro_img_item">
-                                <img src="{{asset('uploads/'.$campaign_data->image_two)}}" alt="">
+                                <img src="<?php echo e(asset('uploads/'.$campaign_data->image_two)); ?>" alt="">
                             </div>
-                        @endif
-                        @if($campaign_data->image_three)
+                        <?php endif; ?>
+                        <?php if($campaign_data->image_three): ?>
                             <div class="campro_img_item">
-                                <img src="{{asset('uploads/'.$campaign_data->image_three)}}" alt="">
+                                <img src="<?php echo e(asset('uploads/'.$campaign_data->image_three)); ?>" alt="">
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
                     <div class="col-sm-12">
                         <div class="ord_btn">
@@ -526,14 +528,14 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
             <div class="col-sm-12">
                 <div class="rev_inn">
 
-                    <h2 class="campaign_offer">{{$campaign_data->review}}</h2>
+                    <h2 class="campaign_offer"><?php echo e($campaign_data->review); ?></h2>
 
                     <div class="review_slider owl-carousel">
-                        @foreach($campaign_data->images as $key=>$value)
+                        <?php $__currentLoopData = $campaign_data->images; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key=>$value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="review_item">
-                                <img src="{{asset($value->image)}}" alt="">
+                                <img src="<?php echo e(asset($value->image)); ?>" alt="">
                             </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
                     <div class="col-sm-12">
                         <div class="ord_btn">
@@ -555,42 +557,43 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
                         <div class="row">
                             <div class="col-sm-12">
                                 <h2 class="campaign_offer">অফারটি সীমিত সময়ের জন্য, তাই অফার শেষ হওয়ার আগেই অর্ডার করুন</h2>
-                                @if($campaign_data->note)
+                                <?php if($campaign_data->note): ?>
                                     <p class="my-1 text-center">
-                                        {!! $campaign_data->note !!}
+                                        <?php echo $campaign_data->note; ?>
+
                                     </p>
-                                @endif
+                                <?php endif; ?>
                             </div>
 
                         </div>
                         <div class="row order_by">
                             <div class="col-lg-7 cust-order-1">
                                 <div class="cart_details">
-                                    @if($products->count()>1)
+                                    <?php if($products->count()>1): ?>
                                         <div class="card mb-2 ">
                                             <div class="card-header">
                                                 <h5 class="potro_font">একটি পণ্য সিলেক্ট করুনণ </h5>
                                             </div>
                                             <div class="card-body">
                                                 <div class="row g-2">
-                                                    @foreach($products as $product)
+                                                    <?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                         <div class="col-md-3 col-6"> <!-- Adjusted column width for smaller cards -->
                                                             <div class="border shadow"> <!-- Wrap the card with form-check for better usability -->
-                                                                <input type="radio" class="form-check-input" name="product" id="product_{{ $product->id }}" value="{{ $product->id }}" {{ $loop->first ? 'checked' : '' }} style="display: none;" onchange="updateCart('{{ $product->id }}')">
-                                                                <label for="product_{{ $product->id }}" class="card shadow-sm product-card {{ $loop->first ? 'selected' : '' }}" style="cursor: pointer;"> <!-- Add class for styling -->
-                                                                    <img src="{{ asset('uploads/products/galleries/'.$product->image->image) }}" class="card-img-top" alt="{{ $product->name }}" style="height: 100px; object-fit: cover;"> <!-- Fixed height and object-fit -->
+                                                                <input type="radio" class="form-check-input" name="product" id="product_<?php echo e($product->id); ?>" value="<?php echo e($product->id); ?>" <?php echo e($loop->first ? 'checked' : ''); ?> style="display: none;" onchange="updateCart('<?php echo e($product->id); ?>')">
+                                                                <label for="product_<?php echo e($product->id); ?>" class="card shadow-sm product-card <?php echo e($loop->first ? 'selected' : ''); ?>" style="cursor: pointer;"> <!-- Add class for styling -->
+                                                                    <img src="<?php echo e(asset('uploads/products/galleries/'.$product->image->image)); ?>" class="card-img-top" alt="<?php echo e($product->name); ?>" style="height: 100px; object-fit: cover;"> <!-- Fixed height and object-fit -->
                                                                     <div class="card-body p-1 text-center"> <!-- Centered text for a better layout -->
-                                                                        <div class="card-title">{{ Str::limit($product->name, 20) }}</div>
-                                                                        <div class="card-text mb-1">৳{{ $product->purchase_price }} <del>৳{{ $product->sale_price }}</del></div>
+                                                                        <div class="card-title"><?php echo e(Str::limit($product->name, 20)); ?></div>
+                                                                        <div class="card-text mb-1">৳<?php echo e($product->purchase_price); ?> <del>৳<?php echo e($product->sale_price); ?></del></div>
                                                                     </div>
                                                                 </label>
                                                             </div>
                                                         </div>
-                                                    @endforeach
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                 </div>
                                             </div>
                                         </div>
-                                    @endif
+                                    <?php endif; ?>
                                     <div class="card">
                                         <div class="card-header">
                                             <h5 class="potro_font">পণ্যের বিবরণ </h5>
@@ -607,93 +610,97 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
                                                 </thead>
 
                                                 <tbody>
-                                                @php
+                                                <?php
                                                     $cartExists = class_exists(\Gloudemans\Shoppingcart\Facades\Cart::class);
-                                                @endphp
-                                                @if($cartExists && Cart::instance('shopping')->count() > 0)
-                                                    @foreach(Cart::instance('shopping')->content() as $value)
+                                                ?>
+                                                <?php if($cartExists && Cart::instance('shopping')->count() > 0): ?>
+                                                    <?php $__currentLoopData = Cart::instance('shopping')->content(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                         <tr>
 
                                                             <td class="text-left">
-                                                                <a style="font-size: 14px;" href="{{route('product',$value->options->slug)}}"><img src="{{asset($value->options->image)}}" height="30" width="30"> {{Str::limit($value->name,20)}}</a>
-                                                                @php
+                                                                <a style="font-size: 14px;" href="<?php echo e(route('product',$value->options->slug)); ?>"><img src="<?php echo e(asset($value->options->image)); ?>" height="30" width="30"> <?php echo e(Str::limit($value->name,20)); ?></a>
+                                                                <?php
                                                                     $product = App\Models\Product::find($value->id);
-                                                                @endphp
+                                                                ?>
 
-                                                                @if($product && ($product->sizes->isNotEmpty() || $product->colors->isNotEmpty()))
+                                                                <?php if($product && ($product->sizes->isNotEmpty() || $product->colors->isNotEmpty())): ?>
                                                                     <div class="row g-1 mt-2">
                                                                         <!-- Size Selector -->
-                                                                        @if($product->sizes->isNotEmpty())
+                                                                        <?php if($product->sizes->isNotEmpty()): ?>
                                                                             <div class="col-6">
 
-                                                                                <select id="size-selector-{{ $value->rowId }}" class="form-select form-select-sm cart-size-selector" data-id="{{ $value->rowId }}">
+                                                                                <select id="size-selector-<?php echo e($value->rowId); ?>" class="form-select form-select-sm cart-size-selector" data-id="<?php echo e($value->rowId); ?>">
                                                                                     <option>Select an option</option>
-                                                                                    @foreach($product->sizes as $size)
-                                                                                        <option value="{{ $size->sizeName }}" {{ $size->sizeName == $value->options->product_size ? 'selected' : '' }}>
-                                                                                            {{ $size->sizeName }}
+                                                                                    <?php $__currentLoopData = $product->sizes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $size): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                                                        <option value="<?php echo e($size->sizeName); ?>" <?php echo e($size->sizeName == $value->options->product_size ? 'selected' : ''); ?>>
+                                                                                            <?php echo e($size->sizeName); ?>
+
                                                                                         </option>
-                                                                                    @endforeach
+                                                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                                                 </select>
-                                                                                <label for="size-selector-{{ $value->rowId }}" class="form-label text-muted text-start" style="font-size: 0.875rem;">Size:
-                                                                                    @if($value->options->product_size)
-                                                                                        {{$value->options->product_size}}
-                                                                                    @endif
+                                                                                <label for="size-selector-<?php echo e($value->rowId); ?>" class="form-label text-muted text-start" style="font-size: 0.875rem;">Size:
+                                                                                    <?php if($value->options->product_size): ?>
+                                                                                        <?php echo e($value->options->product_size); ?>
+
+                                                                                    <?php endif; ?>
                                                                                 </label>
                                                                             </div>
-                                                                        @endif
+                                                                        <?php endif; ?>
 
                                                                         <!-- Color Selector -->
-                                                                        @if($product->colors->isNotEmpty())
+                                                                        <?php if($product->colors->isNotEmpty()): ?>
                                                                             <div class="col-6">
-                                                                                <select id="color-selector-{{ $value->rowId }}" class="form-select form-select-sm cart-color-selector" data-id="{{ $value->rowId }}">
+                                                                                <select id="color-selector-<?php echo e($value->rowId); ?>" class="form-select form-select-sm cart-color-selector" data-id="<?php echo e($value->rowId); ?>">
                                                                                     <option>Select an option</option>
-                                                                                    @foreach($product->colors as $color)
-                                                                                        <option value="{{ $color->colorName }}" {{ $color->colorName == $value->options->product_color ? 'selected' : '' }}>
-                                                                                            {{ $color->colorName }}
+                                                                                    <?php $__currentLoopData = $product->colors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $color): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                                                        <option value="<?php echo e($color->colorName); ?>" <?php echo e($color->colorName == $value->options->product_color ? 'selected' : ''); ?>>
+                                                                                            <?php echo e($color->colorName); ?>
+
                                                                                         </option>
-                                                                                    @endforeach
+                                                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                                                 </select>
-                                                                                <label for="color-selector-{{ $value->rowId }}" class="form-label text-muted text-start" style="font-size: 0.875rem;">Color:
-                                                                                    @if($value->options->product_color)
-                                                                                        {{ $value->options->product_color }}
-                                                                                    @endif
+                                                                                <label for="color-selector-<?php echo e($value->rowId); ?>" class="form-label text-muted text-start" style="font-size: 0.875rem;">Color:
+                                                                                    <?php if($value->options->product_color): ?>
+                                                                                        <?php echo e($value->options->product_color); ?>
+
+                                                                                    <?php endif; ?>
                                                                                 </label>
                                                                             </div>
-                                                                        @endif
+                                                                        <?php endif; ?>
                                                                     </div>
-                                                                @endif
+                                                                <?php endif; ?>
                                                             </td>
                                                             <td width="15%" class="cart_qty">
                                                                 <div class="qty-cart vcart-qty">
                                                                     <div class="quantity">
-                                                                        <button class="minus cart_decrement"  data-id="{{$value->rowId}}">-</button>
-                                                                        <input type="text" value="{{$value->qty}}" readonly />
-                                                                        <button class="plus  cart_increment" data-id="{{$value->rowId}}">+</button>
+                                                                        <button class="minus cart_decrement"  data-id="<?php echo e($value->rowId); ?>">-</button>
+                                                                        <input type="text" value="<?php echo e($value->qty); ?>" readonly />
+                                                                        <button class="plus  cart_increment" data-id="<?php echo e($value->rowId); ?>">+</button>
                                                                     </div>
                                                                 </div>
                                                             </td>
-                                                            <td>৳{{$value->price*$value->qty}}</td>
+                                                            <td>৳<?php echo e($value->price*$value->qty); ?></td>
                                                         </tr>
-                                                    @endforeach
-                                                @endif
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                <?php endif; ?>
                                                 </tbody>
                                                 <tfoot>
                                                 <tr>
                                                     <th colspan="2" class="text-end px-4">মোট</th>
                                                     <td>
-                                                        <span id="net_total"><span class="alinur">৳ </span><strong>{{$subtotal ?? 'N/A'}}</strong></span>
+                                                        <span id="net_total"><span class="alinur">৳ </span><strong><?php echo e($subtotal ?? 'N/A'); ?></strong></span>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <th colspan="2" class="text-end px-4">ডেলিভারি চার্জ</th>
                                                     <td>
-                                                        <span id="cart_shipping_cost"><span class="alinur">৳ </span><strong>{{$shipping ?? 'N/A'}}</strong></span>
+                                                        <span id="cart_shipping_cost"><span class="alinur">৳ </span><strong><?php echo e($shipping ?? 'N/A'); ?></strong></span>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <th colspan="2" class="text-end px-4">সর্বমোট</th>
                                                     <td>
-                                                        <span id="grand_total"><span class="alinur">৳ </span><strong>{{ ($subtotal ?? 0) + ($shipping ?? 0) }}</strong></span>
+                                                        <span id="grand_total"><span class="alinur">৳ </span><strong><?php echo e(($subtotal ?? 0) + ($shipping ?? 0)); ?></strong></span>
                                                     </td>
                                                 </tr>
                                                 </tfoot>
@@ -705,8 +712,8 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
                             </div>
                             <div class="col-lg-5 cus-order-2">
                                 <div class="checkout-shipping" id="order_form">
-                                    <form action="{{route('customer.ordersave')}}" method="POST" data-parsley-validate="">
-                                        @csrf
+                                    <form action="<?php echo e(route('customer.ordersave')); ?>" method="POST" data-parsley-validate="">
+                                        <?php echo csrf_field(); ?>
                                         <div class="card">
                                             <div class="card-header">
                                                 <h5 class="potro_font">আপনার ইনফরমেশন দিন  </h5>
@@ -716,53 +723,109 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
                                                     <div class="col-sm-12">
                                                         <div class="form-group mb-3">
                                                             <label for="name">আপনার নাম লিখুন * </label>
-                                                            <input type="text" id="name" class="form-control @error('name') is-invalid @enderror" name="name" value="{{old('name')}}" placeholder="নাম" required>
-                                                            @error('name')
+                                                            <input type="text" id="name" class="form-control <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" name="name" value="<?php echo e(old('name')); ?>" placeholder="নাম" required>
+                                                            <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                                             <span class="invalid-feedback" role="alert">
-                                                    <strong>{{ $message }}</strong>
+                                                    <strong><?php echo e($message); ?></strong>
                                                 </span>
-                                                            @enderror
+                                                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                                         </div>
                                                     </div>
                                                     <!-- col-end -->
                                                     <div class="col-sm-12">
                                                         <div class="form-group mb-3">
                                                             <label for="phone">আপনার মোবাইল লিখুন *</label>
-                                                            <input type="number" minlength="11" id="number" maxlength="11" pattern="0[0-9]+" title="please enter number only and 0 must first character" title="Please enter an 11-digit number." id="phone" class="form-control @error('phone') is-invalid @enderror" name="phone" value="{{old('phone')}}" placeholder="+৮৮ বাদে ১১ সংখ্যা "  required>
-                                                            @error('phone')
+                                                            <input type="number" minlength="11" id="number" maxlength="11" pattern="0[0-9]+" title="please enter number only and 0 must first character" title="Please enter an 11-digit number." id="phone" class="form-control <?php $__errorArgs = ['phone'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" name="phone" value="<?php echo e(old('phone')); ?>" placeholder="+৮৮ বাদে ১১ সংখ্যা "  required>
+                                                            <?php $__errorArgs = ['phone'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                                             <span class="invalid-feedback" role="alert">
-                                                    <strong>{{ $message }}</strong>
+                                                    <strong><?php echo e($message); ?></strong>
                                                 </span>
-                                                            @enderror
+                                                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                                         </div>
                                                     </div>
                                                     <!-- col-end -->
                                                     <div class="col-sm-12">
                                                         <div class="form-group mb-3">
                                                             <label for="address">আপনার ঠিকানা লিখুন   *</label>
-                                                            <input type="address" id="address" class="form-control @error('address') is-invalid @enderror" placeholder="জেলা, থানা, গ্রাম " name="address" value="{{old('address')}}"  required>
-                                                            @error('email')
+                                                            <input type="address" id="address" class="form-control <?php $__errorArgs = ['address'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" placeholder="জেলা, থানা, গ্রাম " name="address" value="<?php echo e(old('address')); ?>"  required>
+                                                            <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                                             <span class="invalid-feedback" role="alert">
-                                                    <strong>{{ $message }}</strong>
+                                                    <strong><?php echo e($message); ?></strong>
                                                 </span>
-                                                            @enderror
+                                                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                                         </div>
                                                     </div>
                                                     <div class="col-sm-12">
                                                         <div class="form-group mb-3">
                                                             <label for="area">আপনার এরিয়া সিলেক্ট করুন  *</label>
-                                                            <select type="area" id="area" class="form-control @error('area') is-invalid @enderror" name="area"   required>
-                                                                @if(!empty($shippingcharge))
-                                                                    @foreach($shippingcharge as $key=>$value)
-                                                                        <option value="{{$value->id}}">{{$value->name}}</option>
-                                                                    @endforeach
-                                                                @endif
+                                                            <select type="area" id="area" class="form-control <?php $__errorArgs = ['area'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" name="area"   required>
+                                                                <?php if(!empty($shippingcharge)): ?>
+                                                                    <?php $__currentLoopData = $shippingcharge; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key=>$value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                                        <option value="<?php echo e($value->id); ?>"><?php echo e($value->name); ?></option>
+                                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                                <?php endif; ?>
                                                             </select>
-                                                            @error('email')
+                                                            <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                                             <span class="invalid-feedback" role="alert">
-                                                    <strong>{{ $message }}</strong>
+                                                    <strong><?php echo e($message); ?></strong>
                                                 </span>
-                                                            @enderror
+                                                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                                         </div>
                                                     </div>
                                                     <!-- col-end -->
@@ -777,11 +840,12 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
                                         <!-- card end -->
                                     </form>
                                 </div>
-                                @if($campaign_data->billing_details)
+                                <?php if($campaign_data->billing_details): ?>
                                     <p class="my-1 text-center">
-                                        {!! $campaign_data->billing_details !!}
+                                        <?php echo $campaign_data->billing_details; ?>
+
                                     </p>
-                                @endif
+                                <?php endif; ?>
                             </div>
                             <!-- col end -->
 
@@ -795,12 +859,12 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
     </div>
 </section>
 
-<script src="{{ asset('frontend/campaign/js') }}/jquery-2.1.4.min.js"></script>
-<script src="{{ asset('frontend/campaign/js') }}/all.js"></script>
-<script src="{{ asset('frontend/campaign/js') }}/bootstrap.min.js"></script>
-<script src="{{ asset('frontend/campaign/js') }}/owl.carousel.min.js"></script>
-<script src="{{ asset('frontend/campaign/js') }}/select2.min.js"></script>
-<script src="{{ asset('frontend/campaign/js') }}/script.js"></script>
+<script src="<?php echo e(asset('frontend/campaign/js')); ?>/jquery-2.1.4.min.js"></script>
+<script src="<?php echo e(asset('frontend/campaign/js')); ?>/all.js"></script>
+<script src="<?php echo e(asset('frontend/campaign/js')); ?>/bootstrap.min.js"></script>
+<script src="<?php echo e(asset('frontend/campaign/js')); ?>/owl.carousel.min.js"></script>
+<script src="<?php echo e(asset('frontend/campaign/js')); ?>/select2.min.js"></script>
+<script src="<?php echo e(asset('frontend/campaign/js')); ?>/script.js"></script>
 <!-- bootstrap js -->
 <script>
     $(document).ready(function () {
@@ -827,7 +891,7 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
         $.ajax({
             type: "GET",
             data: { id: id },
-            url: "{{route('shipping.charge')}}",
+            url: "<?php echo e(route('shipping.charge')); ?>",
             dataType: "html",
             success: function(response){
                 $('.cartlist').html(response);
@@ -843,7 +907,7 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
             $.ajax({
                 type: "GET",
                 data: { id: id },
-                url: "{{route('cart.remove')}}",
+                url: "<?php echo e(route('cart.remove')); ?>",
                 success: function (data) {
                     if (data) {
                         $(".cartlist").html(data);
@@ -861,7 +925,7 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
             $.ajax({
                 type: "GET",
                 data: { id: id },
-                url: "{{route('cart.increment')}}",
+                url: "<?php echo e(route('cart.increment')); ?>",
                 success: function (data) {
                     if (data) {
                         $(".cartlist").html(data);
@@ -880,7 +944,7 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
             $.ajax({
                 type: "GET",
                 data: { id: id },
-                url: "{{route('cart.decrement')}}",
+                url: "<?php echo e(route('cart.decrement')); ?>",
                 success: function (data) {
                     if (data) {
                         $(".cartlist").html(data);
@@ -952,7 +1016,7 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
 </script>
 <script>
     // Set the deadline from the campaign data
-    const deadline = new Date("{{ $campaign_data->deadline }}").getTime();
+    const deadline = new Date("<?php echo e($campaign_data->deadline); ?>").getTime();
 
     // Update the countdown every 1 second
     const x = setInterval(function() {
@@ -992,7 +1056,7 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
                     'id': rowId,
                     'product_size': selectedSize // New size to update
                 },
-                url: "{{ route('cart.update') }}", // Use the same route for updating size
+                url: "<?php echo e(route('cart.update')); ?>", // Use the same route for updating size
                 success: function(data) {
                     if (data) {
                         $(".cartlist").html(data); // Update the cart list UI with new data
@@ -1019,7 +1083,7 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
                     'id': rowId,
                     'product_color': selectedColor // New size to update
                 },
-                url: "{{ route('cart.update') }}", // Use the same route for updating size
+                url: "<?php echo e(route('cart.update')); ?>", // Use the same route for updating size
                 success: function(data) {
                     if (data) {
                         $(".cartlist").html(data); // Update the cart list UI with new data
@@ -1048,9 +1112,9 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
     console.log('[GTM] Tracking page_view event');
     dataLayer.push({
         'event': 'page_view',
-        'page_title': '{{ $campaign_data->name }}',
-        'page_location': '{{ request()->fullUrl() }}',
-        'page_path': '{{ request()->path() }}'
+        'page_title': '<?php echo e($campaign_data->name); ?>',
+        'page_location': '<?php echo e(request()->fullUrl()); ?>',
+        'page_path': '<?php echo e(request()->path()); ?>'
     });
     console.log('[GTM] page_view event fired');
 
@@ -1095,11 +1159,11 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
 </script>
 
 <script type="text/javascript">
-    @php
+    <?php
         $cartAvailable = class_exists(\Gloudemans\Shoppingcart\Facades\Cart::class);
-    @endphp
+    ?>
     // View Cart Event - Fire when cart section is visible
-    @if($cartAvailable && Cart::instance('shopping')->count() > 0)
+    <?php if($cartAvailable && Cart::instance('shopping')->count() > 0): ?>
     $(document).ready(function() {
         // Clear previous ecommerce object
         dataLayer.push({ ecommerce: null });
@@ -1107,21 +1171,22 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
         // Calculate cart total
         var cartTotal = 0;
         var cartItems = [];
-        @foreach(Cart::instance('shopping')->content() as $cartInfo)
-        var itemTotal = {{ $cartInfo->price }} * {{ $cartInfo->qty ?? 1 }};
+        <?php $__currentLoopData = Cart::instance('shopping')->content(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cartInfo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        var itemTotal = <?php echo e($cartInfo->price); ?> * <?php echo e($cartInfo->qty ?? 1); ?>;
         cartTotal += itemTotal;
         cartItems.push({
-            item_name: "{{ addslashes($cartInfo->name) }}",
-            item_id: "{{ $cartInfo->id }}",
-            price: {{ $cartInfo->price }},
-            item_brand: "{{ $cartInfo->options->brand ?? '' }}",
-            item_category: "{{ $cartInfo->options->category ?? '' }}",
-            item_size: "{{ $cartInfo->options->product_size ?? '' }}",
-            item_color: "{{ $cartInfo->options->product_color ?? '' }}",
+            item_name: "<?php echo e(addslashes($cartInfo->name)); ?>",
+            item_id: "<?php echo e($cartInfo->id); ?>",
+            price: <?php echo e($cartInfo->price); ?>,
+            item_brand: "<?php echo e($cartInfo->options->brand ?? ''); ?>",
+            item_category: "<?php echo e($cartInfo->options->category ?? ''); ?>",
+            item_size: "<?php echo e($cartInfo->options->product_size ?? ''); ?>",
+            item_color: "<?php echo e($cartInfo->options->product_color ?? ''); ?>",
             currency: "BDT",
-            quantity: {{ $cartInfo->qty ?? 1 }}
+            quantity: <?php echo e($cartInfo->qty ?? 1); ?>
+
         });
-        @endforeach
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
         // GTM: View Cart Event
         console.log('[GTM] Tracking view_cart event');
@@ -1141,47 +1206,49 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
         console.log('[GTM] view_cart event fired');
 
         // Facebook Pixel: ViewCart Event
-        @if(isset($pixels) && count($pixels) > 0)
+        <?php if(isset($pixels) && count($pixels) > 0): ?>
         if (typeof fbq !== 'undefined') {
             console.log('[Facebook Pixel] Tracking ViewCart event');
             console.log('[Facebook Pixel] ViewCart data:', {
                 content_type: 'product',
                 value: cartTotal,
                 currency: 'BDT',
-                num_items: {{ Cart::instance('shopping')->count() }}
+                num_items: <?php echo e(Cart::instance('shopping')->count()); ?>
+
             });
             fbq('track', 'ViewCart', {
                 content_type: 'product',
                 value: cartTotal,
                 currency: 'BDT',
-                num_items: {{ Cart::instance('shopping')->count() }},
+                num_items: <?php echo e(Cart::instance('shopping')->count()); ?>,
                 contents: [
-                        @foreach(Cart::instance('shopping')->content() as $cartInfo)
+                        <?php $__currentLoopData = Cart::instance('shopping')->content(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cartInfo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     {
-                        id: "{{ $cartInfo->id }}",
-                        quantity: {{ $cartInfo->qty ?? 1 }},
-                        item_price: {{ $cartInfo->price }}
+                        id: "<?php echo e($cartInfo->id); ?>",
+                        quantity: <?php echo e($cartInfo->qty ?? 1); ?>,
+                        item_price: <?php echo e($cartInfo->price); ?>
+
                     },
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 ]
             });
             console.log('[Facebook Pixel] ViewCart event fired');
         } else {
             console.error('[Facebook Pixel] ERROR: fbq is not defined. Cannot fire ViewCart event.');
         }
-        @else
+        <?php else: ?>
         console.warn('[Facebook Pixel] No pixels configured. ViewCart event skipped.');
-        @endif
+        <?php endif; ?>
     });
-    @endif
+    <?php endif; ?>
 </script>
 
 <script type="text/javascript">
     // Begin Checkout Event - Fire when order form is visible
-    @php
+    <?php
         $cartAvailable = class_exists(\Gloudemans\Shoppingcart\Facades\Cart::class);
-    @endphp
-    @if($cartAvailable && Cart::instance('shopping')->count() > 0)
+    ?>
+    <?php if($cartAvailable && Cart::instance('shopping')->count() > 0): ?>
     $(document).ready(function() {
         // Check if order form is in viewport
         function isElementInViewport(el) {
@@ -1208,21 +1275,22 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
                 // Calculate checkout total
                 var checkoutTotal = 0;
                 var checkoutItems = [];
-                @foreach(Cart::instance('shopping')->content() as $cartInfo)
-                var itemTotal = {{ $cartInfo->price }} * {{ $cartInfo->qty ?? 1 }};
+                <?php $__currentLoopData = Cart::instance('shopping')->content(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cartInfo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                var itemTotal = <?php echo e($cartInfo->price); ?> * <?php echo e($cartInfo->qty ?? 1); ?>;
                 checkoutTotal += itemTotal;
                 checkoutItems.push({
-                    item_name: "{{ addslashes($cartInfo->name) }}",
-                    item_id: "{{ $cartInfo->id }}",
-                    price: {{ $cartInfo->price }},
-                    item_brand: "{{ $cartInfo->options->brand ?? '' }}",
-                    item_category: "{{ $cartInfo->options->category ?? '' }}",
-                    item_size: "{{ $cartInfo->options->product_size ?? '' }}",
-                    item_color: "{{ $cartInfo->options->product_color ?? '' }}",
+                    item_name: "<?php echo e(addslashes($cartInfo->name)); ?>",
+                    item_id: "<?php echo e($cartInfo->id); ?>",
+                    price: <?php echo e($cartInfo->price); ?>,
+                    item_brand: "<?php echo e($cartInfo->options->brand ?? ''); ?>",
+                    item_category: "<?php echo e($cartInfo->options->category ?? ''); ?>",
+                    item_size: "<?php echo e($cartInfo->options->product_size ?? ''); ?>",
+                    item_color: "<?php echo e($cartInfo->options->product_color ?? ''); ?>",
                     currency: "BDT",
-                    quantity: {{ $cartInfo->qty ?? 1 }}
+                    quantity: <?php echo e($cartInfo->qty ?? 1); ?>
+
                 });
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
                 // GTM: Begin Checkout Event
                 console.log('[GTM] Tracking begin_checkout event');
@@ -1242,37 +1310,39 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
                 console.log('[GTM] begin_checkout event fired');
 
                 // Facebook Pixel: InitiateCheckout Event
-                @if(isset($pixels) && count($pixels) > 0)
+                <?php if(isset($pixels) && count($pixels) > 0): ?>
                 if (typeof fbq !== 'undefined') {
                     console.log('[Facebook Pixel] Tracking InitiateCheckout event');
                     console.log('[Facebook Pixel] InitiateCheckout data:', {
                         content_type: 'product',
                         value: checkoutTotal,
                         currency: 'BDT',
-                        num_items: {{ Cart::instance('shopping')->count() }}
+                        num_items: <?php echo e(Cart::instance('shopping')->count()); ?>
+
                     });
                     fbq('track', 'InitiateCheckout', {
                         content_type: 'product',
                         value: checkoutTotal,
                         currency: 'BDT',
-                        num_items: {{ Cart::instance('shopping')->count() }},
+                        num_items: <?php echo e(Cart::instance('shopping')->count()); ?>,
                         contents: [
-                                @foreach(Cart::instance('shopping')->content() as $cartInfo)
+                                <?php $__currentLoopData = Cart::instance('shopping')->content(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $cartInfo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             {
-                                id: "{{ $cartInfo->id }}",
-                                quantity: {{ $cartInfo->qty ?? 1 }},
-                                item_price: {{ $cartInfo->price }}
+                                id: "<?php echo e($cartInfo->id); ?>",
+                                quantity: <?php echo e($cartInfo->qty ?? 1); ?>,
+                                item_price: <?php echo e($cartInfo->price); ?>
+
                             },
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         ]
                     });
                     console.log('[Facebook Pixel] InitiateCheckout event fired');
                 } else {
                     console.error('[Facebook Pixel] ERROR: fbq is not defined. Cannot fire InitiateCheckout event.');
                 }
-                @else
+                <?php else: ?>
                 console.warn('[Facebook Pixel] No pixels configured. InitiateCheckout event skipped.');
-                @endif
+                <?php endif; ?>
             }
         }
 
@@ -1281,7 +1351,7 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
         window.addEventListener('load', checkCheckout);
         setTimeout(checkCheckout, 1000); // Also check after 1 second
     });
-    @endif
+    <?php endif; ?>
 </script>
 
 <script>
@@ -1300,26 +1370,27 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
             $.ajax({
                 type: "GET",
                 data: { id: productId },
-                url: "{{route('cart.changeProduct')}}",
+                url: "<?php echo e(route('cart.changeProduct')); ?>",
                 success: function (data) {
                     if (data) {
                         $(".cartlist").html(data);
                         $("#loading").hide();
 
                         // Fire AddToCart event after product is added
-                        @if(isset($pixels) && count($pixels) > 0)
+                        <?php if(isset($pixels) && count($pixels) > 0): ?>
                         if (typeof fbq !== 'undefined') {
                             // Get product info from the selected product
                             var selectedProduct = null;
-                            @foreach($products as $product)
-                            if ('{{ $product->id }}' == productId) {
+                            <?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            if ('<?php echo e($product->id); ?>' == productId) {
                                 selectedProduct = {
-                                    id: '{{ $product->id }}',
-                                    name: '{{ addslashes($product->name) }}',
-                                    price: {{ $product->new_price }}
+                                    id: '<?php echo e($product->id); ?>',
+                                    name: '<?php echo e(addslashes($product->name)); ?>',
+                                    price: <?php echo e($product->new_price); ?>
+
                                 };
                             }
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
                             if (selectedProduct) {
                                 console.log('[Facebook Pixel] Tracking AddToCart event');
@@ -1356,9 +1427,9 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
                         } else {
                             console.error('[Facebook Pixel] ERROR: fbq is not defined. Cannot fire AddToCart event.');
                         }
-                        @else
+                        <?php else: ?>
                         console.warn('[Facebook Pixel] No pixels configured. AddToCart event skipped.');
-                        @endif
+                        <?php endif; ?>
                     }
                 },
             });
@@ -1373,17 +1444,18 @@ optional($campaign_data)->description && strlen($campaign_data->description) > 1
         }
     });
 </script>
-@if(!empty($gtm_code) && count($gtm_code) > 0)
+<?php if(!empty($gtm_code) && count($gtm_code) > 0): ?>
     <!-- Google Tag Manager (noscript) -->
-    @foreach($gtm_code as $gtm)
-        @php
+    <?php $__currentLoopData = $gtm_code; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $gtm): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <?php
             $gtmId = str_replace('GTM-', '', $gtm->code);
-        @endphp
+        ?>
         <noscript>
-            <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-{{ $gtmId }}" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+            <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-<?php echo e($gtmId); ?>" height="0" width="0" style="display:none;visibility:hidden"></iframe>
         </noscript>
-    @endforeach
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     <!-- End Google Tag Manager (noscript) -->
-@endif
+<?php endif; ?>
 </body>
 </html>
+<?php /**PATH /var/www/html/100_shop/resources/views/frontend/campaign.blade.php ENDPATH**/ ?>
