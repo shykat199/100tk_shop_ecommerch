@@ -13,6 +13,9 @@ use App\Http\Controllers\Backend\CampaignController;
 //use App\Http\Controllers\Backend\ShippingArieaController;
 use App\Http\Controllers\Backend\GoogleTagManagerController;
 use App\Http\Controllers\Backend\EcomPixelController;
+use App\Http\Controllers\Backend\PaymentGatewaysController;
+use App\Http\Controllers\Backend\SmsGatewaysController;
+use App\Http\Controllers\Backend\CourierApisController;
 
 Route::get('/test', function () {
     return menubars();
@@ -106,6 +109,18 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Backend', 'as' => 'backend.']
         Route::post('pixels/inactive', [EcomPixelController::class,'inactive'])->name('pixels.inactive');
         Route::post('pixels/active', [EcomPixelController::class,'active'])->name('pixels.active');
         Route::post('pixels/destroy', [EcomPixelController::class,'destroy'])->name('pixels.destroy');
+
+        // paymentgeteway
+        Route::get('paymentgeteway/manage', [PaymentGatewaysController::class,'pay_manage'])->name('paymentgeteway.manage');
+        Route::post('paymentgeteway/save', [PaymentGatewaysController::class,'pay_update'])->name('paymentgeteway.update');
+
+        // smsgeteway
+        Route::get('smsgeteway/manage', [SmsGatewaysController::class,'sms_manage'])->name('smsgeteway.manage');
+        Route::post('smsgeteway/save', [SmsGatewaysController::class,'sms_update'])->name('smsgeteway.update');
+
+        // courierapi
+        Route::get('courierapi/manage', [CourierApisController::class,'courier_manage'])->name('courierapi.manage');
+        Route::post('courierapi/save', [CourierApisController::class,'courier_update'])->name('courierapi.update');
 
         Route::group(['middleware' => ['check_permission']], function () {
             Route::get('/', 'HomeController@index')->name('home');
