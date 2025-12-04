@@ -23,7 +23,7 @@
     @include('frontend._service')
 
     @include('frontend._brand-logo')
-    
+
     @if (isset($pop_up->is_active) && $pop_up->is_active)
 
         @include('frontend._popup', ['pop_up' => $pop_up])

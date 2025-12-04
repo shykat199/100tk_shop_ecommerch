@@ -52,7 +52,7 @@
 
     <!-- Print CSS -->
     <link rel="stylesheet" href="{{ asset('customer/css/print.css') }}">
-    
+
     <link rel="stylesheet" href="{{ asset('frontend/css/style.css') }}">
     <!-- Responsive -->
     <link rel="stylesheet" href="{{ asset('frontend/css/responsive.css') }}">

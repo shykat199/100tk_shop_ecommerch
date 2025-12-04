@@ -9,7 +9,7 @@
             @endif
 
             @if ($product->quantity <= 0 && $product->is_manage_stock)
-                <small class="sold-out">Sold out</small>
+                <small class="sold-out">Stock out</small>
             @endif
         </a>
         @isset($product->details->flash_deal_title)
@@ -63,6 +63,13 @@
                 <i class="fas fa-shopping-cart"></i> Add to Cart
             </button>
         </a>
+
+        <a href="{{ $product->quantity <= 0 && $product->is_manage_stock ? 'javascript:void(0)' : 'javascript:buyNow(' . $product->id . ')' }}">
+            <button class="btn btn-danger w-100 mt-2" style="border-radius: 0; color:white;" {{ $product->quantity <= 0 && $product->is_manage_stock ? 'disabled' : null }}>
+                <i class="fas fa-bolt"></i> Buy Now
+            </button>
+        </a>
+
         @if ($bn_cart_button->status)
             <a href="{{ $product->quantity <= 0 && $product->is_manage_stock ? 'javascript:void(0)' : 'javascript:addToCart(' . $product->id . ')' }}">
                 <button class="btn btn-danger w-100 mt-2" style="border-radius: 0; color:white;" {{ $product->quantity <= 0 && $product->is_manage_stock ? 'disabled' : null }}>

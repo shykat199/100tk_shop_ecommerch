@@ -509,7 +509,9 @@ button.btn-anime:hover::after {
     2 Top Bar
 =======================*/
 .top-bar {
+    color: var(--color-white);
     border-bottom: 1px solid var(--color-border);
+    background-color: var(--color-orange);
 }
 .top-bar.sticky {
     margin-bottom: 170px;

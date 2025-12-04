@@ -9,7 +9,7 @@
             <?php endif; ?>
 
             <?php if($product->quantity <= 0 && $product->is_manage_stock): ?>
-                <small class="sold-out">Sold out</small>
+                <small class="sold-out">Stock out</small>
             <?php endif; ?>
         </a>
         <?php if(isset($product->details->flash_deal_title)): ?>

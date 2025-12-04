@@ -12,16 +12,16 @@
                         <div class="swiper-wrapper">
                             @foreach($banners as $banner)
                                 <div class="swiper-slide row align-items-center" data-background="{{ asset('uploads/banners') }}/{{ $banner->image }}">
-                                    <div class="col-lg-7">
-                                        <div class="banner-content">
-                                            <h2>{{ $banner->sub_title }}</h2>
-                                            <p>{{ $banner->description }}{{ $banner->category }}</p>
-                                            @if($banner->category)
-                                            <a href="{{ route('category',$banner->category->slug) }}">{{ __('SHOP NOW >') }}</a>
-                                            <span class="discount-tag">{{ $banner->offer_title }}</span>
-                                            @endif
-                                        </div>
-                                    </div>
+{{--                                    <div class="col-lg-7">--}}
+{{--                                        <div class="banner-content">--}}
+{{--                                            <h2>{{ $banner->sub_title }}</h2>--}}
+{{--                                            <p>{{ $banner->description }}{{ $banner->category }}</p>--}}
+{{--                                            @if($banner->category)--}}
+{{--                                            <a href="{{ route('category',$banner->category->slug) }}">{{ __('SHOP NOW >') }}</a>--}}
+{{--                                            <span class="discount-tag">{{ $banner->offer_title }}</span>--}}
+{{--                                            @endif--}}
+{{--                                        </div>--}}
+{{--                                    </div>--}}
                                 </div>
                             @endforeach
                         </div>

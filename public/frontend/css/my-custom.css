@@ -138,7 +138,12 @@ section .table tbody td a.link-anime{
     width: 100%;
     height: auto;
     padding: 10px;
-    border: 2px dotted var(--color-orange);
+    background-color: var(--color-orange);
+    color: #fff;
+    border: 2px dotted #fff;
+}
+.contact-infos .contact-number{
+    color: #fff !important;
 }
 
 .contact-infos .single-item small {

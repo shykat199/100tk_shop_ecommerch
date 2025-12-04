@@ -104,21 +104,21 @@ class FrontController extends Controller
         $allProducts = Product::query()
             ->with('images', 'details', 'reviews')
             ->where('is_active', 1)
-            ->inRandomOrder()
+            ->orderByDesc('id')
             ->take(6)
             ->get();
 
         $newArrivals = Product::query()
             ->with('images', 'details', 'reviews')
             ->where('is_active', 1)
-            ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->take(6)
             ->get();
 
         $bestSellers = Product::query()
             ->with('images', 'details', 'reviews')
             ->where('is_active', 1)
-            ->inRandomOrder()
+            ->orderByDesc('id')
             ->take(6)
             ->get();
 
@@ -127,13 +127,13 @@ class FrontController extends Controller
             ->whereHas('details', function ($q) {
                 $q->where('is_featured', 1);
             })
-            ->inRandomOrder()
+            ->orderByDesc('id')
             ->take(6)
             ->get();
 
         $trends = Product::query()
             ->with('images', 'details', 'reviews')
-            ->inRandomOrder()
+            ->orderByDesc('id')
             ->take(6)
             ->get();
         /** Deal of the day product's query end */
@@ -159,7 +159,8 @@ class FrontController extends Controller
             ->where('quantity', ">", 0)
             ->where('is_manage_stock', 1)
             ->where('name', 'like', "%{$request->q}%")
-            ->orderByRaw('quantity = 0, quantity')
+//            ->orderByRaw('quantity = 0, quantity')
+                ->orderBy('id','DESC')
             ->latest()
             ->paginate(50)
             ->withQueryString();
@@ -289,7 +290,7 @@ class FrontController extends Controller
             ->has('products')
             ->get();
 
-        $populars = Product::query()->inRandomOrder()->take(4)->get();
+        $populars = Product::query()->orderByDesc('id')->take(4)->get();
 
         $cats[] = $category->id;
         foreach ($category->subCategories as $category) {
@@ -302,7 +303,8 @@ class FrontController extends Controller
         $products = Product::query()
             ->whereIn('category_id', $cats)
             ->where('is_active', 1)
-            ->orderByRaw('quantity = 0, quantity')
+//            ->orderByRaw('quantity = 0, quantity')
+            ->orderByDesc('id')
             ->paginate(50);
 
         $sizes = Size::query()->where('is_active', 1)->get();

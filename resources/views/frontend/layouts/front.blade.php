@@ -70,6 +70,18 @@
 
     <!-- product zoom css -->
     <link rel="stylesheet" href="{{ asset('frontend/zoom-images-carousel/zoom-custom.css') }}">
+    <style>
+        .my-toast {
+            padding: 12px !important;
+            font-size: 14px !important;
+            border-radius: 8px !important;
+        }
+
+        .swal2-title{
+            line-height: 25px !important;
+        }
+
+    </style>
 </head>
 
 <body>
@@ -135,6 +147,8 @@
 <script src="{{ asset('frontend/zoom-images-carousel/zoom-custom.js') }}"></script>
 <!-- product zoom js -->
 <script src="{{ asset('frontend/js/index.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     "use strict";
 
@@ -157,7 +171,23 @@
             method: "POST"
         }).done(function(e){
             $("#cart-count").text(e.count);
-            swal("{{ __('Good Choice!') }}", e.name+" {{ __('is added to cart') }}", "success");
+            {{--swal("{{ __('Good Choice!') }}", e.name+" {{ __('is added to cart') }}", "success");--}}
+            Swal.fire({
+                toast: true,
+                position: 'bottom-end',
+                icon: 'success',
+                title: "{{ __('Good Choice!') }}",
+                text: e.name + " {{ __('is added to cart') }}",
+                showConfirmButton: false,
+                timer: 3000,      // 👈 stays 5 seconds (5000 ms)
+                timerProgressBar: true,
+                width: '500px',
+                height:'2000px',
+                customClass: {
+                    popup: 'my-toast'  // 👈 custom style class
+                }
+            });
+
             $(location).attr("href","{{ url('checkout') }}");
         })
     }
@@ -180,7 +210,23 @@
         }).done(function(e) {
             if (e.status == 'success') {
                 $("#cart-count").text(e.count);
-                swal("{{ __('Good Choice!') }}", e.name+" {{ __('is added to cart') }}", "success");
+                {{--swal("{{ __('Good Choice!') }}", e.name+" {{ __('is added to cart') }}", "success");--}}
+                Swal.fire({
+                    toast: true,
+                    position: 'bottom-end',
+                    icon: 'success',
+                    title: "{{ __('Good Choice!') }}",
+                    text: e.name + " {{ __('is added to cart') }}",
+                    showConfirmButton: false,
+                    timer: 3000,      // 👈 stays 5 seconds (5000 ms)
+                    timerProgressBar: true,
+                    width: '500px',
+                    height:'2000px',
+                    customClass: {
+                        popup: 'my-toast'  // 👈 custom style class
+                    }
+                });
+
             } else {
                 swal("{{ __('Sorry!') }}", e, "error");
             }

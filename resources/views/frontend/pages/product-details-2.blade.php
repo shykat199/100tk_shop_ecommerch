@@ -80,7 +80,7 @@
                                             <path fill-rule="evenodd" clip-rule="evenodd" d="M12.0301 6.45179L8.44376 10.2687L6.97682 8.78573C6.64346 8.44873 6.09956 8.44725 5.76435 8.78244C5.43125 9.11552 5.43032 9.65528 5.76228 9.98953L8.44378 12.6896L13.2404 7.6623C13.5746 7.32807 13.5747 6.78613 13.2404 6.45189C12.9062 6.11764 12.3643 6.11759 12.0301 6.45179ZM5.76228 6.45179L12.0301 12.7196M5.76228 12.7196L12.0301 6.45179" stroke="white" stroke-width="1.5" />
                                         </svg>
 
-                                        {{ __('Sold Out') }}
+                                        {{ __('Stock Out') }}
                                     </small>
                                 @endif
 
@@ -312,7 +312,7 @@
                     <div class="contact-infos my-3">
                         @foreach (getContactsInfos() as $item)
                             <div class="single-item">
-                                <h6 class="d-inline-block my-1">{{ $item->value['number'] ?? '' }}</h6> <small class="d-inline-block ms-2">{{ $item->value['title'] ?? '' }}</small>
+                                <h6 class="d-inline-block my-1 contact-number">{{ $item->value['number'] ?? '' }}</h6> <small class="d-inline-block ms-2">{{ $item->value['title'] ?? '' }}</small>
                             </div>
                         @endforeach
                     </div>

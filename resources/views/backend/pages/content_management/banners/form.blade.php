@@ -22,11 +22,11 @@
         </div>
     </div>
     <div class="col-lg-3">
-        <p>{{__('Title')}} <span class="text-red">*</span></p>
+        <p>{{__('Title')}}</p>
     </div>
     <div class="col-lg-7">
         <div class="input-group">
-            <input name="title" type="text" required
+            <input name="title" type="text"
                    class="form-control {{ $errors->has('title') ? ' is-invalid' : '' }}"
                    value="@if($banner->title){{$banner->title}}@else{{ old('title') }}@endif"
                    placeholder="Banner Title">
@@ -54,14 +54,14 @@
         </div>
     </div>
     <div class="col-lg-3">
-        <p>{{__('Offer-Title')}} <span class="text-red">*</span></p>
+        <p>{{__('Offer-Title')}}</p>
     </div>
     <div class="col-lg-7">
         <div class="input-group">
             <input name="offer_title" type="text"
                    class="form-control {{ $errors->has('offer_title') ? ' is-invalid' : '' }}"
                    value="@if($banner->offer_title){{$banner->offer_title}}@else{{ old('offer_title') }}@endif"
-                   placeholder="Offer-Title" required>
+                   placeholder="Offer-Title">
             @error('offer_title')
             <label id="offer_title-error" class="invalid-feedback error" for="offer_title">{{$message}}</label>
             @enderror

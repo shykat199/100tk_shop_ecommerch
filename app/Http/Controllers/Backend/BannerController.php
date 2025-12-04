@@ -157,10 +157,10 @@ class BannerController extends Controller
         try {
             $request->validate([
                 'category_id' => 'required',
-                'title' => 'required|string|max:200',
-                'offer_title' => 'required|string|max:200',
-                'image' => 'required|mimes:jpeg,png,jpg,gif,svg',
-                'type' => 'required',
+                'title' => 'nullable|string|max:200',
+                'offer_title' => 'nullable|string|max:200',
+                'image' => 'nullable|mimes:jpeg,png,jpg,gif,svg',
+                'type' => 'nullable',
                 'description' => 'nullable|string|max:300',
             ]);
             $data = $request->only(
@@ -255,10 +255,10 @@ class BannerController extends Controller
         try {
             $request->validate([
                 'category_id' => 'required',
-                'title' => 'required|string|max:200',
-                'offer_title' => 'required|string|max:200',
+                'title' => 'nullable|string|max:200',
+                'offer_title' => 'nullable|string|max:200',
                 'image' => 'nullable|mimes:jpeg,png,jpg,gif,svg',
-                'type' => 'required',
+                'type' => 'nullable',
                 'description' => 'nullable|string|max:300',
             ]);
             $banner = Banner::findOrFail($id);

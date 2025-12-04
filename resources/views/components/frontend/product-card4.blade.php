@@ -7,7 +7,7 @@
             @endif
 
             @if ($product->quantity <= 0 && $product->is_manage_stock)
-                <small class="sold-out">Sold out</small>
+                <small class="sold-out">Stock out</small>
             @endif
         </a>
         <ul class="product-cart">
