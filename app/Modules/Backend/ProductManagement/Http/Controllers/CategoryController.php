@@ -175,8 +175,8 @@ class CategoryController extends Controller
 
             if (!$request->category_id) {
                 $request->validate([
-                    'banner' => 'required|mimes:jpeg,png,jpg,gif,svg',
-                    'icon' => 'required|mimes:jpeg,png,jpg,gif,svg',
+                    'banner' => 'nullable|mimes:jpeg,png,jpg,gif,svg',
+                    'icon' => 'nullable|mimes:jpeg,png,jpg,gif,svg',
                 ]);
             }
 
@@ -270,9 +270,11 @@ class CategoryController extends Controller
     {
         try {
             $category = Category::findOrFail($id);
+
+            // Validation
             $request->validate([
                 'name' => 'required|string|max:200|unique:categories,name,' . $category->id . ',id,deleted_at,NULL',
-                'slug' => 'required|string|max:200|unique:categories,slug,' . $category->id. ',id,deleted_at,NULL',
+                'slug' => 'required|string|max:200|unique:categories,slug,' . $category->id . ',id,deleted_at,NULL',
                 'order' => 'nullable|integer',
                 'category_id' => 'nullable|integer',
                 'for_menu' => 'nullable|integer',
@@ -281,48 +283,76 @@ class CategoryController extends Controller
 
             if (!$request->category_id) {
                 $request->validate([
-                    'banner' => 'required|mimes:jpeg,png,jpg,gif,svg',
-                    'icon' => 'required|mimes:jpeg,png,jpg,gif,svg',
+                    'banner' => 'nullable|mimes:jpeg,png,jpg,gif,svg',
+                    'icon' => 'nullable|mimes:jpeg,png,jpg,gif,svg',
                 ]);
             }
 
-            $data = $request->only(['name', 'slug', 'category_id', 'order', 'meta_title', 'meta_description', 'commission_rate']);
+            // Data update
+            $data = $request->only([
+                'name', 'slug', 'category_id', 'order',
+                'meta_title', 'meta_description', 'commission_rate'
+            ]);
 
             $category->update($data + [
-                'for_menu' => $request->for_menu ? $request->for_menu : 0,
-            ]);
+                    'for_menu' => $request->for_menu ? $request->for_menu : 0,
+                ]);
+
             $category->refresh();
-            $banner = $request->file('banner');
-            $icon = $request->file('icon');
-            if ($banner) {
-                $banner_path = Storage::putFile('categories/200x200', $banner);
-                $pattern = "/categories\/200x200\//";
-                $banner_path = preg_replace($pattern, '', $banner_path);
-                if (file_exists(storage_path('app/public/categories/200x200/') . $category->banner)) {
+
+            /* =============================
+               HANDLE BANNER UPLOAD SAFELY
+            ==============================*/
+            if ($request->hasFile('banner')) {
+
+                $banner = $request->file('banner');
+
+                // Upload new banner
+                $bannerPath = Storage::putFile('categories/200x200', $banner);
+                $bannerPath = str_replace('categories/200x200/', '', $bannerPath);
+
+                // Delete old banner only if exists
+                if (!empty($category->banner) && Storage::exists('categories/200x200/' . $category->banner)) {
                     Storage::delete('categories/200x200/' . $category->banner);
                 }
-                $category->banner = $banner_path;
+
+                $category->banner = $bannerPath;
             }
-            if ($icon) {
-                $icon_path = Storage::putFile('categories/32x32', $icon);
-                $pattern = "/categories\/32x32\//";
-                $icon_path = preg_replace($pattern, '', $icon_path);
-                if (file_exists(storage_path('app/public/categories/32x32/') . $category->icon))
+
+            /* =============================
+               HANDLE ICON UPLOAD SAFELY
+            ==============================*/
+            if ($request->hasFile('icon')) {
+
+                $icon = $request->file('icon');
+
+                // Upload new icon
+                $iconPath = Storage::putFile('categories/32x32', $icon);
+                $iconPath = str_replace('categories/32x32/', '', $iconPath);
+
+                // Delete old icon only if exists
+                if (!empty($category->icon) && Storage::exists('categories/32x32/' . $category->icon)) {
                     Storage::delete('categories/32x32/' . $category->icon);
-                $category->icon = $icon_path;
+                }
+
+                $category->icon = $iconPath;
             }
 
             $category->save();
 
             return response()->json([
-                'redirect' => auth('seller')->user() ? route('seller.categories.index') : route('backend.categories.index'),
+                'redirect' => auth('seller')->user()
+                    ? route('seller.categories.index')
+                    : route('backend.categories.index'),
                 'message' => __('Category updated successfully.'),
             ]);
 
         } catch (Exception $ex) {
             Log::error($ex->getMessage());
             return response()->json([
-                'redirect' => auth('seller')->user() ? route('seller.categories.index') : route('backend.categories.index'),
+                'redirect' => auth('seller')->user()
+                    ? route('seller.categories.index')
+                    : route('backend.categories.index'),
                 'message' => __('Something was wrong.'),
             ]);
         }

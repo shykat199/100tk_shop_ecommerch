@@ -56,7 +56,7 @@
         </div>
     </div>
     <div class="col-lg-3 has-parent">
-        <p>{{__('Image(32x32)')}}</p>
+        <p>{{__('Logo(32x32)')}}</p>
     </div>
     <div class="col-lg-7 mb-3 has-parent">
         <div class="input-group file-upload">

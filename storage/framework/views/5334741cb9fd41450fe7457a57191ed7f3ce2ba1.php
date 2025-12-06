@@ -57,7 +57,7 @@
         </div>
     </div>
     <div class="col-lg-3 has-parent">
-        <p><?php echo e(__('Image(32x32)')); ?></p>
+        <p><?php echo e(__('Logo(32x32)')); ?></p>
     </div>
     <div class="col-lg-7 mb-3 has-parent">
         <div class="input-group file-upload">
