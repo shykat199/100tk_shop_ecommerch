@@ -288,11 +288,39 @@ class CategoryController extends Controller
                 ]);
             }
 
-            // Data update
+            // ============================
+            // UNIQUE ORDERING LOGIC HERE
+            // ============================
+
+            if ($request->filled('cat_order') && $request->category_id == null) {
+
+                $newOrder = (int) $request->cat_order;
+
+                // Only run if order actually changed
+                if ($category->cat_order != $newOrder) {
+
+                    // Shift all parent categories (excluding current one)
+                    Category::whereNull('category_id')
+                        ->where('id', '!=', $category->id)
+                        ->where('cat_order', '>=', $newOrder)
+                        ->orderBy('cat_order', 'asc')
+                        ->increment('cat_order');
+
+                    // Set new order to current category
+                    $category->cat_order = $newOrder;
+                }
+            }
+
+            // Update other fields
             $data = $request->only([
-                'name', 'slug', 'category_id', 'order',
+                'name', 'slug', 'category_id',
                 'meta_title', 'meta_description', 'commission_rate'
             ]);
+
+            // Merge order (if it exists)
+            if ($request->filled('order')) {
+                $data['cat_order'] = $category->cat_order; // updated by logic above
+            }
 
             $category->update($data + [
                     'for_menu' => $request->for_menu ? $request->for_menu : 0,
@@ -306,12 +334,9 @@ class CategoryController extends Controller
             if ($request->hasFile('banner')) {
 
                 $banner = $request->file('banner');
-
-                // Upload new banner
                 $bannerPath = Storage::putFile('categories/200x200', $banner);
                 $bannerPath = str_replace('categories/200x200/', '', $bannerPath);
 
-                // Delete old banner only if exists
                 if (!empty($category->banner) && Storage::exists('categories/200x200/' . $category->banner)) {
                     Storage::delete('categories/200x200/' . $category->banner);
                 }
@@ -325,12 +350,9 @@ class CategoryController extends Controller
             if ($request->hasFile('icon')) {
 
                 $icon = $request->file('icon');
-
-                // Upload new icon
                 $iconPath = Storage::putFile('categories/32x32', $icon);
                 $iconPath = str_replace('categories/32x32/', '', $iconPath);
 
-                // Delete old icon only if exists
                 if (!empty($category->icon) && Storage::exists('categories/32x32/' . $category->icon)) {
                     Storage::delete('categories/32x32/' . $category->icon);
                 }

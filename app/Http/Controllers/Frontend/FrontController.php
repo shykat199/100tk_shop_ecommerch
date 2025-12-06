@@ -54,7 +54,8 @@ class FrontController extends Controller
             ->with('products.images', 'products.details')
             ->where('is_active', 1)
             ->where('show_in_home', 1)
-            ->orderBy('order')
+//            ->orderBy('order')
+            ->orderBy('cat_order','DESC')
             ->get();
 
         /** Promotion Position One */

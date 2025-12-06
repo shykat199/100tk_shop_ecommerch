@@ -26,6 +26,27 @@
             </select>
         </div>
     </div>
+    @if($category->category_id == null)
+        <div class="col-lg-3">
+            <p>{{__('Ordering Number')}}</p>
+        </div>
+
+        @php
+            $orderCount = \App\Models\Backend\Category::whereNull('category_id')->count() + 1;
+        @endphp
+        <div class="col-lg-7">
+            <div class="overflow-visible">
+                <select name="cat_order" class="parent form-select form-control">
+                    <option value="">Select Order</option>
+                    @for ($i = 1; $i <= $orderCount; $i++)
+                        <option value="{{ $i }}"{{ $category->cat_order == $i ? 'selected' : '' }}>
+                            {{ $i }}
+                        </option>
+                    @endfor
+                </select>
+            </div>
+        </div>
+    @endif
     <div class="col-lg-3">
         <p>{{ __('Slug') }} <span class="text-red">*</span></p>
     </div>
