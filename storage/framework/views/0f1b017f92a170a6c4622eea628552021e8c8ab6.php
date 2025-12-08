@@ -1,7 +1,7 @@
-@extends('backend.layouts.app')
-@section('title','Orders - ')
-@push('css')
-    @include('backend.includes.datatable_css')
+
+<?php $__env->startSection('title','Orders - '); ?>
+<?php $__env->startPush('css'); ?>
+    <?php echo $__env->make('backend.includes.datatable_css', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
     <style>
         .card{
@@ -34,45 +34,45 @@
             margin: 2px 0;
         }
     </style>
-@endpush
-@section('content')
+<?php $__env->stopPush(); ?>
+<?php $__env->startSection('content'); ?>
     <div class="content-body">
-    @include('ordermanagement::orders.order_overview')
+    <?php echo $__env->make('ordermanagement::orders.order_overview', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
     <!-- Tab Content Start -->
-{{--        <div class="tab-content order-content" id="nav-tabContent">--}}
-{{--            <div class="tab-pane fade show active" id="order-list" Area-labelledby="order-list-tab">--}}
-{{--                <div class="container">--}}
 
-{{--                    <div class="content-table mt-0">--}}
-{{--                        <table id="mDataTable" class="table p-table">--}}
-{{--                            <thead>--}}
-{{--                            <tr>--}}
-{{--                                <th scope="col">{{ __('Invoicexxxx#') }}</th>--}}
-{{--                                <th scope="col">{{ __('Name') }}</th>--}}
-{{--                                <th scope="col">{{ __('Shipping') }}</th>--}}
-{{--                                <th scope="col">{{ __('Discount') }}</th>--}}
-{{--                                <th scope="col">{{ __('Total') }}</th>--}}
-{{--                                <th scope="col">{{ __('Payment') }}</th>--}}
-{{--                                <th scope="col">{{ __('Action') }}</th>--}}
-{{--                            </tr>--}}
-{{--                            </thead>--}}
-{{--                            <tbody>--}}
 
-{{--                            </tbody>--}}
-{{--                        </table>--}}
 
-{{--                    </div>--}}
-{{--                </div>--}}
 
-{{--            </div>--}}
-{{--        </div>--}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         <!-- Tab Content End -->
 
         <!-- start page title -->
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">{{@$order_status->name}} Order ({{@$order_status->orders_count}})</h4>
+                    <h4 class="page-title"><?php echo e(@$order_status->name); ?> Order (<?php echo e(@$order_status->orders_count); ?>)</h4>
                 </div>
             </div>
         </div>
@@ -112,43 +112,44 @@
 
 
                                 <tbody>
-                                @foreach($show_data as $key=>$value)
+                                <?php $__currentLoopData = $show_data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key=>$value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 
                                     <tr>
-                                        <td><input type="checkbox" class="checkbox" value="{{$value->id}}"></td>
-                                        <td>{{$loop->iteration}}</td>
+                                        <td><input type="checkbox" class="checkbox" value="<?php echo e($value->id); ?>"></td>
+                                        <td><?php echo e($loop->iteration); ?></td>
                                         <td>
                                             <div class="button-list custom-btn-list">
                                                 <a href="" title="Invoice"><i class="fa fa-eye"></i></a>
                                                 <a href="" title="Process"><i class="fa-solid fa-gear"></i></a>
                                                 <a href="" title="Edit"><i class="fa fa-pencil-square"></i></a>
                                                 <form method="post" action="" class="d-inline">
-                                                    @csrf
-                                                    <input type="hidden" value="{{$value->id}}" name="id">
+                                                    <?php echo csrf_field(); ?>
+                                                    <input type="hidden" value="<?php echo e($value->id); ?>" name="id">
                                                     <button type="submit" title="Delete" class="delete-confirm"><i class="fa fa-trash"></i></button>
 
                                                 </form>
                                             </div>
                                         </td>
-                                        <td>{{$value->order_no}}</td>
-                                        <td>{{date('d-m-Y', strtotime($value->updated_at))}}<br> {{date('h:i:s a', strtotime($value->updated_at))}}</td>
+                                        <td><?php echo e($value->order_no); ?></td>
+                                        <td><?php echo e(date('d-m-Y', strtotime($value->updated_at))); ?><br> <?php echo e(date('h:i:s a', strtotime($value->updated_at))); ?></td>
                                         <td>
-                                            <strong>{{$value->shipping_address_1?$value->shipping_address_1:''}}</strong>
-                                            <p>{{$value->shipping_post?$value->shipping_post:''}}</p>
-                                            <p>{{$value->shipping_town?$value->shipping_town:''}}</p>
+                                            <strong><?php echo e($value->shipping_address_1?$value->shipping_address_1:''); ?></strong>
+                                            <p><?php echo e($value->shipping_post?$value->shipping_post:''); ?></p>
+                                            <p><?php echo e($value->shipping_town?$value->shipping_town:''); ?></p>
                                         </td>
-                                        <td>{{$value->shipping_mobile?$value->shipping_mobile:''}}</td>
+                                        <td><?php echo e($value->shipping_mobile?$value->shipping_mobile:''); ?></td>
                                         <td> <a target="_blank" style="text-decoration: underline" href="https://greenviewit.com/check-fraud-customer" >Fraud Customer Check</a></td>
-                                        <td>৳{{$value->total_price}}</td>
-                                        <td>{{$value->details && !empty($value->details[0]) && $value->details[0]->orderStatus?$value->details[0]->orderStatus->name:'N/A'}}</td>
+                                        <td>৳<?php echo e($value->total_price); ?></td>
+                                        <td><?php echo e($value->details && !empty($value->details[0]) && $value->details[0]->orderStatus?$value->details[0]->orderStatus->name:'N/A'); ?></td>
 
                                     </tr>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </tbody>
                             </table>
                         </div>
                         <div class="custom-paginate">
-                            {{$show_data->links('pagination::bootstrap-4')}}
+                            <?php echo e($show_data->links('pagination::bootstrap-4')); ?>
+
                         </div>
                     </div> <!-- end card body-->
 
@@ -185,10 +186,10 @@
 </div>
 
 
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('js')
-    @include('backend.includes.datatable_js')
+<?php $__env->startPush('js'); ?>
+    <?php echo $__env->make('backend.includes.datatable_js', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
     <script>
 
         $(function() {
@@ -198,7 +199,7 @@
                 // DataTable
                 var table = $('#mDataTable');
                 table.DataTable({
-                    ajax: "@auth('admin'){{route('backend.orders.list')}}@elseauth('seller'){{route('seller.orders.list', ['order_no' => request('order')])}}@endauth",
+                    ajax: "<?php if(auth()->guard('admin')->check()): ?><?php echo e(route('backend.orders.list')); ?><?php elseif(auth()->guard('seller')->check()): ?><?php echo e(route('seller.orders.list', ['order_no' => request('order')])); ?><?php endif; ?>",
                     columns: [
                         { data: 'order_no' },
                         { data: 'user_last_name' },
@@ -222,4 +223,6 @@
             });
         });
     </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('backend.layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /var/www/html/100_shop/app/Modules/Backend/OrderManagement/Resources/views/orders/index.blade.php ENDPATH**/ ?>

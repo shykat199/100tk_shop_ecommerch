@@ -938,11 +938,11 @@ class OrderController extends Controller
             'product_id' => 'required|integer|exists:products,id',
             'orders_details_id' => 'required|integer|exists:order_details,id',
         ]);
-            
+
         $order = Order::findOrFail($request->order_id);
         $order_details = OrderDetail::findOrFail($request->orders_details_id);
 
-        if ($order->payment_by == 'cod' && $order->payment_status === 'unpaid' && $request->order_stat == 6) 
+        if ($order->payment_by == 'cod' && $order->payment_status === 'unpaid' && $request->order_stat == 6)
         {
             $seller = Seller::findOrFail($order_details->seller_id);
             $product = Product::findOrFail($order_details->product_id);
@@ -1054,7 +1054,7 @@ class OrderController extends Controller
         return response()->json([
             'message' => 'Status updated successfully.',
             'redirect' => url()->previous()
-        ]); 
+        ]);
     }
 
 }
