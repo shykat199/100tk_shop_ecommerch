@@ -38,8 +38,10 @@ class OrderController extends Controller
     {
         $searchValue = '';
         $order_overview = $this->orderOverview();
-        $show_data = $this->orderList($request);
-        return view('ordermanagement::orders.index', compact('order_overview', 'searchValue','show_data'));
+        $record = $this->orderList($request);
+        $show_data = $record['record'];
+        $totalRecords = $record['totalRecords'];
+        return view('ordermanagement::orders.index', compact('order_overview', 'searchValue','show_data','totalRecords'));
     }
 
     public function orderList($request)
@@ -70,8 +72,6 @@ class OrderController extends Controller
         }
         // Total records
         $totalRecords = $query->count();
-        $totalRecordswithFilter = $totalRecords;
-        // Get records, also we have included search filter as well
         if (!empty($searchValue)) {
             $query
                 ->where('order_no', 'like', '%' . $searchValue . '%')
@@ -88,7 +88,10 @@ class OrderController extends Controller
 //            ->take($rowperpage)
             ->paginate(20);
 
-        return $records;
+        return [
+            'record' =>$records,
+            'totalRecords' =>$totalRecords,
+        ];
     }
 
     /* Process ajax request */
@@ -208,114 +211,169 @@ class OrderController extends Controller
 
     /* for pending orders */
 
-    public function pendingOrder()
+    public function pendingOrder(Request  $request)
     {
         $order_overview = $this->orderOverview();
-        return view('ordermanagement::orders.pending_orders', compact('order_overview'));
+        $record = $this->pendingOrderList($request);
+       $show_data = $record['record'] ?? [];
+       $totalRecords = $record['totalRecords'] ?? 0;
+        return view('ordermanagement::orders.pending_orders', compact('order_overview','show_data','totalRecords'));
     }
 
-    /* Process ajax request */
-    public function pendingOrderList(Request $request)
+    public function pendingOrderList($request)
     {
         $draw = $request->get('draw');
         $start = $request->get("start");
-        $rowperpage = $request->get("length"); // total number of rows per page
+        $rowperpage = $request->get("length");
 
         $columnIndex_arr = $request->get('order');
         $columnName_arr = $request->get('columns');
         $order_arr = $request->get('order');
         $search_arr = $request->get('search');
 
-        $columnIndex = $columnIndex_arr[0]['column']; // Column index
-        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
-        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
-        $searchValue = $search_arr['value']; // Search value
+        $searchValue = '';
 
         $query = Order::query();
-        $query
-            ->whereHas('details', function ($query) {
+        $query->whereHas('details', function ($query) {
                 $query->where('order_stat', 1);
             });
-        // specific seller
         if (auth('seller')->user() && auth('seller')->user()->getRoleNames()->first() == 'Seller') {
             $query
                 ->whereHas('details', function ($query) {
                     $query->where('seller_id', auth()->id());
                 });
         }
-        // Total records
         $query
             ->with('orderStatus', 'country')
             ->withSum('details', 'qty');
         $totalRecords = $query->count();
-        $totalRecordswithFilter = $totalRecords;
-        // Get records, also we have included search filter as well
         if (!empty($searchValue)) {
-            $query
-                ->where(function ($qry) use ($searchValue) {
+            $query->where(function ($qry) use ($searchValue) {
                     $qry->orWhere('order_no', 'like', '%' . $searchValue . '%');
                     $qry->orWhere('user_first_name', 'like', '%' . $searchValue . '%');
                     $qry->orWhere('user_last_name', 'like', '%' . $searchValue . '%');
                     $qry->orWhere('created_at', 'like', '%' . $searchValue . '%');
                     $qry->orWhere('id', 'like', '%' . $searchValue . '%');
                 });
-            $totalRecordswithFilter = $query->count();
         }
         $records = $query
-            ->orderBy($columnName, $columnSortOrder)
-            ->skip($start)
-            ->take($rowperpage)
-            ->get();
+//            ->orderBy($columnName, $columnSortOrder)
+//            ->skip($start)
+//            ->take($rowperpage)
+            ->paginate(20);
 
-        $data_arr = array();
 
-        foreach ($records as $record) {
-            $show_route = auth('seller')->user() ? route('seller.orders.show', $record->id) : route('backend.orders.show', $record->id);
-            $action = '';
-            if (auth()->user()->can('delete_orders') || auth()->user()->hasRole('super-admin'))
-                $action =      '<div class="btn-group rounded-1">
-                                    <a class="text-light bg-success px-1 order-action" data-id="' . $record->id . '" data-status="2" data-content="You want to confirm this, Are you sure?" href="' . route('backend.change-order-status', $record->id) . '">
-                                        <i class="fa-solid fa-circle-check"></i> Confirmed
-                                    </a>
-                                    </form>
-                                    <a class="text-light bg-danger px-1 order-action" data-id="' . $record->id . '" data-status="7" data-content="You want to confirm this, Are you sure?" href="' . route('backend.change-order-status', $record->id) . '">
-                                        <i class="fa-solid fa-circle-xmark"></i> Cancle
-                                    </a>
-                                </div>';
+        return [
+            'record' =>$records,
+            'totalRecords' =>$totalRecords,
+        ];
 
-            $data_arr[] = array(
-                "order_no" => '<a href="' . $show_route . '"><span class="text-primary">' . $record->order_no . '</span>' .
-                    date("d M Y", strtotime($record->created_at)) .
-                    ' at ' . date("h:i A", strtotime($record->created_at)) . '</a>',
-
-                "user_last_name" => $record->full_name(),
-                "user_country" => $record->country->name,
-                "details_sum_qty" => $record->details_sum_qty,
-                "created_at" => $record->created_at ? date("d.m.Y", strtotime($record->created_at)) : '',
-                "action" => $action
-            );
-        }
-
-        $response = array(
-            "draw" => intval($draw),
-            "iTotalRecords" => $totalRecords,
-            "iTotalDisplayRecords" => $totalRecordswithFilter,
-            "aaData" => $data_arr,
-        );
-
-        return json_encode($response);
-    }
-
-    /* for confirmed orders */
-
-    public function confirmedOrder()
-    {
-        $order_overview = $this->orderOverview();
-        return view('ordermanagement::orders.confirmed_orders', compact('order_overview'));
     }
 
     /* Process ajax request */
-    public function confirmedOrderList(Request $request)
+//    public function pendingOrderList(Request $request)
+//    {
+//        $draw = $request->get('draw');
+//        $start = $request->get("start");
+//        $rowperpage = $request->get("length"); // total number of rows per page
+//
+//        $columnIndex_arr = $request->get('order');
+//        $columnName_arr = $request->get('columns');
+//        $order_arr = $request->get('order');
+//        $search_arr = $request->get('search');
+//
+//        $columnIndex = $columnIndex_arr[0]['column']; // Column index
+//        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
+//        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
+//        $searchValue = $search_arr['value']; // Search value
+//
+//        $query = Order::query();
+//        $query
+//            ->whereHas('details', function ($query) {
+//                $query->where('order_stat', 1);
+//            });
+//        // specific seller
+//        if (auth('seller')->user() && auth('seller')->user()->getRoleNames()->first() == 'Seller') {
+//            $query
+//                ->whereHas('details', function ($query) {
+//                    $query->where('seller_id', auth()->id());
+//                });
+//        }
+//        // Total records
+//        $query
+//            ->with('orderStatus', 'country')
+//            ->withSum('details', 'qty');
+//        $totalRecords = $query->count();
+//        $totalRecordswithFilter = $totalRecords;
+//        // Get records, also we have included search filter as well
+//        if (!empty($searchValue)) {
+//            $query
+//                ->where(function ($qry) use ($searchValue) {
+//                    $qry->orWhere('order_no', 'like', '%' . $searchValue . '%');
+//                    $qry->orWhere('user_first_name', 'like', '%' . $searchValue . '%');
+//                    $qry->orWhere('user_last_name', 'like', '%' . $searchValue . '%');
+//                    $qry->orWhere('created_at', 'like', '%' . $searchValue . '%');
+//                    $qry->orWhere('id', 'like', '%' . $searchValue . '%');
+//                });
+//            $totalRecordswithFilter = $query->count();
+//        }
+//        $records = $query
+//            ->orderBy($columnName, $columnSortOrder)
+//            ->skip($start)
+//            ->take($rowperpage)
+//            ->get();
+//
+//        $data_arr = array();
+//
+//        foreach ($records as $record) {
+//            $show_route = auth('seller')->user() ? route('seller.orders.show', $record->id) : route('backend.orders.show', $record->id);
+//            $action = '';
+//            if (auth()->user()->can('delete_orders') || auth()->user()->hasRole('super-admin'))
+//                $action =      '<div class="btn-group rounded-1">
+//                                    <a class="text-light bg-success px-1 order-action" data-id="' . $record->id . '" data-status="2" data-content="You want to confirm this, Are you sure?" href="' . route('backend.change-order-status', $record->id) . '">
+//                                        <i class="fa-solid fa-circle-check"></i> Confirmed
+//                                    </a>
+//                                    </form>
+//                                    <a class="text-light bg-danger px-1 order-action" data-id="' . $record->id . '" data-status="7" data-content="You want to confirm this, Are you sure?" href="' . route('backend.change-order-status', $record->id) . '">
+//                                        <i class="fa-solid fa-circle-xmark"></i> Cancle
+//                                    </a>
+//                                </div>';
+//
+//            $data_arr[] = array(
+//                "order_no" => '<a href="' . $show_route . '"><span class="text-primary">' . $record->order_no . '</span>' .
+//                    date("d M Y", strtotime($record->created_at)) .
+//                    ' at ' . date("h:i A", strtotime($record->created_at)) . '</a>',
+//
+//                "user_last_name" => $record->full_name(),
+//                "user_country" => $record->country->name,
+//                "details_sum_qty" => $record->details_sum_qty,
+//                "created_at" => $record->created_at ? date("d.m.Y", strtotime($record->created_at)) : '',
+//                "action" => $action
+//            );
+//        }
+//
+//        $response = array(
+//            "draw" => intval($draw),
+//            "iTotalRecords" => $totalRecords,
+//            "iTotalDisplayRecords" => $totalRecordswithFilter,
+//            "aaData" => $data_arr,
+//        );
+//
+//        return json_encode($response);
+//    }
+
+    /* for confirmed orders */
+
+    public function confirmedOrder(Request $request)
+    {
+        $order_overview = $this->orderOverview();
+        $record = $this->pendingOrderList($request);
+        $show_data = $record['record'] ?? [];
+        $totalRecords = $record['totalRecords'] ?? 0;
+        return view('ordermanagement::orders.confirmed_orders', compact('order_overview','show_data','totalRecords'));
+    }
+
+    public function confirmedOrderList($request)
     {
         $draw = $request->get('draw');
         $start = $request->get("start");
@@ -326,10 +384,7 @@ class OrderController extends Controller
         $order_arr = $request->get('order');
         $search_arr = $request->get('search');
 
-        $columnIndex = $columnIndex_arr[0]['column']; // Column index
-        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
-        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
-        $searchValue = $search_arr['value']; // Search value
+        $searchValue = ''; // Search value
 
         $query = Order::query();
         $query
@@ -346,7 +401,6 @@ class OrderController extends Controller
         }
         // Total records
         $totalRecords = $query->count();
-        $totalRecordswithFilter = $totalRecords;
         // Get records, also we have included search filter as well
         if (!empty($searchValue)) {
             $query
@@ -357,86 +411,146 @@ class OrderController extends Controller
                     $qry->orWhere('payment_by', 'like', '%' . $searchValue . '%');
                     $qry->orWhere('id', 'like', '%' . $searchValue . '%');
                 });
-            $totalRecordswithFilter = $query->count();
         }
         $records = $query
             ->with('orderStatus', 'customer')
             ->withSum('details', 'qty')
-            ->orderBy($columnName, $columnSortOrder)
-            ->skip($start)
-            ->take($rowperpage)
-            ->get();
+//            ->orderBy($columnName, $columnSortOrder)
+//            ->skip($start)
+//            ->take($rowperpage)
+            ->paginate(20);
 
-        $data_arr = array();
-
-        foreach ($records as $record) {
-            $show_route = auth('seller')->user() ? route('seller.orders.show', $record->id) : route('backend.orders.show', $record->id);
-            $delete_route = auth('seller')->user() ? route('seller.orders.show', $record->id) : route('backend.orders.destroy', $record->id);
-            $action = '';
-            if (auth()->user()->can('delete_orders') || auth()->user()->hasRole('super-admin'))
-                $action =      '<ul>
-                                <li>
-                                     <form user="deleteForm" method="POST"
-                                              action="' . $delete_route . '">
-                                            ' . csrf_field() . method_field("DELETE") . '
-                                            <a class="p-0 action" href="javascript:void(0);"
-                                               onclick="deleteWithSweetAlert(event,parentNode);">
-                                                <button title="Delete">
-                                                    <svg viewBox="0 0 10 11" xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M8.65184 10.2545C8.63809 10.5288 8.36791 10.7452 8.03934 10.7452H2.31625C1.98768 10.7452 1.7175 10.5288 1.70375 10.2545L1.29504 3.04834H9.06055L8.65184 10.2545ZM3.88317 4.83823C3.88317 4.7234 3.77169 4.63027 3.63416 4.63027H3.23589C3.09844 4.63027 2.98688 4.72338 2.98688 4.83823V8.95529C2.98688 9.07014 3.09835 9.16324 3.23589 9.16324H3.63416C3.77163 9.16324 3.88317 9.07019 3.88317 8.95529V4.83823ZM5.62591 4.83823C5.62591 4.7234 5.51444 4.63027 5.37693 4.63027H4.97866C4.84121 4.63027 4.72968 4.72338 4.72968 4.83823V8.95529C4.72968 9.07014 4.84112 9.16324 4.97866 9.16324H5.37693C5.51441 9.16324 5.62591 9.07019 5.62591 8.95529V4.83823ZM7.36871 4.83823C7.36871 4.7234 7.25724 4.63027 7.11973 4.63027H6.72143C6.58396 4.63027 6.47245 4.72338 6.47245 4.83823V8.95529C6.47245 9.07014 6.58393 9.16324 6.72143 9.16324H7.11973C7.25721 9.16324 7.36871 9.07019 7.36871 8.95529V4.83823Z"/>
-                                                        <path d="M1.0213 1.09395H3.66155V0.677051C3.66155 0.617846 3.71902 0.569824 3.78994 0.569824H6.56248C6.63337 0.569824 6.69083 0.617846 6.69083 0.677051V1.09393H9.33112C9.5436 1.09393 9.71582 1.23779 9.71582 1.41526V2.42468H0.636597V1.41528C0.636597 1.23782 0.808817 1.09395 1.0213 1.09395Z"/>
-                                                    </svg>
-                                                </button>
-                                            </a>
-                                     </form>
-                                </li>
-                             </ul>';
-            $data_arr[] = array(
-                "order_no" => '<a href="' . $show_route . '"><span class="text-primary">' . $record->order_no . '</span>' .
-                    date("d M Y", strtotime($record->created_at)) .
-                    ' at ' . date("h:i A", strtotime($record->created_at)) . '</a>',
-
-                "created_by" => $record->full_name(),
-                "details_sum_qty" => $record->details_sum_qty,
-                "payment_by" => $record->payment_by,
-                "action" => $action
-            );
-        }
-
-        $response = array(
-            "draw" => intval($draw),
-            "iTotalRecords" => $totalRecords,
-            "iTotalDisplayRecords" => $totalRecordswithFilter,
-            "aaData" => $data_arr,
-        );
-
-        return json_encode($response);
-    }
-
-    /* for processing orders */
-
-    public function processingOrder()
-    {
-        $order_overview = $this->orderOverview();
-        return view('ordermanagement::orders.processing_orders', compact('order_overview'));
+        return [
+            'record' =>$records,
+            'totalRecords' =>$totalRecords,
+        ];
     }
 
     /* Process ajax request */
+//    public function confirmedOrderList(Request $request)
+//    {
+//        $draw = $request->get('draw');
+//        $start = $request->get("start");
+//        $rowperpage = $request->get("length"); // total number of rows per page
+//
+//        $columnIndex_arr = $request->get('order');
+//        $columnName_arr = $request->get('columns');
+//        $order_arr = $request->get('order');
+//        $search_arr = $request->get('search');
+//
+//        $columnIndex = $columnIndex_arr[0]['column']; // Column index
+//        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
+//        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
+//        $searchValue = $search_arr['value']; // Search value
+//
+//        $query = Order::query();
+//        $query
+//            ->whereHas('details', function ($query) {
+//                $query->where('order_stat', 2);
+//            });
+//
+//        // specific seller
+//        if (auth('seller')->user() && auth('seller')->user()->getRoleNames()->first() == 'Seller') {
+//            $query
+//                ->whereHas('details', function ($query) {
+//                    $query->where('seller_id', 'like', '%' . auth()->id() . '%');
+//                });
+//        }
+//        // Total records
+//        $totalRecords = $query->count();
+//        $totalRecordswithFilter = $totalRecords;
+//        // Get records, also we have included search filter as well
+//        if (!empty($searchValue)) {
+//            $query
+//                ->where(function ($qry) use ($searchValue) {
+//                    $qry->orWhere('order_no', 'like', '%' . $searchValue . '%');
+//                    $qry->orWhere('user_first_name', 'like', '%' . $searchValue . '%');
+//                    $qry->orWhere('user_last_name', 'like', '%' . $searchValue . '%');
+//                    $qry->orWhere('payment_by', 'like', '%' . $searchValue . '%');
+//                    $qry->orWhere('id', 'like', '%' . $searchValue . '%');
+//                });
+//            $totalRecordswithFilter = $query->count();
+//        }
+//        $records = $query
+//            ->with('orderStatus', 'customer')
+//            ->withSum('details', 'qty')
+//            ->orderBy($columnName, $columnSortOrder)
+//            ->skip($start)
+//            ->take($rowperpage)
+//            ->get();
+//
+//        $data_arr = array();
+//
+//        foreach ($records as $record) {
+//            $show_route = auth('seller')->user() ? route('seller.orders.show', $record->id) : route('backend.orders.show', $record->id);
+//            $delete_route = auth('seller')->user() ? route('seller.orders.show', $record->id) : route('backend.orders.destroy', $record->id);
+//            $action = '';
+//            if (auth()->user()->can('delete_orders') || auth()->user()->hasRole('super-admin'))
+//                $action =      '<ul>
+//                                <li>
+//                                     <form user="deleteForm" method="POST"
+//                                              action="' . $delete_route . '">
+//                                            ' . csrf_field() . method_field("DELETE") . '
+//                                            <a class="p-0 action" href="javascript:void(0);"
+//                                               onclick="deleteWithSweetAlert(event,parentNode);">
+//                                                <button title="Delete">
+//                                                    <svg viewBox="0 0 10 11" xmlns="http://www.w3.org/2000/svg">
+//                                                        <path d="M8.65184 10.2545C8.63809 10.5288 8.36791 10.7452 8.03934 10.7452H2.31625C1.98768 10.7452 1.7175 10.5288 1.70375 10.2545L1.29504 3.04834H9.06055L8.65184 10.2545ZM3.88317 4.83823C3.88317 4.7234 3.77169 4.63027 3.63416 4.63027H3.23589C3.09844 4.63027 2.98688 4.72338 2.98688 4.83823V8.95529C2.98688 9.07014 3.09835 9.16324 3.23589 9.16324H3.63416C3.77163 9.16324 3.88317 9.07019 3.88317 8.95529V4.83823ZM5.62591 4.83823C5.62591 4.7234 5.51444 4.63027 5.37693 4.63027H4.97866C4.84121 4.63027 4.72968 4.72338 4.72968 4.83823V8.95529C4.72968 9.07014 4.84112 9.16324 4.97866 9.16324H5.37693C5.51441 9.16324 5.62591 9.07019 5.62591 8.95529V4.83823ZM7.36871 4.83823C7.36871 4.7234 7.25724 4.63027 7.11973 4.63027H6.72143C6.58396 4.63027 6.47245 4.72338 6.47245 4.83823V8.95529C6.47245 9.07014 6.58393 9.16324 6.72143 9.16324H7.11973C7.25721 9.16324 7.36871 9.07019 7.36871 8.95529V4.83823Z"/>
+//                                                        <path d="M1.0213 1.09395H3.66155V0.677051C3.66155 0.617846 3.71902 0.569824 3.78994 0.569824H6.56248C6.63337 0.569824 6.69083 0.617846 6.69083 0.677051V1.09393H9.33112C9.5436 1.09393 9.71582 1.23779 9.71582 1.41526V2.42468H0.636597V1.41528C0.636597 1.23782 0.808817 1.09395 1.0213 1.09395Z"/>
+//                                                    </svg>
+//                                                </button>
+//                                            </a>
+//                                     </form>
+//                                </li>
+//                             </ul>';
+//            $data_arr[] = array(
+//                "order_no" => '<a href="' . $show_route . '"><span class="text-primary">' . $record->order_no . '</span>' .
+//                    date("d M Y", strtotime($record->created_at)) .
+//                    ' at ' . date("h:i A", strtotime($record->created_at)) . '</a>',
+//
+//                "created_by" => $record->full_name(),
+//                "details_sum_qty" => $record->details_sum_qty,
+//                "payment_by" => $record->payment_by,
+//                "action" => $action
+//            );
+//        }
+//
+//        $response = array(
+//            "draw" => intval($draw),
+//            "iTotalRecords" => $totalRecords,
+//            "iTotalDisplayRecords" => $totalRecordswithFilter,
+//            "aaData" => $data_arr,
+//        );
+//
+//        return json_encode($response);
+//    }
+
+    /* for processing orders */
+
+    public function processingOrder(Request  $request)
+    {
+        $order_overview = $this->orderOverview();
+        $record = $this->processingOrderList($request);
+        $show_data = $record['record'] ?? [];
+        $totalRecords = $record['totalRecords'] ?? 0;
+        return view('ordermanagement::orders.processing_orders', compact('order_overview','show_data','totalRecords'));
+    }
+
     public function processingOrderList(Request $request)
     {
         $draw = $request->get('draw');
         $start = $request->get("start");
         $rowperpage = $request->get("length"); // total number of rows per page
 
-        $columnIndex_arr = $request->get('order');
-        $columnName_arr = $request->get('columns');
-        $order_arr = $request->get('order');
-        $search_arr = $request->get('search');
+//        $columnIndex_arr = $request->get('order');
+//        $columnName_arr = $request->get('columns');
+//        $order_arr = $request->get('order');
+//        $search_arr = $request->get('search');
 
-        $columnIndex = $columnIndex_arr[0]['column']; // Column index
-        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
-        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
-        $searchValue = $search_arr['value']; // Search value
+//        $columnIndex = $columnIndex_arr[0]['column']; // Column index
+//        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
+//        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
+        $searchValue = '';
 
         $query = Order::query();
         $query
@@ -452,7 +566,6 @@ class OrderController extends Controller
         }
         // Total records
         $totalRecords = $query->count();
-        $totalRecordswithFilter = $totalRecords;
         // Get records, also we have included search filter as well
         if (!empty($searchValue)) {
             $query
@@ -463,72 +576,132 @@ class OrderController extends Controller
                     $qry->orWhere('created_at', 'like', '%' . $searchValue . '%');
                     $qry->orWhere('id', 'like', '%' . $searchValue . '%');
                 });
-            $totalRecordswithFilter = $query->count();
         }
         $records = $query
             ->with('orderStatus', 'country')
             ->withSum('details', 'qty')
-            ->orderBy($columnName, $columnSortOrder)
-            ->skip($start)
-            ->take($rowperpage)
-            ->get();
+//            ->orderBy($columnName, $columnSortOrder)
+//            ->skip($start)
+//            ->take($rowperpage)
+            ->paginate(20);
 
-        $data_arr = array();
+        return [
+            'record' =>$records,
+            'totalRecords' =>$totalRecords,
+        ];
 
-        foreach ($records as $record) {
-            $show_route = auth('seller')->user() ? route('seller.orders.show', $record->id) : route('backend.orders.show', $record->id);
-            $delete_route = auth('seller')->user() ? route('seller.orders.show', $record->id) : route('backend.orders.destroy', $record->id);
-            $action = '';
-            if (auth()->user()->can('delete_orders') || auth()->user()->hasRole('super-admin'))
-                $action =      '<ul>
-                                <li>
-                                     <form user="deleteForm" method="POST"
-                                              action="' . $delete_route . '">
-                                            ' . csrf_field() . method_field("DELETE") . '
-                                            <a class="p-0 action" href="javascript:void(0);"
-                                               onclick="deleteWithSweetAlert(event,parentNode);">
-                                                <button title="Delete">
-                                                    <svg viewBox="0 0 10 11" xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M8.65184 10.2545C8.63809 10.5288 8.36791 10.7452 8.03934 10.7452H2.31625C1.98768 10.7452 1.7175 10.5288 1.70375 10.2545L1.29504 3.04834H9.06055L8.65184 10.2545ZM3.88317 4.83823C3.88317 4.7234 3.77169 4.63027 3.63416 4.63027H3.23589C3.09844 4.63027 2.98688 4.72338 2.98688 4.83823V8.95529C2.98688 9.07014 3.09835 9.16324 3.23589 9.16324H3.63416C3.77163 9.16324 3.88317 9.07019 3.88317 8.95529V4.83823ZM5.62591 4.83823C5.62591 4.7234 5.51444 4.63027 5.37693 4.63027H4.97866C4.84121 4.63027 4.72968 4.72338 4.72968 4.83823V8.95529C4.72968 9.07014 4.84112 9.16324 4.97866 9.16324H5.37693C5.51441 9.16324 5.62591 9.07019 5.62591 8.95529V4.83823ZM7.36871 4.83823C7.36871 4.7234 7.25724 4.63027 7.11973 4.63027H6.72143C6.58396 4.63027 6.47245 4.72338 6.47245 4.83823V8.95529C6.47245 9.07014 6.58393 9.16324 6.72143 9.16324H7.11973C7.25721 9.16324 7.36871 9.07019 7.36871 8.95529V4.83823Z"/>
-                                                        <path d="M1.0213 1.09395H3.66155V0.677051C3.66155 0.617846 3.71902 0.569824 3.78994 0.569824H6.56248C6.63337 0.569824 6.69083 0.617846 6.69083 0.677051V1.09393H9.33112C9.5436 1.09393 9.71582 1.23779 9.71582 1.41526V2.42468H0.636597V1.41528C0.636597 1.23782 0.808817 1.09395 1.0213 1.09395Z"/>
-                                                    </svg>
-                                                </button>
-                                            </a>
-                                     </form>
-                                </li>
-                             </ul>';
-            $data_arr[] = array(
-                "order_no" => '<a href="' . $show_route . '"><span class="text-primary">' . $record->order_no . '</span>' .
-                    date("d M Y", strtotime($record->created_at)) .
-                    ' at ' . date("h:i A", strtotime($record->created_at)) . '</a>',
-
-                "user_last_name" => $record->full_name(),
-                "user_country" => $record->country->name,
-                "details_sum_qty" => $record->details_sum_qty,
-                "created_at" => $record->created_at ? date("d.m.Y", strtotime($record->created_at)) : '',
-                "action" => $action
-            );
-        }
-
-        $response = array(
-            "draw" => intval($draw),
-            "iTotalRecords" => $totalRecords,
-            "iTotalDisplayRecords" => $totalRecordswithFilter,
-            "aaData" => $data_arr,
-        );
-
-        return json_encode($response);
-    }
-
-    /* for picked orders */
-
-    public function pickedOrder()
-    {
-        $order_overview = $this->orderOverview();
-        return view('ordermanagement::orders.picked_orders', compact('order_overview'));
     }
 
     /* Process ajax request */
+//    public function processingOrderList(Request $request)
+//    {
+//        $draw = $request->get('draw');
+//        $start = $request->get("start");
+//        $rowperpage = $request->get("length"); // total number of rows per page
+//
+//        $columnIndex_arr = $request->get('order');
+//        $columnName_arr = $request->get('columns');
+//        $order_arr = $request->get('order');
+//        $search_arr = $request->get('search');
+//
+//        $columnIndex = $columnIndex_arr[0]['column']; // Column index
+//        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
+//        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
+//        $searchValue = $search_arr['value']; // Search value
+//
+//        $query = Order::query();
+//        $query
+//            ->whereHas('details', function ($query) {
+//                $query->where('order_stat', 3);
+//            });
+//        // specific seller
+//        if (auth('seller')->user() && auth('seller')->user()->getRoleNames()->first() == 'Seller') {
+//            $query
+//                ->whereHas('details', function ($query) {
+//                    $query->where('seller_id', 'like', '%' . auth()->id() . '%');
+//                });
+//        }
+//        // Total records
+//        $totalRecords = $query->count();
+//        $totalRecordswithFilter = $totalRecords;
+//        // Get records, also we have included search filter as well
+//        if (!empty($searchValue)) {
+//            $query
+//                ->where(function ($qry) use ($searchValue) {
+//                    $qry->orWhere('order_no', 'like', '%' . $searchValue . '%');
+//                    $qry->orWhere('user_first_name', 'like', '%' . $searchValue . '%');
+//                    $qry->orWhere('user_last_name', 'like', '%' . $searchValue . '%');
+//                    $qry->orWhere('created_at', 'like', '%' . $searchValue . '%');
+//                    $qry->orWhere('id', 'like', '%' . $searchValue . '%');
+//                });
+//            $totalRecordswithFilter = $query->count();
+//        }
+//        $records = $query
+//            ->with('orderStatus', 'country')
+//            ->withSum('details', 'qty')
+//            ->orderBy($columnName, $columnSortOrder)
+//            ->skip($start)
+//            ->take($rowperpage)
+//            ->get();
+//
+//        $data_arr = array();
+//
+//        foreach ($records as $record) {
+//            $show_route = auth('seller')->user() ? route('seller.orders.show', $record->id) : route('backend.orders.show', $record->id);
+//            $delete_route = auth('seller')->user() ? route('seller.orders.show', $record->id) : route('backend.orders.destroy', $record->id);
+//            $action = '';
+//            if (auth()->user()->can('delete_orders') || auth()->user()->hasRole('super-admin'))
+//                $action =      '<ul>
+//                                <li>
+//                                     <form user="deleteForm" method="POST"
+//                                              action="' . $delete_route . '">
+//                                            ' . csrf_field() . method_field("DELETE") . '
+//                                            <a class="p-0 action" href="javascript:void(0);"
+//                                               onclick="deleteWithSweetAlert(event,parentNode);">
+//                                                <button title="Delete">
+//                                                    <svg viewBox="0 0 10 11" xmlns="http://www.w3.org/2000/svg">
+//                                                        <path d="M8.65184 10.2545C8.63809 10.5288 8.36791 10.7452 8.03934 10.7452H2.31625C1.98768 10.7452 1.7175 10.5288 1.70375 10.2545L1.29504 3.04834H9.06055L8.65184 10.2545ZM3.88317 4.83823C3.88317 4.7234 3.77169 4.63027 3.63416 4.63027H3.23589C3.09844 4.63027 2.98688 4.72338 2.98688 4.83823V8.95529C2.98688 9.07014 3.09835 9.16324 3.23589 9.16324H3.63416C3.77163 9.16324 3.88317 9.07019 3.88317 8.95529V4.83823ZM5.62591 4.83823C5.62591 4.7234 5.51444 4.63027 5.37693 4.63027H4.97866C4.84121 4.63027 4.72968 4.72338 4.72968 4.83823V8.95529C4.72968 9.07014 4.84112 9.16324 4.97866 9.16324H5.37693C5.51441 9.16324 5.62591 9.07019 5.62591 8.95529V4.83823ZM7.36871 4.83823C7.36871 4.7234 7.25724 4.63027 7.11973 4.63027H6.72143C6.58396 4.63027 6.47245 4.72338 6.47245 4.83823V8.95529C6.47245 9.07014 6.58393 9.16324 6.72143 9.16324H7.11973C7.25721 9.16324 7.36871 9.07019 7.36871 8.95529V4.83823Z"/>
+//                                                        <path d="M1.0213 1.09395H3.66155V0.677051C3.66155 0.617846 3.71902 0.569824 3.78994 0.569824H6.56248C6.63337 0.569824 6.69083 0.617846 6.69083 0.677051V1.09393H9.33112C9.5436 1.09393 9.71582 1.23779 9.71582 1.41526V2.42468H0.636597V1.41528C0.636597 1.23782 0.808817 1.09395 1.0213 1.09395Z"/>
+//                                                    </svg>
+//                                                </button>
+//                                            </a>
+//                                     </form>
+//                                </li>
+//                             </ul>';
+//            $data_arr[] = array(
+//                "order_no" => '<a href="' . $show_route . '"><span class="text-primary">' . $record->order_no . '</span>' .
+//                    date("d M Y", strtotime($record->created_at)) .
+//                    ' at ' . date("h:i A", strtotime($record->created_at)) . '</a>',
+//
+//                "user_last_name" => $record->full_name(),
+//                "user_country" => $record->country->name,
+//                "details_sum_qty" => $record->details_sum_qty,
+//                "created_at" => $record->created_at ? date("d.m.Y", strtotime($record->created_at)) : '',
+//                "action" => $action
+//            );
+//        }
+//
+//        $response = array(
+//            "draw" => intval($draw),
+//            "iTotalRecords" => $totalRecords,
+//            "iTotalDisplayRecords" => $totalRecordswithFilter,
+//            "aaData" => $data_arr,
+//        );
+//
+//        return json_encode($response);
+//    }
+
+    /* for picked orders */
+
+    public function pickedOrder(Request $request)
+    {
+        $order_overview = $this->orderOverview();
+        $record = $this->pickedOrderList($request);
+        $show_data = $record['record'] ?? [];
+        $totalRecords = $record['totalRecords'] ?? 0;
+        return view('ordermanagement::orders.picked_orders', compact('order_overview','show_data','totalRecords'));
+    }
+
     public function pickedOrderList(Request $request)
     {
         $draw = $request->get('draw');
@@ -540,10 +713,10 @@ class OrderController extends Controller
         $order_arr = $request->get('order');
         $search_arr = $request->get('search');
 
-        $columnIndex = $columnIndex_arr[0]['column']; // Column index
-        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
-        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
-        $searchValue = $search_arr['value']; // Search value
+//        $columnIndex = $columnIndex_arr[0]['column']; // Column index
+//        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
+//        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
+        $searchValue = ''; // Search value
 
         $query = Order::query();
         $query
@@ -560,7 +733,7 @@ class OrderController extends Controller
         }
         // Total records
         $totalRecords = $query->count();
-        $totalRecordswithFilter = $totalRecords;
+//        $totalRecordswithFilter = $totalRecords;
         // Get records, also we have included search filter as well
         if (!empty($searchValue)) {
             $query
@@ -570,61 +743,119 @@ class OrderController extends Controller
                     $qry->orWhere('user_last_name', 'like', '%' . $searchValue . '%');
                     $qry->orWhere('id', 'like', '%' . $searchValue . '%');
                 });
-            $totalRecordswithFilter = $query->count();
+//            $totalRecordswithFilter = $query->count();
         }
         $records = $query
             ->with('orderStatus', 'country')
             ->withSum('details', 'qty')
-            ->orderBy($columnName, $columnSortOrder)
-            ->skip($start)
-            ->take($rowperpage)
-            ->get();
+//            ->orderBy($columnName, $columnSortOrder)
+//            ->skip($start)
+//            ->take($rowperpage)
+            ->paginate(20);
 
-        $data_arr = array();
-
-        foreach ($records as $record) {
-            $show_route = auth('seller')->user() ? route('seller.orders.show', $record->id) : route('backend.orders.show', $record->id);
-            $delete_route = auth('seller')->user() ? route('seller.orders.show', $record->id) : route('backend.orders.destroy', $record->id);
-            $action = '';
-            if (auth()->user()->can('delete_orders') || auth()->user()->hasRole('super-admin'))
-                $action =      '<ul>
-                                <li>
-                                     <form user="deleteForm" method="POST"
-                                              action="' . $delete_route . '">
-                                            ' . csrf_field() . method_field("DELETE") . '
-                                            <a class="p-0 action" href="javascript:void(0);"
-                                               onclick="deleteWithSweetAlert(event,parentNode);">
-                                                <button title="Delete">
-                                                    <svg viewBox="0 0 10 11" xmlns="http://www.w3.org/2000/svg">
-                                                        <path d="M8.65184 10.2545C8.63809 10.5288 8.36791 10.7452 8.03934 10.7452H2.31625C1.98768 10.7452 1.7175 10.5288 1.70375 10.2545L1.29504 3.04834H9.06055L8.65184 10.2545ZM3.88317 4.83823C3.88317 4.7234 3.77169 4.63027 3.63416 4.63027H3.23589C3.09844 4.63027 2.98688 4.72338 2.98688 4.83823V8.95529C2.98688 9.07014 3.09835 9.16324 3.23589 9.16324H3.63416C3.77163 9.16324 3.88317 9.07019 3.88317 8.95529V4.83823ZM5.62591 4.83823C5.62591 4.7234 5.51444 4.63027 5.37693 4.63027H4.97866C4.84121 4.63027 4.72968 4.72338 4.72968 4.83823V8.95529C4.72968 9.07014 4.84112 9.16324 4.97866 9.16324H5.37693C5.51441 9.16324 5.62591 9.07019 5.62591 8.95529V4.83823ZM7.36871 4.83823C7.36871 4.7234 7.25724 4.63027 7.11973 4.63027H6.72143C6.58396 4.63027 6.47245 4.72338 6.47245 4.83823V8.95529C6.47245 9.07014 6.58393 9.16324 6.72143 9.16324H7.11973C7.25721 9.16324 7.36871 9.07019 7.36871 8.95529V4.83823Z"/>
-                                                        <path d="M1.0213 1.09395H3.66155V0.677051C3.66155 0.617846 3.71902 0.569824 3.78994 0.569824H6.56248C6.63337 0.569824 6.69083 0.617846 6.69083 0.677051V1.09393H9.33112C9.5436 1.09393 9.71582 1.23779 9.71582 1.41526V2.42468H0.636597V1.41528C0.636597 1.23782 0.808817 1.09395 1.0213 1.09395Z"/>
-                                                    </svg>
-                                                </button>
-                                            </a>
-                                     </form>
-                                </li>
-                             </ul>';
-            $data_arr[] = array(
-                "order_no" => '<a href="' . $show_route . '"><span class="text-primary">' . $record->order_no . '</span>' .
-                    date("d M Y", strtotime($record->created_at)) .
-                    ' at ' . date("h:i A", strtotime($record->created_at)) . '</a>',
-
-                "user_last_name" => $record->full_name(),
-                "user_country" => $record->country->name,
-                "details_sum_qty" => $record->details_sum_qty,
-                "action" => $action
-            );
-        }
-
-        $response = array(
-            "draw" => intval($draw),
-            "iTotalRecords" => $totalRecords,
-            "iTotalDisplayRecords" => $totalRecordswithFilter,
-            "aaData" => $data_arr,
-        );
-
-        return json_encode($response);
+        return [
+            'record' =>$records,
+            'totalRecords' =>$totalRecords,
+        ];
     }
+
+    /* Process ajax request */
+//    public function pickedOrderList(Request $request)
+//    {
+//        $draw = $request->get('draw');
+//        $start = $request->get("start");
+//        $rowperpage = $request->get("length"); // total number of rows per page
+//
+//        $columnIndex_arr = $request->get('order');
+//        $columnName_arr = $request->get('columns');
+//        $order_arr = $request->get('order');
+//        $search_arr = $request->get('search');
+//
+//        $columnIndex = $columnIndex_arr[0]['column']; // Column index
+//        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
+//        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
+//        $searchValue = $search_arr['value']; // Search value
+//
+//        $query = Order::query();
+//        $query
+//            ->whereHas('details', function ($query) {
+//                $query->where('order_stat', 4);
+//            });
+//
+//        // specific seller
+//        if (auth('seller')->user() && auth('seller')->user()->getRoleNames()->first() == 'Seller') {
+//            $query
+//                ->whereHas('details', function ($query) {
+//                    $query->where('seller_id', 'like', '%' . auth()->id() . '%');
+//                });
+//        }
+//        // Total records
+//        $totalRecords = $query->count();
+//        $totalRecordswithFilter = $totalRecords;
+//        // Get records, also we have included search filter as well
+//        if (!empty($searchValue)) {
+//            $query
+//                ->where(function ($qry) use ($searchValue) {
+//                    $qry->orWhere('order_no', 'like', '%' . $searchValue . '%');
+//                    $qry->orWhere('user_first_name', 'like', '%' . $searchValue . '%');
+//                    $qry->orWhere('user_last_name', 'like', '%' . $searchValue . '%');
+//                    $qry->orWhere('id', 'like', '%' . $searchValue . '%');
+//                });
+//            $totalRecordswithFilter = $query->count();
+//        }
+//        $records = $query
+//            ->with('orderStatus', 'country')
+//            ->withSum('details', 'qty')
+//            ->orderBy($columnName, $columnSortOrder)
+//            ->skip($start)
+//            ->take($rowperpage)
+//            ->get();
+//
+//        $data_arr = array();
+//
+//        foreach ($records as $record) {
+//            $show_route = auth('seller')->user() ? route('seller.orders.show', $record->id) : route('backend.orders.show', $record->id);
+//            $delete_route = auth('seller')->user() ? route('seller.orders.show', $record->id) : route('backend.orders.destroy', $record->id);
+//            $action = '';
+//            if (auth()->user()->can('delete_orders') || auth()->user()->hasRole('super-admin'))
+//                $action =      '<ul>
+//                                <li>
+//                                     <form user="deleteForm" method="POST"
+//                                              action="' . $delete_route . '">
+//                                            ' . csrf_field() . method_field("DELETE") . '
+//                                            <a class="p-0 action" href="javascript:void(0);"
+//                                               onclick="deleteWithSweetAlert(event,parentNode);">
+//                                                <button title="Delete">
+//                                                    <svg viewBox="0 0 10 11" xmlns="http://www.w3.org/2000/svg">
+//                                                        <path d="M8.65184 10.2545C8.63809 10.5288 8.36791 10.7452 8.03934 10.7452H2.31625C1.98768 10.7452 1.7175 10.5288 1.70375 10.2545L1.29504 3.04834H9.06055L8.65184 10.2545ZM3.88317 4.83823C3.88317 4.7234 3.77169 4.63027 3.63416 4.63027H3.23589C3.09844 4.63027 2.98688 4.72338 2.98688 4.83823V8.95529C2.98688 9.07014 3.09835 9.16324 3.23589 9.16324H3.63416C3.77163 9.16324 3.88317 9.07019 3.88317 8.95529V4.83823ZM5.62591 4.83823C5.62591 4.7234 5.51444 4.63027 5.37693 4.63027H4.97866C4.84121 4.63027 4.72968 4.72338 4.72968 4.83823V8.95529C4.72968 9.07014 4.84112 9.16324 4.97866 9.16324H5.37693C5.51441 9.16324 5.62591 9.07019 5.62591 8.95529V4.83823ZM7.36871 4.83823C7.36871 4.7234 7.25724 4.63027 7.11973 4.63027H6.72143C6.58396 4.63027 6.47245 4.72338 6.47245 4.83823V8.95529C6.47245 9.07014 6.58393 9.16324 6.72143 9.16324H7.11973C7.25721 9.16324 7.36871 9.07019 7.36871 8.95529V4.83823Z"/>
+//                                                        <path d="M1.0213 1.09395H3.66155V0.677051C3.66155 0.617846 3.71902 0.569824 3.78994 0.569824H6.56248C6.63337 0.569824 6.69083 0.617846 6.69083 0.677051V1.09393H9.33112C9.5436 1.09393 9.71582 1.23779 9.71582 1.41526V2.42468H0.636597V1.41528C0.636597 1.23782 0.808817 1.09395 1.0213 1.09395Z"/>
+//                                                    </svg>
+//                                                </button>
+//                                            </a>
+//                                     </form>
+//                                </li>
+//                             </ul>';
+//            $data_arr[] = array(
+//                "order_no" => '<a href="' . $show_route . '"><span class="text-primary">' . $record->order_no . '</span>' .
+//                    date("d M Y", strtotime($record->created_at)) .
+//                    ' at ' . date("h:i A", strtotime($record->created_at)) . '</a>',
+//
+//                "user_last_name" => $record->full_name(),
+//                "user_country" => $record->country->name,
+//                "details_sum_qty" => $record->details_sum_qty,
+//                "action" => $action
+//            );
+//        }
+//
+//        $response = array(
+//            "draw" => intval($draw),
+//            "iTotalRecords" => $totalRecords,
+//            "iTotalDisplayRecords" => $totalRecordswithFilter,
+//            "aaData" => $data_arr,
+//        );
+//
+//        return json_encode($response);
+//    }
 
     /* for shipped orders */
 

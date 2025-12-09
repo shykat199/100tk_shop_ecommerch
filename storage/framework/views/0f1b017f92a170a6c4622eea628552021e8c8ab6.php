@@ -72,7 +72,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title"><?php echo e(@$order_status->name); ?> Order (<?php echo e(@$order_status->orders_count); ?>)</h4>
+                    <h4 class="page-title">All Orders (<?php echo e($order_overview['total_order']??0); ?>)</h4>
                 </div>
             </div>
         </div>
@@ -192,36 +192,36 @@
     <?php echo $__env->make('backend.includes.datatable_js', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
     <script>
 
-        $(function() {
-            "use strict";
+        
+        
 
-            $(document).ready(function(){
-                // DataTable
-                var table = $('#mDataTable');
-                table.DataTable({
-                    ajax: "<?php if(auth()->guard('admin')->check()): ?><?php echo e(route('backend.orders.list')); ?><?php elseif(auth()->guard('seller')->check()): ?><?php echo e(route('seller.orders.list', ['order_no' => request('order')])); ?><?php endif; ?>",
-                    columns: [
-                        { data: 'order_no' },
-                        { data: 'user_last_name' },
-                        { data: 'shipping_address_1'},
-                        { data: 'discount' },
-                        { data: 'total_price' },
-                        { data: 'payment_by' },
-                        { data: 'action',searchable:false,sortable:false },
-                    ]
-                });
-                let method = "<?php echo Route::getCurrentRoute()->getName(); ?>";
-                if(method == 'backend.search'){
-                    let searchValue = "<?php echo $searchValue; ?>";
-                    table.DataTable().search(searchValue).draw();
-                }
-                else if(method == 'seller.search'){
-                    let searchValue = "<?php echo $searchValue; ?>";
-                    table.DataTable().search(searchValue).draw();
-                }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
-            });
-        });
+        
+        
     </script>
 <?php $__env->stopPush(); ?>
 

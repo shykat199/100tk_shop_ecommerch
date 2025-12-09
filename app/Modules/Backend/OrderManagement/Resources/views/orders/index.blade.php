@@ -72,7 +72,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">{{@$order_status->name}} Order ({{@$order_status->orders_count}})</h4>
+                    <h4 class="page-title">All Orders ({{$order_overview['total_order']??0}})</h4>
                 </div>
             </div>
         </div>
@@ -191,35 +191,35 @@
     @include('backend.includes.datatable_js')
     <script>
 
-        $(function() {
-            "use strict";
+        {{--$(function() {--}}
+        {{--    "use strict";--}}
 
-            $(document).ready(function(){
-                // DataTable
-                var table = $('#mDataTable');
-                table.DataTable({
-                    ajax: "@auth('admin'){{route('backend.orders.list')}}@elseauth('seller'){{route('seller.orders.list', ['order_no' => request('order')])}}@endauth",
-                    columns: [
-                        { data: 'order_no' },
-                        { data: 'user_last_name' },
-                        { data: 'shipping_address_1'},
-                        { data: 'discount' },
-                        { data: 'total_price' },
-                        { data: 'payment_by' },
-                        { data: 'action',searchable:false,sortable:false },
-                    ]
-                });
-                let method = "<?php echo Route::getCurrentRoute()->getName(); ?>";
-                if(method == 'backend.search'){
-                    let searchValue = "<?php echo $searchValue; ?>";
-                    table.DataTable().search(searchValue).draw();
-                }
-                else if(method == 'seller.search'){
-                    let searchValue = "<?php echo $searchValue; ?>";
-                    table.DataTable().search(searchValue).draw();
-                }
+        {{--    $(document).ready(function(){--}}
+        {{--        // DataTable--}}
+        {{--        var table = $('#mDataTable');--}}
+        {{--        table.DataTable({--}}
+        {{--            ajax: "@auth('admin'){{route('backend.orders.list')}}@elseauth('seller'){{route('seller.orders.list', ['order_no' => request('order')])}}@endauth",--}}
+        {{--            columns: [--}}
+        {{--                { data: 'order_no' },--}}
+        {{--                { data: 'user_last_name' },--}}
+        {{--                { data: 'shipping_address_1'},--}}
+        {{--                { data: 'discount' },--}}
+        {{--                { data: 'total_price' },--}}
+        {{--                { data: 'payment_by' },--}}
+        {{--                { data: 'action',searchable:false,sortable:false },--}}
+        {{--            ]--}}
+        {{--        });--}}
+        {{--        let method = "<?php echo Route::getCurrentRoute()->getName(); ?>";--}}
+        {{--        if(method == 'backend.search'){--}}
+        {{--            let searchValue = "<?php echo $searchValue; ?>";--}}
+        {{--            table.DataTable().search(searchValue).draw();--}}
+        {{--        }--}}
+        {{--        else if(method == 'seller.search'){--}}
+        {{--            let searchValue = "<?php echo $searchValue; ?>";--}}
+        {{--            table.DataTable().search(searchValue).draw();--}}
+        {{--        }--}}
 
-            });
-        });
+        {{--    });--}}
+        {{--});--}}
     </script>
 @endpush
