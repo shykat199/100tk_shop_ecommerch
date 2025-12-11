@@ -107,18 +107,26 @@
                                 <tbody>
                                 @foreach($show_data as $key=>$value)
 
+                                    @php
+                                        $show_route = auth('seller')->user() ? route('seller.orders.show', $value->id) : route('backend.orders.show', $value->id);
+                                        $delete_route = auth('seller')->user() ? route('seller.orders.show', $value->id) : route('backend.orders.destroy', $value->id);
+                                        $edit_route = route('backend.order.edit.show', $value->order_no);
+                                        $order_process = route('backend.process_orders',$value->order_no);
+                                    @endphp
+
                                     <tr>
                                         <td><input type="checkbox" class="checkbox" value="{{$value->id}}"></td>
                                         <td>{{$loop->iteration}}</td>
                                         <td>
                                             <div class="button-list custom-btn-list">
-                                                <a href="" title="Invoice"><i class="fa fa-eye"></i></a>
-                                                <a href="" title="Process"><i class="fa-solid fa-gear"></i></a>
-                                                <a href="" title="Edit"><i class="fa fa-pencil-square"></i></a>
-                                                <form method="post" action="" class="d-inline">
+                                                <a href="{{$show_route}}" title="Invoice"><i class="fa fa-eye"></i></a>
+                                                <a href="{{$order_process}}" title="Process"><i class="fa-solid fa-gear"></i></a>
+                                                <a href="{{$edit_route}}" title="Edit"><i class="fa fa-pencil-square"></i></a>
+                                                <form method="post" action="{{$delete_route}}" class="d-inline">
                                                     @csrf
+                                                    @method("DELETE")
                                                     <input type="hidden" value="{{$value->id}}" name="id">
-                                                    <button type="submit" title="Delete" class="delete-confirm"><i class="fa fa-trash"></i></button>
+                                                    <button type="submit" onclick="deleteWithSweetAlert(event,parentNode);" title="Delete" class="delete-confirm"><i class="fa fa-trash"></i></button>
 
                                                 </form>
                                             </div>
@@ -133,7 +141,7 @@
                                         <td>{{$value->shipping_mobile?$value->shipping_mobile:''}}</td>
                                         <td> <a target="_blank" style="text-decoration: underline" href="https://greenviewit.com/check-fraud-customer" >Fraud Customer Check</a></td>
                                         <td>৳{{$value->total_price}}</td>
-                                        {{--                                        <td>{{$value->details && !empty($value->details[0]) && $value->details[0]->orderStatus?$value->details[0]->orderStatus->name:'N/A'}}</td>--}}
+                                        <td>{{$value->details && !empty($value->details[0]) && $value->details[0]->orderStatus?$value->details[0]->orderStatus->name:'N/A'}}</td>
 
                                     </tr>
                                 @endforeach

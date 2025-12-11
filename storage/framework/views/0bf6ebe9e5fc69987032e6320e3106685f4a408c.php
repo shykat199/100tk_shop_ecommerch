@@ -71,7 +71,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">All Orders (<?php echo e($order_overview[1]??0); ?>)</h4>
+                    <h4 class="page-title">Pending Orders (<?php echo e($order_overview[1]??0); ?>)</h4>
                 </div>
             </div>
         </div>

@@ -2,15 +2,13 @@
 
 <?php $__env->startSection('content'); ?>
 
-<div class="row m-2">
-  <div class="col-lg-5 pt-3" style="background-color: white;border-radius: 7px;width: 40.5vw">
-      <h4>
-          Products
-      </h3>
-
-      <div style="background-color: white">
-          <table class="table table-striped">
-              <thead>
+<div class="row mt-2">
+  <div class="col-12 mt-3" style="background-color: white;border-radius: 7px;">
+      <div class="container">
+          <h4>Products</h4>
+          <div style="background-color: white">
+              <table class="table table-striped">
+                  <thead>
                   <tr>
                       <th style="font-weight: 800; width:14vw;">Name</th>
                       <th style="font-weight: 800;">Image</th>
@@ -19,33 +17,36 @@
                       <th style="font-weight: 800; width:7vw; text-align: center">Total</th>
                       <th style="font-weight: 800; width:3vw; text-align: center">Action</th>
                   </tr>
-              </thead>
-              <tbody>
+                  </thead>
+                  <tbody>
                   <?php $__currentLoopData = $order->details; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order_details): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                       <tr>
                           <td><?php echo e($order_details->product->name); ?></td>
                           <td>
-                            <?php $__currentLoopData = $order_details->product->images; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $image): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                              <img src="<?php echo e(URL::to('uploads/products/galleries/' . $image->image)); ?>" width="45px" height="45px" alt="product">
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                              <?php $__currentLoopData = $order_details->product->images; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $image): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                  <img src="<?php echo e(URL::to('uploads/products/galleries/' . $image->image)); ?>" width="45px" height="45px" alt="product">
+                              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                           </td>
                           <td>
                               <form action="<?php echo e(route('backend.order.product.qtyUpdate', $order_details->id)); ?>"
-                                  method="POST">
+                                    method="POST">
                                   <?php echo csrf_field(); ?>
                                   <?php echo method_field('put'); ?>
-                                  <input type="number" min="1" name="qty"
-                                      value="<?php echo e($order_details->qty); ?>" style="width:4vw">
-                                  <button class="btn btn-sm btn-success" style="color: white">
-                                      <i class="fa fa-refresh"></i>
-                                  </button>
+                                  <div class="d-flex align-items-center">
+                                      <input type="number" min="1" name="qty" value="<?php echo e($order_details->qty); ?>" class="form-control form-control-sm" style="width: 80px;">
+
+                                      <button class="btn btn-sm btn-success ms-2" style="color: white">
+                                          <i class="fa fa-refresh"></i>
+                                      </button>
+                                  </div>
+
                               </form>
                           </td>
                           <td><?php echo e($order_details->sale_price); ?></td>
                           <td><?php echo e($order_details->sale_price*$order_details->qty); ?></td>
                           <td>
                               <form action="<?php echo e(route('backend.order.product.delete', $order_details->id)); ?>"
-                                  method="POST">
+                                    method="POST">
                                   <?php echo csrf_field(); ?>
                                   <?php echo method_field('delete'); ?>
                                   <button class="btn btn-sm btn-danger" type="submit" style="color: white">
@@ -55,19 +56,24 @@
                           </td>
                       </tr>
                   <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-              </tbody>
-          </table>
+                  </tbody>
+              </table>
+          </div>
       </div>
   </div>
 
-  <div class="col-lg-5 pt-3" style="background-color: white;border-radius: 7px; width: 40.5vw; margin-left: 1.5vw;">
-      <h4>
-          Add Products
-      </h3>
+    <div class="col-12 mt-3 mb-2" style="background-color: white;border-radius: 7px;">
+      <div class="container">
+          <div class="col-12 pt-3" style="background-color: white;border-radius: 7px;">
+              <h4>
+                  Add Products
+              </h4>
 
-      <div style="background-color: white">
-          <input class="form-control" type="text" name="name" id="search-product" placeholder="Search Product" style="width:39.5vw">
-          <ul id="show-product" class="list-group" style="position: absolute;width: 39.5vw;overflow-y: auto;height: 20.5vh;padding: 2px;"></ul>
+              <div style="background-color: white">
+                  <input class="form-control mb-3" type="text" name="name" id="search-product" placeholder="Search Product">
+                  <ul id="show-product" class="list-group" style="position: absolute;width: 39.5vw;overflow-y: auto;height: 20.5vh;padding: 2px;"></ul>
+              </div>
+          </div>
       </div>
   </div>
 
@@ -382,18 +388,12 @@ unset($__errorArgs, $__bag); ?>
             </div>
 
 
-            
+
 
         </div>
     </div>
 
-
-
-
 </form>
-
-
-
 
 
 <?php $__env->stopSection(); ?>
@@ -440,4 +440,5 @@ unset($__errorArgs, $__bag); ?>
     });
 </script>
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('backend.layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /var/www/html/100_shop/app/Modules/Backend/OrderManagement/Resources/views/orders/edit_order.blade.php ENDPATH**/ ?>

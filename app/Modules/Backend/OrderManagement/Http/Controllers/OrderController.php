@@ -1697,6 +1697,11 @@ class OrderController extends Controller
         Order::where('id', $order_id)->update(['total_price' => $total]);
     }
 
+    public function processOrder($id)
+    {
+
+    }
+
 
 
 }

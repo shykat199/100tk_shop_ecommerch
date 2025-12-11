@@ -49,6 +49,7 @@ Route::group(['prefix' => 'admin', 'as' => 'backend.'], function () {
             Route::get('shipped_orders', 'OrderController@shippedOrder')->name('shipped_orders');
             Route::get('delivered_orders', 'OrderController@deliveredOrder')->name('delivered_orders');
             Route::get('cancelled_orders', 'OrderController@cancelledOrder')->name('cancelled_orders');
+            Route::get('process_orders/{id}', 'OrderController@processOrder')->name('process_orders');
         });
     });
 
