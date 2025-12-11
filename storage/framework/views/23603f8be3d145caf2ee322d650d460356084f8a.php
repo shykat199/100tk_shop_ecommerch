@@ -1,13 +1,44 @@
 
-<?php $__env->startSection('title','Cancelled Orders - '); ?>
+<?php $__env->startSection('title','Delivered Orders - '); ?>
 <?php $__env->startPush('css'); ?>
     <?php echo $__env->make('backend.includes.datatable_css', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+    <style>
+        .card{
+            background: #ffff;
+        }
+        .custom-btn-list button {
+            background: transparent;
+            border: 0;
+        }
+
+        .custom-btn-list button i, .custom-btn-list a i {
+            color: #444;
+            font-size: 16px;
+        }
+
+        .button-list.custom-btn-list a, .button-list.custom-btn-list button {
+            margin: 3px 5px;
+            padding: 0;
+        }
+
+        .action2-btn {
+            margin: 0;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .action2-btn li {
+            display: inline-block;
+            list-style: none;
+            margin: 2px 0;
+        }
+    </style>
 <?php $__env->stopPush(); ?>
 <?php $__env->startSection('content'); ?>
     <div class="content-body">
-        <?php echo $__env->make('ordermanagement::orders.order_overview', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+    <?php echo $__env->make('ordermanagement::orders.order_overview', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+    <!-- Tab Content Start -->
 
-        <!-- Tab Content Start -->
 
 
 
@@ -34,7 +65,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">Cancel Orders (<?php echo e($order_overview[7]??0); ?>)</h4>
+                    <h4 class="page-title">Delivery Orders (<?php echo e($order_overview[6]??0); ?>)</h4>
                 </div>
             </div>
         </div>
@@ -125,25 +156,25 @@
     <?php echo $__env->make('backend.includes.datatable_js', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
     <script>
 
-        
-        
+        $(function() {
+            "use strict";
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
-        
-        
-        
-        
+            $(document).ready(function(){
+                // DataTable
+                var table = $('#mDataTable');
+                table.DataTable({
+                    ajax: "<?php if(auth()->guard('admin')->check()): ?><?php echo e(route('backend.delivered_orders.list')); ?><?php elseif(auth()->guard('seller')->check()): ?><?php echo e(route('seller.delivered_orders.list')); ?><?php endif; ?>",
+                    columns: [
+                        { data: 'order_no' },
+                        { data: 'user_last_name' },
+                        { data: 'user_country'},
+                        { data: 'details_sum_qty' },
+                        { data: 'action',searchable:false,sortable:false },
+                    ]
+                });
+            });
+        });
     </script>
 <?php $__env->stopPush(); ?>
 
-<?php echo $__env->make('backend.layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /var/www/html/100_shop/app/Modules/Backend/OrderManagement/Resources/views/orders/cancelled_orders.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('backend.layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /var/www/html/100_shop/app/Modules/Backend/OrderManagement/Resources/views/orders/delivered_orders.blade.php ENDPATH**/ ?>

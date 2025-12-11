@@ -2,6 +2,38 @@
 @section('title','Processing Orders - ')
 @push('css')
     @include('backend.includes.datatable_css')
+
+    <style>
+        .card{
+            background: #ffff;
+        }
+        .custom-btn-list button {
+            background: transparent;
+            border: 0;
+        }
+
+        .custom-btn-list button i, .custom-btn-list a i {
+            color: #444;
+            font-size: 16px;
+        }
+
+        .button-list.custom-btn-list a, .button-list.custom-btn-list button {
+            margin: 3px 5px;
+            padding: 0;
+        }
+
+        .action2-btn {
+            margin: 0;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .action2-btn li {
+            display: inline-block;
+            list-style: none;
+            margin: 2px 0;
+        }
+    </style>
 @endpush
 @section('content')
     <div class="content-body">
