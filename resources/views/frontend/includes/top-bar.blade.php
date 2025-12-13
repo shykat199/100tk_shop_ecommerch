@@ -30,7 +30,7 @@
 			c0.8,0,1.5-0.1,2.3-0.2C469.556,223.306,474.556,216.306,473.256,209.006z"/>
 											</svg>
 										</span>
-                                <span class="text text-white">{{ maanAppearance('hotline_number') }}</span>
+                                <strong class="text text-white">{{ maanAppearance('hotline_number') }}</strong>
                             </a>
                         </li>
                         @if(maanHeader('enable_tracking_order'))
@@ -51,7 +51,7 @@
 			c8.912,0,16.134-7.223,16.134-16.134S162.727,208.134,153.815,208.134z"/><path d="M180.168,144.672H42.487c-8.912,0-16.134,7.223-16.134,16.134c0,8.912,7.223,16.134,16.134,16.134h137.681
 			c8.912,0,16.134-7.223,16.134-16.134C196.303,151.895,189.08,144.672,180.168,144.672z"/></svg>
 										</span>
-                                    <span class="text text-white">{{ __('Track Your Order') }}</span>
+                                    <strong class="text text-white">{{ __('Track Your Order') }}</strong>
                                 </a>
                             </li>
                         @endif

@@ -2,18 +2,18 @@
 
 /*
 Theme Name: Mshop Dashboard Teamplate
-Theme URI: 
-Developed by: Abdullah Al Numan 
+Theme URI:
+Developed by: Abdullah Al Numan
 Version: 1.0
-License: 
-Tags: 
+License:
+Tags:
 */
 
 
 /*================================================
 [  Table of contents  ]
 ================================================
-    
+
 ======================================
 [ End table content ]
 ======================================*/
@@ -332,7 +332,7 @@ Tags:
     .mybazar-customer-dashboard .maan-layout-style-one .maan-counter-wpr.grid-4 {
         grid-template-columns: repeat(2, 1fr);
     }
-  
+
       .mybazar-customer-dashboard .maan-counter-box .maan-icon i {
         height: 70px;
         width: 70px;
