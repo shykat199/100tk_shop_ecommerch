@@ -53,17 +53,20 @@
                         <span></span>
                         <span></span>
                     </button>
-                    <ul>
+                    <ul class="category-scroll">
                         <li>
                             <a href="{{ url('shop') }}" class="{{ isActiveMenu('shop') }}">{{ __('All Products') }}</a>
                         </li>
-						<li>
-                            <a href="{{ route('frontend.new.arrival') }}" class="{{ Route::is('frontend.new.arrival') ? 'active' : '' }}">{{ __('New Arrivals') }}</a>
-                        </li>
-                        @foreach (menubars() as $menubar)
                         <li>
-                            <a href="{{ route('category', $menubar->slug) }}" class="{{ isActiveMenu($menubar->slug) }}">{{ $menubar->name }}</a>
+                            <a href="{{ route('frontend.new.arrival') }}"
+                               class="{{ Route::is('frontend.new.arrival') ? 'active' : '' }}">{{ __('New Arrivals') }}</a>
                         </li>
+
+                        @foreach (menubars() as $menubar)
+                            <li>
+                                <a href="{{ route('category', $menubar->slug) }}"
+                                   class="{{ isActiveMenu($menubar->slug) }}">{{ $menubar->name }}</a>
+                            </li>
                         @endforeach
                         {{-- <li>
                             <a href="{{ route('seller.registration') }}" class="{{ isActiveMenu('/') }}">{{ __('Sale on China Hub') }}</a>

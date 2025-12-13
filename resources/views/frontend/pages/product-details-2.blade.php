@@ -213,14 +213,22 @@
                             <small>{{ __('Share') }}: </small>
                             <ul>
                                 <li>
-                                    <div data-href="{{ url()->full() }}" data-layout="button" data-size="small"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u={{ url()->full() }}&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore"><i class="fa-brands fa-facebook-f"></i></a></div>
+                                    <a href="https://wa.me/?text={{ urlencode(url()->full()) }}"
+                                        target="_blank"
+                                        title="Share on WhatsApp">
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                    </a>
                                 </li>
-                                <li><a class="twitter-share-button" href="https://twitter.com/intent/tweet?text={{ url()->full() }}" target="_blank"><i class="fa-brands fa-twitter"></i></a></li>
-                                <li><a href="https://www.linkedin.com/sharing/share-offsite/?url={{ route('product', $product->slug) }}" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a></li>
-                                <li><a href="https://www.pinterest.com/pin/create/button?url={{ route('product', $product->slug) }}&media={{ asset('uploads/products/galleries') }}/{{ optional($product->images)->first()->image ?? '' }}&description={{ $product->name }}" target="_blank"><i class="fa-brands fa-pinterest-p"></i></a></li>
-                                <li><a href="#" target="_blank"><i class="fab fa-linkedin-in"></i></a></li>
-                                <li><a href="#" target="_blank"><i class="fab fa-youtube"></i></a></li>
+
+                                <li>
+                                    <a href="https://t.me/share/url?url={{ urlencode(url()->full()) }}&text={{ urlencode($product->name ?? '') }}"
+                                        target="_blank"
+                                        title="Share on Telegram">
+                                        <i class="fa-brands fa-telegram"></i>
+                                    </a>
+                                </li>
                             </ul>
+
                         </div>
                     </div>
                     {{-- <div class="product-details-wedget">

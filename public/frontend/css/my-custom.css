@@ -290,8 +290,30 @@ small.sold-out {
     z-index: 1;
     position: absolute;
     top: calc(45%);
-    background-color: rgba(225, 49, 51, 0.8);
+    background-color: rgba(225, 49, 51, 0.5); /* ↓ reduced opacity */
     padding: 5px;
     text-align: center;
     text-transform: uppercase;
 }
+
+.category-scroll {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    white-space: nowrap;
+    direction: ltr;
+    /*justify-content: flex-start;*/
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.category-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.category-scroll li {
+    flex: 0 0 auto;
+    list-style: none;
+}
+
+
+

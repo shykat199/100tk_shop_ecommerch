@@ -60,15 +60,15 @@
             </div>
             <div class="col-sm-5">
                 <div class="top-bar-right">
-                    <ul>
-                        <li>
+                    <ul class="bg-dark">
+                        <li class="bg-dark">
                             <div class="top-social-links">
                                 <a href="{{ maanAppearance('facebook_link') }}">
                                     <i class="fa-brands fa-facebook-f text-white"></i>
                                 </a>
                             </div>
                         </li>
-                        <li>
+                        <li class="bg-dark">
                             <div class="top-social-links">
                                 <a href="{{ maanAppearance('youtube_link') }}">
                                     <i class="fab fa-youtube text-white"></i>

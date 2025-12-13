@@ -105,6 +105,7 @@ class FrontController extends Controller
         $allProducts = Product::query()
             ->with('images', 'details', 'reviews')
             ->where('is_active', 1)
+            ->orderByRaw('quantity = 0')
             ->orderByDesc('id')
             ->take(6)
             ->get();
@@ -112,6 +113,7 @@ class FrontController extends Controller
         $newArrivals = Product::query()
             ->with('images', 'details', 'reviews')
             ->where('is_active', 1)
+            ->orderByRaw('quantity = 0')
             ->orderByDesc('id')
             ->take(6)
             ->get();
@@ -119,6 +121,7 @@ class FrontController extends Controller
         $bestSellers = Product::query()
             ->with('images', 'details', 'reviews')
             ->where('is_active', 1)
+            ->orderByRaw('quantity = 0')
             ->orderByDesc('id')
             ->take(6)
             ->get();
@@ -128,12 +131,14 @@ class FrontController extends Controller
             ->whereHas('details', function ($q) {
                 $q->where('is_featured', 1);
             })
+            ->orderByRaw('quantity = 0')
             ->orderByDesc('id')
             ->take(6)
             ->get();
 
         $trends = Product::query()
             ->with('images', 'details', 'reviews')
+            ->orderByRaw('quantity = 0')
             ->orderByDesc('id')
             ->take(6)
             ->get();
@@ -160,8 +165,8 @@ class FrontController extends Controller
             ->where('quantity', ">", 0)
             ->where('is_manage_stock', 1)
             ->where('name', 'like', "%{$request->q}%")
-//            ->orderByRaw('quantity = 0, quantity')
-                ->orderBy('id','DESC')
+            ->orderByRaw('quantity = 0, quantity')
+            ->orderBy('id','DESC')
             ->latest()
             ->paginate(50)
             ->withQueryString();
@@ -304,7 +309,7 @@ class FrontController extends Controller
         $products = Product::query()
             ->whereIn('category_id', $cats)
             ->where('is_active', 1)
-//            ->orderByRaw('quantity = 0, quantity')
+            ->orderByRaw('quantity = 0, quantity')
             ->orderByDesc('id')
             ->paginate(50);
 

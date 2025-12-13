@@ -58,19 +58,35 @@
         </div> -->
 
 
-        <a href="{{ $product->quantity <= 0 && $product->is_manage_stock ? 'javascript:void(0)' : 'javascript:addToCart(' . $product->id . ')' }}">
-            <button class="btn btn-danger w-100 mt-2" style="border-radius: 0; color:white;" {{ $product->quantity <= 0 && $product->is_manage_stock ? 'disabled' : null }}>
-                <i class="fas fa-shopping-cart"></i> Add to Cart
-            </button>
-        </a>
+        <div class="d-flex gap-2 mt-2">
+            <a class="flex-fill"
+               href="{{ $product->quantity <= 0 && $product->is_manage_stock ? 'javascript:void(0)' : 'javascript:addToCart(' . $product->id . ')' }}">
+                <button
+                    type="button"
+                    class="btn btn-outline-danger btn-sm w-100"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title="Add to Cart"
+                    {{ $product->quantity <= 0 && $product->is_manage_stock ? 'disabled' : null }}>
+                    <i class="fas fa-shopping-cart"></i>
+                </button>
+            </a>
 
-        <a href="{{ $product->quantity <= 0 && $product->is_manage_stock ? 'javascript:void(0)' : 'javascript:buyNow(' . $product->id . ')' }}">
-            <button class="btn btn-danger w-100 mt-2" style="border-radius: 0; color:white;" {{ $product->quantity <= 0 && $product->is_manage_stock ? 'disabled' : null }}>
-                <i class="fas fa-bolt"></i> Buy Now
-            </button>
-        </a>
+            <a class="flex-fill"
+               href="{{ $product->quantity <= 0 && $product->is_manage_stock ? 'javascript:void(0)' : 'javascript:buyNow(' . $product->id . ')' }}">
+                <button
+                    type="button"
+                    class="btn btn-danger btn-sm w-100 text-white"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title="Buy Now"
+                    {{ $product->quantity <= 0 && $product->is_manage_stock ? 'disabled' : null }}>
+                    <i class="fas fa-bolt"></i>
+                </button>
+            </a>
+        </div>
 
-        @if ($bn_cart_button->status)
+    @if ($bn_cart_button->status)
             <a href="{{ $product->quantity <= 0 && $product->is_manage_stock ? 'javascript:void(0)' : 'javascript:addToCart(' . $product->id . ')' }}">
                 <button class="btn btn-danger w-100 mt-2" style="border-radius: 0; color:white;" {{ $product->quantity <= 0 && $product->is_manage_stock ? 'disabled' : null }}>
                     <i class="fas fa-shopping-cart"></i> অর্ডার করুন
