@@ -2,6 +2,10 @@
 
 namespace App\Modules\Backend\OrderManagement\Http\Controllers;
 
+use App\Models\Backend\CourierApis;
+use App\Modules\Backend\OrderManagement\Entities\OrderStatus;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Http;
 use Throwable;
 use Carbon\Carbon;
 use App\Models\Transaction;
@@ -83,7 +87,7 @@ class OrderController extends Controller
                 ->orWhere('payment_by', 'like', '%' . $searchValue . '%');
         }
         $records = $query
-            ->with('orderStatus','details.orderStatus')
+            ->with('newOrderStatus','details.orderStatus')
 //            ->skip($start)
 //            ->take($rowperpage)
             ->paginate(20);
@@ -692,6 +696,69 @@ class OrderController extends Controller
 //    }
 
     /* for picked orders */
+
+    public function courierOrder(Request $request)
+    {
+        $order_overview = $this->orderOverview();
+        $record = $this->courierOrderList($request);
+        $show_data = $record['record'] ?? [];
+        $totalRecords = $record['totalRecords'] ?? 0;
+        return view('ordermanagement::orders.courier_orders', compact('order_overview','show_data','totalRecords'));
+    }
+
+    public function courierOrderList($request)
+    {
+        $draw = $request->get('draw');
+        $start = $request->get("start");
+        $rowperpage = $request->get("length"); // total number of rows per page
+
+        $columnIndex_arr = $request->get('order');
+        $columnName_arr = $request->get('columns');
+        $order_arr = $request->get('order');
+        $search_arr = $request->get('search');
+
+//        $columnIndex = $columnIndex_arr[0]['column']; // Column index
+//        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
+//        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
+        $searchValue = ''; // Search value
+
+        $query = Order::query();
+        $query->where('order_status', 9);
+
+        // specific seller
+        if (auth('seller')->user() && auth('seller')->user()->getRoleNames()->first() == 'Seller') {
+            $query
+                ->whereHas('details', function ($query) {
+                    $query->where('seller_id', 'like', '%' . auth()->id() . '%');
+                });
+        }
+        // Total records
+        $totalRecords = $query->count();
+//        $totalRecordswithFilter = $totalRecords;
+        // Get records, also we have included search filter as well
+        if (!empty($searchValue)) {
+            $query
+                ->where(function ($qry) use ($searchValue) {
+                    $qry->orWhere('order_no', 'like', '%' . $searchValue . '%');
+                    $qry->orWhere('user_first_name', 'like', '%' . $searchValue . '%');
+                    $qry->orWhere('user_last_name', 'like', '%' . $searchValue . '%');
+                    $qry->orWhere('id', 'like', '%' . $searchValue . '%');
+                });
+//            $totalRecordswithFilter = $query->count();
+        }
+        $records = $query
+            ->with('orderStatus', 'country')
+            ->withSum('details', 'qty')
+//            ->orderBy($columnName, $columnSortOrder)
+//            ->skip($start)
+//            ->take($rowperpage)
+            ->paginate(20);
+
+        return [
+            'record' =>$records,
+            'totalRecords' =>$totalRecords,
+        ];
+    }
 
     public function pickedOrder(Request $request)
     {
@@ -1653,7 +1720,6 @@ class OrderController extends Controller
     }
 
 
-
     // add product to order
 
     public function order_add_product(string $order_id, string $product_id)
@@ -1699,9 +1765,210 @@ class OrderController extends Controller
 
     public function processOrder($id)
     {
+        $order = Order::where(['order_no'=>$id])->with(['details.product.images','orderStatus','customer','details.orderStatus'])->first();
+        $orderstatus = OrderStatus::get();
+        return view('ordermanagement::orders.process_order', compact('order', 'orderstatus'));
+    }
 
+    public function orderProcess(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+            $order = Order::withSum('details', 'qty')->with('details')->findOrFail($request->id);
+
+            $previousStatus = $order->order_status;
+
+            // Update order status
+            $order->order_status = $request->status;
+            $order->save();
+
+            // Update shipping cost
+            $shippingFee = 50;
+            $order->total_price += ($shippingFee - $order->shipping_cost);
+            $order->shipping_cost = $shippingFee;
+            $order->save();
+
+            // Create courier order only once
+            if ($request->status == 9 && $previousStatus != 9) {
+
+                $pathaoCourier = CourierApis::where([
+                    'status' => 1,
+                    'type'   => 'pathao'
+                ])->first();
+
+                if ($pathaoCourier) {
+                    $consignmentData = [
+                        'store_id' => 339841,
+                        'merchant_order_id' => $order->order_no ?? 'ORDER-' . time(),
+                        'invoice' => $order->order_no,
+                        'recipient_name' => $order->shipping_address_1 ?? 'InboxHat',
+                        'recipient_phone' => $order->shipping_mobile ?? '01750578495',
+                        'recipient_address' => 'Call on the mentioned mobile number ' . $order->shipping_mobile,
+                        'delivery_type' => 48,
+                        'item_type' => 2,
+                        'item_quantity' => (int) ($order->details_sum_qty ?? 1),
+                        'item_weight' => 0.5,
+                        'amount_to_collect' => $order->total_price,
+                    ];
+
+                    $this->createOrder($consignmentData);
+                } else {
+                    $steadfastOrderData = [
+                        'invoice' => $order->order_no ?? 'ORDER-' . time(),
+                        'recipient_name' => $order->shipping_address_1 ?? 'InboxHat',
+                        'recipient_phone' => $order->shipping_mobile ?? '01750578495',
+                        'recipient_address' => 'Call on the mentioned mobile number ' . $order->shipping_mobile,
+                        'cod_amount' => $order->total_price,
+                    ];
+
+                   $response = $this->createSteadfastOrder($steadfastOrderData);
+                }
+            }
+
+            // Reduce stock when status = 6
+            if ($request->status == 6) {
+                foreach ($order->details as $detail) {
+                    $product = \App\Modules\Backend\ProductManagement\Entities\Product::find($detail->product_id);
+                    if ($product) {
+                        $product->stock = max(0, $product->stock - $detail->qty);
+                        $product->save();
+                    }
+                }
+            }
+
+            // ✅ Commit happens BEFORE return
+            DB::commit();
+
+            return redirect()
+                ->route('backend.orders.index')
+                ->with('message', 'Order status changed successfully');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()
+                ->back()
+                ->with('message', $e->getMessage());
+        }
     }
 
 
+    public function createOrder($orderData)
+    {
+        try {
+            $curl = curl_init();
+            curl_setopt_array($curl, [
+                CURLOPT_URL => "https://courier-api-sandbox.pathao.com/aladdin/api/v1/orders",
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "POST",
+                CURLOPT_POSTFIELDS => json_encode($orderData),
+                CURLOPT_HTTPHEADER => [
+                    "cache-control: no-cache",
+                    "content-type: application/json",
+                    'Authorization: Bearer ' . $this->accessPathaoInfo()['access_token'],
+                ],
+            ]);
+
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+
+            if ($err) {
+                return ['error' => true, 'message' => $err];
+            }
+
+            $result = json_decode($response, true);
+            dd($result);
+
+            if (isset($result['code']) && $result['code'] != 200) {
+                return ['error' => true, 'response' => $result];
+            }
+
+            return ['error' => false, 'response' => $result];
+
+        } catch (\Exception $exception) {
+            return ['error' => true, 'message' => $exception->getMessage()];
+        }
+    }
+
+    public function accessPathaoInfo()
+    {
+        $courier_info = CourierApis::where(['status' => 1, 'type' => 'pathao'])->first();
+        if ($courier_info){
+            $curl = curl_init();
+
+            $token_postdata = [
+                'client_id'     => '7N1aMJQbWm',
+                'client_secret' => 'wRcaibZkUdSNz2EI9ZyuXLlNrnAv0TdPUPXMnD39',
+                'username'      => 'test@pathao.com',
+                'password'      => 'lovePathao',
+                'grant_type'    => 'password',
+            ];
+
+            curl_setopt_array($curl, [
+                CURLOPT_URL => "https://courier-api-sandbox.pathao.com/aladdin/api/v1/issue-token",
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "POST",
+                CURLOPT_POSTFIELDS => json_encode($token_postdata),
+                CURLOPT_HTTPHEADER => [
+                    "cache-control: no-cache",
+                    "content-type: application/json",
+                ],
+            ]);
+
+            $token_response = curl_exec($curl);
+
+            if (curl_errno($curl)) {
+                echo 'Curl error: ' . curl_error($curl);
+            }
+
+            curl_close($curl);
+
+            return json_decode($token_response, true);
+        }
+
+        return null;
+    }
+
+    public function createSteadfastOrder(array $order)
+    {
+        $steadfast = CourierApis::where([
+            'status' => 1,
+            'type'   => 'steadfast'
+        ])->first();
+
+        if (!$steadfast) {
+            throw new \RuntimeException('Steadfast courier not configured');
+        }
+
+        $payload = [
+            'invoice' => $order['invoice'],
+            'recipient_name' => $order['recipient_name'],
+            'recipient_phone' => $order['recipient_phone'],
+            'recipient_address' => $order['recipient_address'],
+            'cod_amount' => $order['cod_amount'],
+            'note' => $order['note'] ?? 'Handle with care',
+            'item_description' => $order['item_description'] ?? 'Ecommerce order',
+            'delivery_type' => 0,
+        ];
+
+        $response = Http::withHeaders([
+            'Api-Key' => $steadfast->api_key,
+            'Secret-Key' => $steadfast->secret_key,
+            'Content-Type' => 'application/json',
+        ])->post(
+            'https://portal.packzy.com/api/v1/create_order',
+            $payload
+        );
+
+        return $response->json();
+    }
 
 }

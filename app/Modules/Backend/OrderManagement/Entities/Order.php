@@ -64,6 +64,11 @@ class Order extends Model
         return $this->hasOne(OrderStatus::class, 'id', 'order_stat')->withDefault(['name' => '']);
     }
 
+    public function newOrderStatus(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(OrderStatus::class, 'order_status', 'id');
+    }
+
     /* order payment*/
 
     public function payment(): HasOne

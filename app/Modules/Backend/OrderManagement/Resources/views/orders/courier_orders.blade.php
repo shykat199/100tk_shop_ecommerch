@@ -66,7 +66,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">Picked Orders ({{$order_overview[4]??0}})</h4>
+                    <h4 class="page-title">Courier Orders ({{$totalRecords??0}})</h4>
                 </div>
             </div>
         </div>

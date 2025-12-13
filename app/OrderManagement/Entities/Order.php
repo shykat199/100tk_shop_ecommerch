@@ -43,6 +43,7 @@ class Order extends Model
         'user_country_id',
         'user_mobile',
         'user_email',
+        'payment_status'
     ];
 
     public function full_name()
@@ -62,6 +63,10 @@ class Order extends Model
     public function orderStatus(): HasOne
     {
         return $this->hasOne(OrderStatus::class, 'id', 'order_stat')->withDefault(['name' => '']);
+    }
+    public function newOrderStatus(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(OrderStatus::class, 'order_status', 'id');
     }
 
     /* order payment*/

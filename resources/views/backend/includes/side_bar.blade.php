@@ -80,6 +80,11 @@
                             @endif
                             @if (auth()->user()->can('browse_picked_orders') || auth()->user()->hasRole('super-admin'))
                                 <li>
+                                    <a class="@if (Request::is('admin/courier_orders')) active @endif" href="{{ route('backend.courier_orders') }}">
+                                        {{ __('Courier Orders') }}
+                                    </a>
+                                </li>
+                                <li>
                                     <a class="@if (Request::is('admin/picked_orders')) active @endif" href="{{ route('backend.picked_orders') }}">
                                         {{ __('Picked') }}
                                     </a>

@@ -148,7 +148,7 @@
                                         <td><?php echo e($value->shipping_mobile?$value->shipping_mobile:''); ?></td>
                                         <td> <a target="_blank" style="text-decoration: underline" href="https://greenviewit.com/check-fraud-customer" >Fraud Customer Check</a></td>
                                         <td>৳<?php echo e($value->total_price); ?></td>
-                                        <td><?php echo e($value->details && !empty($value->details[0]) && $value->details[0]->orderStatus?$value->details[0]->orderStatus->name:'N/A'); ?></td>
+                                        <td><?php echo e($value->newOrderStatus->name ?? 'Unknown'); ?></td>
 
                                     </tr>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>

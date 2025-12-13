@@ -84,6 +84,12 @@
                             <?php endif; ?>
                             <?php if(auth()->user()->can('browse_picked_orders') || auth()->user()->hasRole('super-admin')): ?>
                                 <li>
+                                    <a class="<?php if(Request::is('admin/courier_orders')): ?> active <?php endif; ?>" href="<?php echo e(route('backend.courier_orders')); ?>">
+                                        <?php echo e(__('Courier Orders')); ?>
+
+                                    </a>
+                                </li>
+                                <li>
                                     <a class="<?php if(Request::is('admin/picked_orders')): ?> active <?php endif; ?>" href="<?php echo e(route('backend.picked_orders')); ?>">
                                         <?php echo e(__('Picked')); ?>
 

@@ -148,7 +148,7 @@
                                         <td>{{$value->shipping_mobile?$value->shipping_mobile:''}}</td>
                                         <td> <a target="_blank" style="text-decoration: underline" href="https://greenviewit.com/check-fraud-customer" >Fraud Customer Check</a></td>
                                         <td>৳{{$value->total_price}}</td>
-                                        <td>{{$value->details && !empty($value->details[0]) && $value->details[0]->orderStatus?$value->details[0]->orderStatus->name:'N/A'}}</td>
+                                        <td>{{$value->newOrderStatus->name ?? 'Unknown'}}</td>
 
                                     </tr>
                                 @endforeach
