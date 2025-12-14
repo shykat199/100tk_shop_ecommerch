@@ -87,7 +87,9 @@
 
                                 <div class="sku-text m-2"><?php echo e(__('Code:')); ?> <?php echo e($product->sku); ?></div>
                                 <?php if($product->details->is_show_stock_quantity): ?>
-                                    <div class=" m-2"><?php echo e(__('Stock Qty:')); ?> <?php echo e($product->quantity); ?></div>
+                                        <div id="stock_qty" class="m-2">
+                                            <?php echo e(__('Stock Qty:')); ?> <span id="stock_value" class="text-dark"><?php echo e($product->quantity); ?></span>
+                                        </div>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -128,7 +130,7 @@
                                             <?php if($productstock->color->name ?? false): ?>
                                                 <li>
                                                     <label class="product-size">
-                                                        <input name="color"  value="<?php echo e($productstock->color->name); ?>" type="radio" data-color_id="<?php echo e($productstock->color->id); ?>" class="color-vAreation" data-variantimage="<?php echo e($productstock->variant_image); ?>">
+                                                        <input name="color"  value="<?php echo e($productstock->color->name); ?>" type="radio" data-color_qty="<?php echo e($productstock->quantities); ?>" data-color_id="<?php echo e($productstock->color->id); ?>" class="color-vAreation" data-variantimage="<?php echo e($productstock->variant_image); ?>">
                                                         <span class="checkmark product-color" style="background-color: <?php echo e($productstock->color->hex); ?>"></span>
                                                     </label>
                                                 </li>
@@ -364,9 +366,21 @@
         $(document).ready(function() {
             $('.color-vAreation').click(function(e) {
                 let color = $(this).data('variantimage');
+                let variantQty = $(this).data('color_qty');
                 let path = `<?php echo e(asset('/uploads/products/galleries/${color}')); ?>`
                 $('#show-img').attr('src', path);
                 $('#big-img').attr('src', path)
+
+                if (variantQty !== undefined && variantQty !== null) {
+                    $('#stock_value').text(variantQty);
+
+                    if (variantQty > 0) {
+                        $('#stock_qty').removeClass('text-danger').addClass('text-success');
+                    } else {
+                        $('#stock_value').text('<?php echo e(__("Out of Stock")); ?>');
+                        $('#stock_qty').removeClass('text-success').addClass('text-danger');
+                    }
+                }
             });
         })
         $('.buynow-btn').on('click', function() {

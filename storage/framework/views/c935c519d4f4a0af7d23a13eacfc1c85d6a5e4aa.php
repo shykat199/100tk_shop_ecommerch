@@ -17,7 +17,7 @@
                                     <option value="<?php echo e($sz->id); ?>"><?php echo e($sz->name); ?></option>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
-                            <input type="number" class="form-control" placeholder="Enter quantity" name="quantities_new[]">
+                            <input type="number" class="form-control variant-qty" placeholder="Enter quantity" name="quantities_new[]">
                             <div>
                                 <label for="variantImage${count}">
                                     <img src="<?php echo e(asset('dummy-image-square.jpg')); ?>" alt="Choose Image" width="80" height="160" style="border-radius: 4px; margin: 3px">

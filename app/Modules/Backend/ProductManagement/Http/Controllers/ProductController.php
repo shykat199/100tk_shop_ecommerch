@@ -723,7 +723,7 @@ class ProductController extends Controller
                             'variant_image' => $image_path,
                         ]);
                     }
-                } 
+                }
                 if($request->has('colors') || $request->has('sizes') || $request->has('quantities')) {
                     // $request->validate([
                     //     'colors.*' => 'required',

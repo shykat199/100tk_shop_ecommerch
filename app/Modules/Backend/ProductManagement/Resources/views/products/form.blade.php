@@ -17,7 +17,7 @@
             </div>
             <div class="col-lg-4">
                 <div class="input-group">
-                    <input type="number" name="minimum_qty" class="form-control" min="1" value="1" value="{{ $product->minimum_qty ?? '' }}" required>
+                    <input type="number" id="minimum_qty" name="minimum_qty" class="form-control" min="1" value="1" value="{{ $product->minimum_qty ?? '' }}" required>
                 </div>
             </div>
             <div class="col-lg-2">
@@ -306,7 +306,7 @@
                                                         <option {{ $productstock->size_id == $sz->id ? 'selected' : '' }} value="{{ $sz->id }}">{{ $sz->name }}</option>
                                                     @endforeach
                                                 </select>
-                                                <input type="number" class="form-control" value="{{ $productstock->quantities }}" placeholder="Enter quantity" name="quantities[]">
+                                                <input type="number" class="form-control variant-qty" value="{{ $productstock->quantities }}" placeholder="Enter quantity" name="quantities[]">
                                                 <div>
                                                     <label for="variantImage{{ $count }}">
                                                         <img src="{{ isset($productstock->variant_image) ? asset('uploads/products/galleries/' . $productstock->variant_image) : asset('dummy-image-square.jpg') }}" alt="Choose Image" width="80" height="160" style="border-radius: 4px; margin: 3px">
@@ -790,6 +790,28 @@
 
 @push('js')
     @include('productmanagement::products.product-js')
+
+    <script>
+        $(document).on('input', '.variant-qty', function () {
+            let totalQty = 0;
+
+            // Sum all variant quantities
+            $('.variant-qty').each(function () {
+                let qty = parseInt($(this).val());
+                if (!isNaN(qty) && qty > 0) {
+                    totalQty += qty;
+                }
+            });
+
+            // If total quantity is 0, fallback to 1
+            totalQty = totalQty > 0 ? totalQty : 1;
+
+            // Update minimum quantity input
+            $('#minimum_qty')
+                .val(totalQty)
+                .attr('max', totalQty); // optional safety
+        });
+    </script>
     <script>
         $(document).ready(function() {
             "use strict";

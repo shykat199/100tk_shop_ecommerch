@@ -30,7 +30,7 @@
                                     <p><?php echo e(__('Minimum Qty')); ?> <span class="text-red">*</span></p>
                                 </div>
                                 <div class="col-lg-4">
-                                    <input type="number" name="minimum_qty" class="form-control" min="1" required>
+                                    <input type="number" id="minimum_qty" name="minimum_qty" class="form-control" min="1" required>
                                 </div>
                                 <div class="col-lg-2">
                                     <p><?php echo e(__('Category')); ?> <span class="text-red">*</span> <a target="_blank" class="rounded-circle w-50 h-50" href="<?php echo e(route('backend.categories.create')); ?>"><i class="fas fa-plus-circle text-primary"></i></a></p>
@@ -247,7 +247,7 @@
                                                                         <option value="<?php echo e($sz->id); ?>"><?php echo e($sz->name); ?></option>
                                                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                                 </select>
-                                                                <input type="number" class="form-control" placeholder="Enter quantity" name="quantities_new[]">
+                                                                <input type="number" class="form-control variant-qty" placeholder="Enter quantity" name="quantities_new[]">
                                                                 <div>
                                                                     <label for="variantImage">
                                                                         <img src="<?php echo e(asset('dummy-image-square.jpg')); ?>" alt="Choose Image" width="80" height="160" style="border-radius: 4px; margin: 3px">
@@ -663,6 +663,28 @@
     <?php $__env->startPush('js'); ?>
         <?php echo $__env->make('productmanagement::products.product-js', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
         <script src="<?php echo e(asset('plugins/image-uploader/image-uploader.min.js')); ?>"></script>
+
+        <script>
+                $(document).on('input', '.variant-qty', function () {
+                    let totalQty = 0;
+
+                    // Sum all variant quantities
+                    $('.variant-qty').each(function () {
+                        let qty = parseInt($(this).val());
+                        if (!isNaN(qty) && qty > 0) {
+                            totalQty += qty;
+                        }
+                    });
+
+                    // If total quantity is 0, fallback to 1
+                    totalQty = totalQty > 0 ? totalQty : 1;
+
+                    // Update minimum quantity input
+                    $('#minimum_qty')
+                        .val(totalQty)
+                        .attr('max', totalQty); // optional safety
+                });
+            </script>
         <script>
             $(document).ready(function() {
                 "use strict";

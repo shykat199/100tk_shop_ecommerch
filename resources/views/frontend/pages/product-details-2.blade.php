@@ -86,7 +86,9 @@
 
                                 <div class="sku-text m-2">{{ __('Code:') }} {{ $product->sku }}</div>
                                 @if ($product->details->is_show_stock_quantity)
-                                    <div class=" m-2">{{ __('Stock Qty:') }} {{ $product->quantity }}</div>
+                                        <div id="stock_qty" class="m-2">
+                                            {{ __('Stock Qty:') }} <span id="stock_value" class="text-dark">{{ $product->quantity }}</span>
+                                        </div>
                                 @endif
                             </div>
                         </div>
@@ -126,7 +128,7 @@
                                             @if ($productstock->color->name ?? false)
                                                 <li>
                                                     <label class="product-size">
-                                                        <input name="color" {{-- {{ $loop->first ? 'checked':'' }} --}} value="{{ $productstock->color->name }}" type="radio" data-color_id="{{ $productstock->color->id }}" class="color-vAreation" data-variantimage="{{ $productstock->variant_image }}">
+                                                        <input name="color" {{-- {{ $loop->first ? 'checked':'' }} --}} value="{{ $productstock->color->name }}" type="radio" data-color_qty="{{ $productstock->quantities }}" data-color_id="{{ $productstock->color->id }}" class="color-vAreation" data-variantimage="{{ $productstock->variant_image }}">
                                                         <span class="checkmark product-color" style="background-color: {{ $productstock->color->hex }}"></span>
                                                     </label>
                                                 </li>
@@ -442,9 +444,21 @@
         $(document).ready(function() {
             $('.color-vAreation').click(function(e) {
                 let color = $(this).data('variantimage');
+                let variantQty = $(this).data('color_qty');
                 let path = `{{ asset('/uploads/products/galleries/${color}') }}`
                 $('#show-img').attr('src', path);
                 $('#big-img').attr('src', path)
+
+                if (variantQty !== undefined && variantQty !== null) {
+                    $('#stock_value').text(variantQty);
+
+                    if (variantQty > 0) {
+                        $('#stock_qty').removeClass('text-danger').addClass('text-success');
+                    } else {
+                        $('#stock_value').text('{{ __("Out of Stock") }}');
+                        $('#stock_qty').removeClass('text-success').addClass('text-danger');
+                    }
+                }
             });
         })
         $('.buynow-btn').on('click', function() {
