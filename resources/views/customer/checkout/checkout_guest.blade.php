@@ -165,24 +165,61 @@
                                     </table>
 
                                     <div class="order-cart mt-4">
+{{--                                        <ul id="order-details">--}}
+{{--                                            <li>{{ __('Subtotal') }}<span class="sub-total"--}}
+{{--                                                    data-sub-total="{{ Cookie::get('subTotal') }}">{{ currency(Cookie::get('subTotal'), 2) }}</span>--}}
+{{--                                            </li>--}}
+{{--                                            <li>{{ __('Shipping Charge') }}--}}
+{{--                                                @if (Cookie::get('totalShipping') == 0)--}}
+{{--                                                    <span class="total-shipping">{{ __('Free') }}</span>--}}
+{{--                                                @else--}}
+{{--                                                    <span--}}
+{{--                                                        class="total-shipping">{{ currency(Cookie::get('totalShipping'), 2) }}</span>--}}
+{{--                                                @endif--}}
+{{--                                            </li>--}}
+{{--                                            @if (Cookie::get('coupon_discount'))--}}
+{{--                                                <li>{{ __('Coupon') }}<span>{{ currency(Cookie::get('coupon_discount'), 2) }}</span>--}}
+{{--                                                </li>--}}
+{{--                                            @endif--}}
+{{--                                            <li>{{ __('Total') }}<span--}}
+{{--                                                    class="grand-total">{{ currency(Cookie::get('total') - Cookie::get('coupon_discount'), 2) }}</span>--}}
+{{--                                            </li>--}}
+{{--                                        </ul>--}}
+
                                         <ul id="order-details">
-                                            <li>{{ __('Subtotal') }}<span class="sub-total"
-                                                    data-sub-total="{{ Cookie::get('subTotal') }}">{{ currency(Cookie::get('subTotal'), 2) }}</span>
+                                            <li>
+                                                {{ __('Subtotal') }}
+                                                <span class="sub-total" data-sub-total="{{ session('subTotal', 0) }}">
+                                                    {{ currency(session('subTotal', 0), 2) }}
+                                                </span>
                                             </li>
-                                            <li>{{ __('Shipping Charge') }}
-                                                @if (Cookie::get('totalShipping') == 0)
+
+                                            <li>
+                                                {{ __('Shipping Charge') }}
+                                                @if (session('totalShipping', 0) == 0)
                                                     <span class="total-shipping">{{ __('Free') }}</span>
                                                 @else
-                                                    <span
-                                                        class="total-shipping">{{ currency(Cookie::get('totalShipping'), 2) }}</span>
+                                                <span class="total-shipping">
+                                                    {{ currency(session('totalShipping', 0), 2) }}
+                                                </span>
                                                 @endif
                                             </li>
-                                            @if (Cookie::get('coupon_discount'))
-                                                <li>{{ __('Coupon') }}<span>{{ currency(Cookie::get('coupon_discount'), 2) }}</span>
+
+                                            @if (session()->has('coupon_discount'))
+                                                <li>
+                                                    {{ __('Coupon') }}
+                                                    <span>{{ currency(session('coupon_discount'), 2) }}</span>
                                                 </li>
                                             @endif
-                                            <li>{{ __('Total') }}<span
-                                                    class="grand-total">{{ currency(Cookie::get('total') - Cookie::get('coupon_discount'), 2) }}</span>
+
+                                            <li>
+                                                {{ __('Total') }}
+                                                <span class="grand-total">
+                                                    {{ currency(
+                                                        session('total', 0) - session('coupon_discount', 0),
+                                                        2
+                                                    ) }}
+                                                </span>
                                             </li>
                                         </ul>
                                     </div>

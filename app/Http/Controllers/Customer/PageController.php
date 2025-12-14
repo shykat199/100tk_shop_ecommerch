@@ -44,13 +44,38 @@ class PageController extends Controller
         return view('customer.checkout.checkout',compact('carts', 'billing', 'shipping'));
     }
 
+//    public function checkoutGuest()
+//    {
+//        $cart = Cookie::get('cart');
+//        $carts = json_decode($cart);
+//        $products = \Illuminate\Support\Facades\DB::table('products')->get();
+//
+//        if (!$carts) return back()->with('error', __('Your cart is empty!'));
+//
+//        $billing = UserBilling::query()
+//            ->where('user_id', auth('customer')->id())
+//            ->where('is_active', 1)
+//            ->first();
+//
+//        $shipping = ShippingAddress::query()
+//            ->where('user_id', auth('customer')->id())
+//            ->latest()
+//            ->first();
+//            $shipping_areas = ShippingArea::where('status', 1)->orderBy('id', 'asc')->get();
+//
+//        return view('customer.checkout.checkout_guest',compact('carts', 'billing', 'shipping','shipping_areas', 'products'));
+//    }
+
     public function checkoutGuest()
     {
-        $cart = Cookie::get('cart');
-        $carts = json_decode($cart);
-        $products = \Illuminate\Support\Facades\DB::table('products')->get();
+        // 🔁 Get cart from SESSION
+        $carts = session()->get('cart', []);
 
-        if (!$carts) return back()->with('error', __('Your cart is empty!'));
+        if (empty($carts)) {
+            return back()->with('error', __('Your cart is empty!'));
+        }
+
+        $products = \Illuminate\Support\Facades\DB::table('products')->get();
 
         $billing = UserBilling::query()
             ->where('user_id', auth('customer')->id())
@@ -61,9 +86,17 @@ class PageController extends Controller
             ->where('user_id', auth('customer')->id())
             ->latest()
             ->first();
-            $shipping_areas = ShippingArea::where('status', 1)->orderBy('id', 'asc')->get();
 
-        return view('customer.checkout.checkout_guest',compact('carts', 'billing', 'shipping','shipping_areas', 'products'));
+        $shipping_areas = ShippingArea::where('status', 1)
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $carts = json_decode(json_encode(session()->get('cart', [])));
+
+        return view(
+            'customer.checkout.checkout_guest',
+            compact('carts', 'billing', 'shipping', 'shipping_areas', 'products')
+        );
     }
 
     /**
@@ -95,8 +128,8 @@ class PageController extends Controller
         $products =  \Illuminate\Support\Facades\DB::table('products')
         ->where('name', 'like', '%' . $keyword . '%')
         ->get();
-        
+
         return response()->json($products);
     }
-    
+
 }

@@ -166,25 +166,68 @@
                                     </table>
 
                                     <div class="order-cart mt-4">
-                                        <ul id="order-details">
-                                            <li><?php echo e(__('Subtotal')); ?><span class="sub-total"
-                                                    data-sub-total="<?php echo e(Cookie::get('subTotal')); ?>"><?php echo e(currency(Cookie::get('subTotal'), 2)); ?></span>
-                                            </li>
-                                            <li><?php echo e(__('Shipping Charge')); ?>
 
-                                                <?php if(Cookie::get('totalShipping') == 0): ?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                        <ul id="order-details">
+                                            <li>
+                                                <?php echo e(__('Subtotal')); ?>
+
+                                                <span class="sub-total" data-sub-total="<?php echo e(session('subTotal', 0)); ?>">
+                                                    <?php echo e(currency(session('subTotal', 0), 2)); ?>
+
+                                                </span>
+                                            </li>
+
+                                            <li>
+                                                <?php echo e(__('Shipping Charge')); ?>
+
+                                                <?php if(session('totalShipping', 0) == 0): ?>
                                                     <span class="total-shipping"><?php echo e(__('Free')); ?></span>
                                                 <?php else: ?>
-                                                    <span
-                                                        class="total-shipping"><?php echo e(currency(Cookie::get('totalShipping'), 2)); ?></span>
+                                                <span class="total-shipping">
+                                                    <?php echo e(currency(session('totalShipping', 0), 2)); ?>
+
+                                                </span>
                                                 <?php endif; ?>
                                             </li>
-                                            <?php if(Cookie::get('coupon_discount')): ?>
-                                                <li><?php echo e(__('Coupon')); ?><span><?php echo e(currency(Cookie::get('coupon_discount'), 2)); ?></span>
+
+                                            <?php if(session()->has('coupon_discount')): ?>
+                                                <li>
+                                                    <?php echo e(__('Coupon')); ?>
+
+                                                    <span><?php echo e(currency(session('coupon_discount'), 2)); ?></span>
                                                 </li>
                                             <?php endif; ?>
-                                            <li><?php echo e(__('Total')); ?><span
-                                                    class="grand-total"><?php echo e(currency(Cookie::get('total') - Cookie::get('coupon_discount'), 2)); ?></span>
+
+                                            <li>
+                                                <?php echo e(__('Total')); ?>
+
+                                                <span class="grand-total">
+                                                    <?php echo e(currency(
+                                                        session('total', 0) - session('coupon_discount', 0),
+                                                        2
+                                                    )); ?>
+
+                                                </span>
                                             </li>
                                         </ul>
                                     </div>
