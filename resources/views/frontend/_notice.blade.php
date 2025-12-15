@@ -7,7 +7,7 @@
                 onmouseover="this.stop()"
                 onmouseout="this.start()"
                 style="color: #ffffff;">
-                <span class="px-4">
+                <span class="px-4" style="color: #FFFFFF">
                     <b>{{ $notice->headline ?? '' }}:&nbsp;</b>{{ $notice->description ?? '' }}
                 </span>
             </marquee>

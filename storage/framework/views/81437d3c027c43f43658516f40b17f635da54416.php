@@ -12,16 +12,16 @@
                         <div class="swiper-wrapper">
                             <?php $__currentLoopData = $banners; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $banner): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <div class="swiper-slide row align-items-center" data-background="<?php echo e(asset('uploads/banners')); ?>/<?php echo e($banner->image); ?>">
-                                    <div class="col-lg-7">
-                                        <div class="banner-content">
-                                            <h2><?php echo e($banner->sub_title); ?></h2>
-                                            <p><?php echo e($banner->description); ?><?php echo e($banner->category); ?></p>
-                                            <?php if($banner->category): ?>
-                                            <a href="<?php echo e(route('category',$banner->category->slug)); ?>"><?php echo e(__('SHOP NOW >')); ?></a>
-                                            <span class="discount-tag"><?php echo e($banner->offer_title); ?></span>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
+
+
+
+
+
+
+
+
+
+
                                 </div>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>

@@ -61,12 +61,35 @@
         </div> -->
 
 
-        <a href="<?php echo e($product->quantity <= 0 && $product->is_manage_stock ? 'javascript:void(0)' : 'javascript:addToCart(' . $product->id . ')'); ?>">
-            <button class="btn btn-danger w-100 mt-2" style="border-radius: 0; color:white;" <?php echo e($product->quantity <= 0 && $product->is_manage_stock ? 'disabled' : null); ?>>
-                <i class="fas fa-shopping-cart"></i> Add to Cart
-            </button>
-        </a>
-        <?php if($bn_cart_button->status): ?>
+        <div class="d-flex gap-2 mt-2">
+            <a class="flex-fill"
+               href="<?php echo e($product->quantity <= 0 && $product->is_manage_stock ? 'javascript:void(0)' : 'javascript:addToCart(' . $product->id . ')'); ?>">
+                <button
+                    type="button"
+                    class="btn btn-outline-danger btn-sm w-100"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title="Add to Cart"
+                    <?php echo e($product->quantity <= 0 && $product->is_manage_stock ? 'disabled' : null); ?>>
+                    <i class="fas fa-shopping-cart"></i>
+                </button>
+            </a>
+
+            <a class="flex-fill"
+               href="<?php echo e($product->quantity <= 0 && $product->is_manage_stock ? 'javascript:void(0)' : 'javascript:buyNow(' . $product->id . ')'); ?>">
+                <button
+                    type="button"
+                    class="btn btn-danger btn-sm w-100 text-white"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title="Buy Now"
+                    <?php echo e($product->quantity <= 0 && $product->is_manage_stock ? 'disabled' : null); ?>>
+                    <i class="fas fa-bolt"></i>
+                </button>
+            </a>
+        </div>
+
+    <?php if($bn_cart_button->status): ?>
             <a href="<?php echo e($product->quantity <= 0 && $product->is_manage_stock ? 'javascript:void(0)' : 'javascript:addToCart(' . $product->id . ')'); ?>">
                 <button class="btn btn-danger w-100 mt-2" style="border-radius: 0; color:white;" <?php echo e($product->quantity <= 0 && $product->is_manage_stock ? 'disabled' : null); ?>>
                     <i class="fas fa-shopping-cart"></i> অর্ডার করুন
