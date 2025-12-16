@@ -162,6 +162,9 @@
 @push('js')
     @include('backend.includes.datatable_js')
     <script>
+        $(".checkall").on('change',function(){
+            $(".checkbox").prop('checked',$(this).is(":checked"));
+        });
 
         $(function() {
             "use strict";

@@ -165,6 +165,10 @@
 
 <?php $__env->startPush('js'); ?>
     <?php echo $__env->make('backend.includes.datatable_js', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+    <script>
+        $(".checkall").on('change',function(){
+            $(".checkbox").prop('checked',$(this).is(":checked"));
+        });
 
 
 
@@ -185,9 +189,7 @@
 
 
 
-
-
-
+    </script>
 <?php $__env->stopPush(); ?>
 
 <?php echo $__env->make('backend.layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /var/www/html/100_shop/app/Modules/Backend/OrderManagement/Resources/views/orders/processing_orders.blade.php ENDPATH**/ ?>

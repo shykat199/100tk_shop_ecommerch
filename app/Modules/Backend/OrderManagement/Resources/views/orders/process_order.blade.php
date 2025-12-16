@@ -129,6 +129,8 @@
 
 @section('script')
 <script>
-
+    $(".checkall").on('change',function(){
+        $(".checkbox").prop('checked',$(this).is(":checked"));
+    });
 </script>
 @endsection

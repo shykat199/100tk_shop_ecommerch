@@ -367,37 +367,73 @@
             });
         }
 
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+
         function removeFromCart(key, id) {
-            swal({
-                title: "<?php echo e(__('Really!?')); ?>",
-                text: "<?php echo e(__('Are you sure you want remove this form cart?')); ?>",
+            Swal.fire({
+                title: "Really!?",
+                text: "Are you sure you want to remove this from cart?",
                 icon: "warning",
-                buttons: true,
-                dangerMode: true,
-            }).then((whileDelete) => {
-                if (whileDelete) {
-                    var csrf = "<?php echo e(csrf_token()); ?>";
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                confirmButtonText: "Yes, remove it!",
+            }).then((result) => {
+                if (result.isConfirmed) {
                     $.ajax({
                         url: "<?php echo e(route('customer.removeFromCart')); ?>",
+                        type: "POST",
                         data: {
-                            _token: csrf,
+                            _token: "<?php echo e(csrf_token()); ?>",
                             key: key,
                             id: id
                         },
-                        type: "POST"
-                    }).done(function(e) {
-                        swal("<?php echo e(__('Poof! Your item has been removed!')); ?>", {
-                            icon: "success",
-                        }).then(value => {
+                        success: function (e) {
+                            Swal.fire(
+                                "Removed!",
+                                "Your item has been removed.",
+                                "success"
+                            );
+
                             $("#cart-count").text(e.count);
                             $(".sub-total").text(e.sub_total);
                             $(".grand-total").text(e.grand_total);
                             $(".total-shipping").text(e.totalShipping);
                             $("#cart-row-" + key).remove();
-                        });
-                    })
+                        }
+                    });
                 }
-            })
+            });
         }
 
         function updateCart(elem) {

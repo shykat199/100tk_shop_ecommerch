@@ -24,7 +24,7 @@ class CouponController extends Controller
         if (!$coupon) {
             return response(['status' => 'error', 'discount' => 0, 'msg' => 'Coupon not found.']);
         }
-        
+
         $total_usage = CouponUsage::query()->where('coupon_id', $coupon->id)->count();
         $exists = CouponUsage::query()->where('coupon_id', $coupon->id)->where('user_id', auth('customer')->id())->exists();
 
@@ -38,15 +38,15 @@ class CouponController extends Controller
             return response(['status' => 'error', 'discount' => 0, 'msg' => 'You have already used this coupon.']);
         }
 
-        $subTotal = Cookie::get('subTotal');
-        $totalShipping = Cookie::get('totalShipping');
+        $subTotal = session('subTotal', 0);
+        $totalShipping = session('totalShipping', 0);
         $discount = $coupon->discount;
 
         if ($coupon->type == 'cart') {
             $details = json_decode($coupon->details);
 
-            $subTotal = Cookie::get('subTotal');
-            $totalShipping = Cookie::get('totalShipping');
+            $subTotal = session('subTotal', 0);
+            $totalShipping = session('totalShipping', 0);
 
             if ($coupon->discount_type == 'percent') {
                 $discount = $subTotal * ($discount / 100);
@@ -67,7 +67,7 @@ class CouponController extends Controller
 
             if ($eligible) {
                 $price = $product->sale_price;
-                $totalShipping = Cookie::get('totalShipping');
+                $totalShipping = session('totalShipping', 0);
 
                 if ($coupon->discount_type == 'percent') {
                     $discount = $price * ($discount / 100);
@@ -96,15 +96,15 @@ class CouponController extends Controller
         Cookie::queue(Cookie::forget('coupon_infos'));
         Cookie::queue(Cookie::forget('coupon_discount'));
 
-        $subTotal = Cookie::get('subTotal');
-        $totalShipping = Cookie::get('totalShipping');
+        $subTotal = session('subTotal', 0);
+        $totalShipping = session('totalShipping', 0);
         $total = $subTotal + $totalShipping;
 
         return response()->json([
             'message' => __('Coupon has been removed'),
             'data' => view('customer.checkout._order-details', compact('subTotal', 'totalShipping', 'total'))->render()
         ]);
-    } 
+    }
 
     public function buyNowCoupon(Request $request, $id)
     {
@@ -114,7 +114,7 @@ class CouponController extends Controller
         if (!$coupon) {
             return response(['status' => 'error', 'discount' => 0, 'msg' => 'Coupon not found.']);
         }
-        
+
         $product = Product::query()->find($id);
         $total_usage = CouponUsage::where('coupon_id', $coupon->id)->count();
         $exists = CouponUsage::where('coupon_id', $coupon->id)->where('user_id', auth('customer')->id())->exists();

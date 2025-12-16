@@ -167,6 +167,10 @@
     <?php echo $__env->make('backend.includes.datatable_js', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
     <script>
 
+        $(".checkall").on('change',function(){
+            $(".checkbox").prop('checked',$(this).is(":checked"));
+        });
+
         
         
 

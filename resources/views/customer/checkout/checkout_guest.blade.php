@@ -359,37 +359,73 @@
             });
         }
 
+        {{--function removeFromCart(key, id) {--}}
+        {{--    swal({--}}
+        {{--        title: "{{ __('Really!?') }}",--}}
+        {{--        text: "{{ __('Are you sure you want remove this form cart?') }}",--}}
+        {{--        icon: "warning",--}}
+        {{--        buttons: true,--}}
+        {{--        dangerMode: true,--}}
+        {{--    }).then((whileDelete) => {--}}
+        {{--        if (whileDelete) {--}}
+        {{--            var csrf = "{{ csrf_token() }}";--}}
+        {{--            $.ajax({--}}
+        {{--                url: "{{ route('customer.removeFromCart') }}",--}}
+        {{--                data: {--}}
+        {{--                    _token: csrf,--}}
+        {{--                    key: key,--}}
+        {{--                    id: id--}}
+        {{--                },--}}
+        {{--                type: "POST"--}}
+        {{--            }).done(function(e) {--}}
+        {{--                swal("{{ __('Poof! Your item has been removed!') }}", {--}}
+        {{--                    icon: "success",--}}
+        {{--                }).then(value => {--}}
+        {{--                    $("#cart-count").text(e.count);--}}
+        {{--                    $(".sub-total").text(e.sub_total);--}}
+        {{--                    $(".grand-total").text(e.grand_total);--}}
+        {{--                    $(".total-shipping").text(e.totalShipping);--}}
+        {{--                    $("#cart-row-" + key).remove();--}}
+        {{--                });--}}
+        {{--            })--}}
+        {{--        }--}}
+        {{--    })--}}
+        {{--}--}}
+
         function removeFromCart(key, id) {
-            swal({
-                title: "{{ __('Really!?') }}",
-                text: "{{ __('Are you sure you want remove this form cart?') }}",
+            Swal.fire({
+                title: "Really!?",
+                text: "Are you sure you want to remove this from cart?",
                 icon: "warning",
-                buttons: true,
-                dangerMode: true,
-            }).then((whileDelete) => {
-                if (whileDelete) {
-                    var csrf = "{{ csrf_token() }}";
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                confirmButtonText: "Yes, remove it!",
+            }).then((result) => {
+                if (result.isConfirmed) {
                     $.ajax({
                         url: "{{ route('customer.removeFromCart') }}",
+                        type: "POST",
                         data: {
-                            _token: csrf,
+                            _token: "{{ csrf_token() }}",
                             key: key,
                             id: id
                         },
-                        type: "POST"
-                    }).done(function(e) {
-                        swal("{{ __('Poof! Your item has been removed!') }}", {
-                            icon: "success",
-                        }).then(value => {
+                        success: function (e) {
+                            Swal.fire(
+                                "Removed!",
+                                "Your item has been removed.",
+                                "success"
+                            );
+
                             $("#cart-count").text(e.count);
                             $(".sub-total").text(e.sub_total);
                             $(".grand-total").text(e.grand_total);
                             $(".total-shipping").text(e.totalShipping);
                             $("#cart-row-" + key).remove();
-                        });
-                    })
+                        }
+                    });
                 }
-            })
+            });
         }
 
         function updateCart(elem) {

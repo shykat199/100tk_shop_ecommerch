@@ -273,6 +273,10 @@
 
 @section('script')
 <script>
+
+    $(".checkall").on('change',function(){
+        $(".checkbox").prop('checked',$(this).is(":checked"));
+    });
     $(document).ready(function() {
         var order_id = @json($order->id);
         let typingTimer;
