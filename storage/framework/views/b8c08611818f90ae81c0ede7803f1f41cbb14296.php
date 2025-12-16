@@ -21,7 +21,7 @@
     <?php echo $__env->make('frontend._service', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
     <?php echo $__env->make('frontend._brand-logo', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
-    
+
     <?php if(isset($pop_up->is_active) && $pop_up->is_active): ?>
 
         <?php echo $__env->make('frontend._popup', ['pop_up' => $pop_up], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>

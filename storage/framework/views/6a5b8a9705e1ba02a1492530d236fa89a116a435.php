@@ -53,17 +53,20 @@
                         <span></span>
                         <span></span>
                     </button>
-                    <ul>
+                    <ul class="category-scroll">
                         <li>
                             <a href="<?php echo e(url('shop')); ?>" class="<?php echo e(isActiveMenu('shop')); ?>"><?php echo e(__('All Products')); ?></a>
                         </li>
-						<li>
-                            <a href="<?php echo e(route('frontend.new.arrival')); ?>" class="<?php echo e(Route::is('frontend.new.arrival') ? 'active' : ''); ?>"><?php echo e(__('New Arrivals')); ?></a>
-                        </li>
-                        <?php $__currentLoopData = menubars(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $menubar): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <li>
-                            <a href="<?php echo e(route('category', $menubar->slug)); ?>" class="<?php echo e(isActiveMenu($menubar->slug)); ?>"><?php echo e($menubar->name); ?></a>
+                            <a href="<?php echo e(route('frontend.new.arrival')); ?>"
+                               class="<?php echo e(Route::is('frontend.new.arrival') ? 'active' : ''); ?>"><?php echo e(__('New Arrivals')); ?></a>
                         </li>
+
+                        <?php $__currentLoopData = menubars(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $menubar): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <li>
+                                <a href="<?php echo e(route('category', $menubar->slug)); ?>"
+                                   class="<?php echo e(isActiveMenu($menubar->slug)); ?>"><?php echo e($menubar->name); ?></a>
+                            </li>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         
                     </ul>
