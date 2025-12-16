@@ -353,13 +353,14 @@ class OrderController extends Controller
     {
         $draw = $request->get('draw');
         $start = $request->get("start");
+        $keyword = $request->get("keyword");
         $rowperpage = $request->get("length"); // total number of rows per page
 
         $columnIndex_arr = $request->get('order');
         $columnName_arr = $request->get('columns');
         $order_arr = $request->get('order');
         $search_arr = $request->get('search');
-        $searchValue = '';
+        $searchValue = $request->get('keyword');
 
 
         $query = Order::query()
@@ -536,7 +537,7 @@ class OrderController extends Controller
         $order_arr = $request->get('order');
         $search_arr = $request->get('search');
 
-        $searchValue = '';
+        $searchValue = $request->get('keyword');
 
         $query = Order::query();
         $query->whereHas('details', function ($query) {
@@ -689,7 +690,7 @@ class OrderController extends Controller
         $order_arr = $request->get('order');
         $search_arr = $request->get('search');
 
-        $searchValue = ''; // Search value
+        $searchValue = $request->get('keyword');
 
         $query = Order::query();
         $query
@@ -855,7 +856,7 @@ class OrderController extends Controller
 //        $columnIndex = $columnIndex_arr[0]['column']; // Column index
 //        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
 //        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
-        $searchValue = '';
+        $searchValue = $request->get('keyword');
 
         $query = Order::query();
         $query
@@ -1021,7 +1022,7 @@ class OrderController extends Controller
 //        $columnIndex = $columnIndex_arr[0]['column']; // Column index
 //        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
 //        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
-        $searchValue = ''; // Search value
+        $searchValue = $request->get('keyword');
 
         $query = Order::query();
         $query->where('order_status', 9);
@@ -1084,7 +1085,7 @@ class OrderController extends Controller
 //        $columnIndex = $columnIndex_arr[0]['column']; // Column index
 //        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
 //        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
-        $searchValue = ''; // Search value
+        $searchValue = $request->get('keyword');
 
         $query = Order::query();
         $query
@@ -1250,7 +1251,7 @@ class OrderController extends Controller
 //        $columnIndex = $columnIndex_arr[0]['column']; // Column index
 //        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
 //        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
-        $searchValue =''; // Search value
+        $searchValue = $request->get('keyword');
 
         $query = Order::query();
         $query->whereHas('details', function ($query) {
@@ -1422,7 +1423,7 @@ class OrderController extends Controller
 //        $columnIndex = $columnIndex_arr[0]['column']; // Column index
 //        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
 //        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
-        $searchValue = ''; // Search value
+        $searchValue = $request->get('keyword');
 
         $query = Order::query();
         $query->whereHas('details', function ($query) {
@@ -1583,7 +1584,7 @@ class OrderController extends Controller
 //        $columnIndex = $columnIndex_arr[0]['column']; // Column index
 //        $columnName = $columnName_arr[$columnIndex]['data']; // Column name
 //        $columnSortOrder = $order_arr[0]['dir']; // asc or desc
-        $searchValue =''; // Search value
+        $searchValue = $request->get('keyword');
 
         $query = Order::query();
         $query->whereHas('details', function ($query) {

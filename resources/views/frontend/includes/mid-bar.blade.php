@@ -149,7 +149,7 @@
 
                                 </span>
                                 <span class="number" id="cart-count">
-                                    {{ Cookie::has('cart') ? count(get_object_vars(json_decode(Cookie::get('cart')))) : 0 }}
+                                    {{ session()->has('cart') ? count(session('cart')) : 0 }}
                                 </span>
                             </a>
                         </li>

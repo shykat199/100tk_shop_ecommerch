@@ -162,15 +162,12 @@ class FrontController extends Controller
         // dd($request->all());
         $products = Product::query()
             ->where('is_active', 1)
-            ->where('quantity', ">", 0)
             ->where('is_manage_stock', 1)
             ->where('name', 'like', "%{$request->q}%")
-            ->orderByRaw('quantity = 0, quantity')
-            ->orderBy('id','DESC')
-            ->latest()
+            ->orderByRaw('CASE WHEN quantity = 0 THEN 1 ELSE 0 END') // stock grouping
+            ->orderBy('created_at', 'DESC')
             ->paginate(50)
             ->withQueryString();
-        // dd($products);
 
         $categories = $this->categories();
 
@@ -296,7 +293,10 @@ class FrontController extends Controller
             ->has('products')
             ->get();
 
-        $populars = Product::query()->orderByDesc('id')->take(4)->get();
+        $populars = Product::query()
+            ->orderByRaw('CASE WHEN quantity = 0 THEN 1 ELSE 0 END')
+            ->orderBy('created_at', 'DESC')
+            ->take(4)->get();
 
         $cats[] = $category->id;
         foreach ($category->subCategories as $category) {
@@ -446,7 +446,8 @@ class FrontController extends Controller
             ->whereHas('details', function ($q) {
                 $q->where('is_best_sell', 1);
             })
-            ->inRandomOrder()
+            ->orderByRaw('CASE WHEN quantity = 0 THEN 1 ELSE 0 END') // stock grouping
+            ->orderBy('created_at', 'DESC')
             ->paginate(50);
 
         $sizes = Size::query()->where('is_active', 1)->get();
@@ -465,7 +466,8 @@ class FrontController extends Controller
 
         $products = Product::query()
             ->active()
-            ->orderByDesc('created_at')
+            ->orderByRaw('CASE WHEN quantity = 0 THEN 1 ELSE 0 END') // stock grouping
+            ->orderBy('created_at', 'DESC')
             ->paginate(50);
 
         $categories = $this->categories();
