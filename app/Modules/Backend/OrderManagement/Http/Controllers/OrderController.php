@@ -2,10 +2,26 @@
 
 namespace App\Modules\Backend\OrderManagement\Http\Controllers;
 
+use App\Http\Controllers\Frontend\ShippingAddressController;
+use App\Http\Controllers\Frontend\UserBillingInfoController;
+use App\Mail\OrderPending;
 use App\Models\Backend\CourierApis;
+use App\Models\Courierapi;
+use App\Models\Customer;
+use App\Models\Frontend\CartItem;
+use App\Models\Frontend\OrderTimeline;
+use App\Models\Frontend\User;
+use App\Models\GeneralSetting;
+use App\Models\OrderDetails;
+use App\Models\Payment;
+use App\Models\Productstock;
+use App\Models\Shipping;
+use App\Models\SmsGateway;
 use App\Modules\Backend\OrderManagement\Entities\OrderStatus;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
 use Throwable;
 use Carbon\Carbon;
 use App\Models\Transaction;
@@ -36,6 +52,291 @@ class OrderController extends Controller
         $searchValue = $request->input('navbar_search');
         $order_overview = $this->orderOverview();
         return view('ordermanagement::orders.index', compact('order_overview', 'searchValue'));
+    }
+
+    public function createCustomOrder()
+    {
+        $products = \App\Modules\Backend\ProductManagement\Entities\Product::with('images')->select('id','name','discount','unit_price','sale_price','sku','minimum_qty','quantity')->where(['is_active'=>1])->get();
+
+        return view('ordermanagement::orders.create-order',compact('products'));
+    }
+
+    public function getProduct($id)
+    {
+        $product = \App\Modules\Backend\ProductManagement\Entities\Product::with('images')
+            ->select(
+                'id',
+                'name',
+                'discount',
+                'unit_price',
+                'sale_price',
+                'sku',
+                'minimum_qty',
+                'quantity'
+            )
+            ->where('is_active', 1)
+            ->findOrFail($id);
+
+        return response()->json([
+            'id' => $product->id,
+            'name' => $product->name,
+            'sale_price' => $product->sale_price,
+            'discount' => $product->discount,
+            'images' => $product->images->map(function ($img) {
+                return  asset('uploads/products/galleries/'.$img->image);
+            }),
+        ]);
+    }
+
+    public function customOrderStore(Request $request)
+    {
+
+        $request->validate([
+            'last_name' => 'required',
+            'first_name' => 'required',
+            'customer_number' => 'required',
+            'address' => 'required',
+        ]);
+        DB::beginTransaction();
+
+        try {
+
+            $exits_customer = User::where('mobile', $request->customer_number)->select('mobile', 'id')->first();
+            if ($exits_customer) {
+                $customer_id = $exits_customer->id;
+            } else {
+                $password = random_int(111111, 999999);
+                $user = new User();
+                $user->first_name = $request->first_name;
+                $user->last_name = $request->last_name;
+                $user->mobile = $request->mobile;
+                $user->password = bcrypt($password);
+                $user->is_approve = 1;
+                $user->is_active = 1;
+                $user->save();
+                $customer_id = $user->id;
+            }
+
+            $order_no = Order::all()->last()->order_no ?? 1000;
+            $order_no = substr($order_no, 3);
+
+            $order = new Order();
+            $order->order_no = 'INV' . ($order_no + 1);
+            $order->discount = $request->shipping_fee ?? 0;
+            $order->shipping_cost = $request->shipping_fee;
+            $order->total_price = $request->grand_total;
+            $order->payment_status = 1;
+            $order->payment_by = 'COD';
+            $order->user_id = $exits_customer ? $customer_id : Auth::id();
+            $order->shipping_address_1 = $request->address;
+            $order->shipping_address_2 = $request->address;
+            $order->shipping_mobile = $request->customer_number;
+            $order->shipping_name = $request->first_name . ' ' . $request->last_name;
+            $order->save();
+
+            $request['user_id'] = $exits_customer ? $customer_id : Auth::id();
+
+            app(ShippingAddressController::class)->store($request);
+            app(UserBillingInfoController::class)->store($request);
+
+            $cart = $request->products;
+
+            foreach ($cart as $productId => $item) {
+
+                $product = \App\Modules\Backend\ProductManagement\Entities\Product::findOrFail($productId);
+
+
+                $qty = (int)$item['qty'];
+                $discount = (float)($item['discount'] ?? 0);
+
+                if ($product->is_manage_stock && $product->quantity < $qty) {
+                    return redirect()
+                        ->back()
+                        ->withInput()
+                        ->with($this->product_insufficient_message)
+                        ->withErrors([
+                            'stock' => "Insufficient stock for {$product->name}. Available: {$product->quantity}, Requested: {$qty}"
+                        ]);
+                }
+
+                $coupon_discount = 0;
+
+                $salePrice = CartItem::price($productId);
+                $totalPrice = ($salePrice * $qty) - $discount;
+                $shippingCost = CartItem::shipping($productId);
+                $totalShipping = CartItem::shipping($productId, $qty);
+                $grandTotal = $totalPrice + $totalShipping;
+
+                $details = OrderDetail::create([
+                    'seller_id' => $product->seller_id ?? null,
+                    'user_id' => $request->user_id,
+                    'order_id' => $order->id,
+                    'order_stat' => 1,
+                    'product_id' => $productId,
+                    'sale_price' => $salePrice,
+                    'qty' => $qty,
+                    'discount' => $discount,
+                    'coupon_discount' => $coupon_discount,
+                    'shipping_cost' => $shippingCost,
+                    'total_shipping_cost' => $totalShipping,
+                    'total_price' => $totalPrice,
+                    'grand_total' => $grandTotal,
+//                'inside_shipping_days' => CartItem::estimatedShippingDays($productId),
+                ]);
+
+                // Order timeline
+                OrderTimeline::create([
+                    'order_detail_id' => $details->id,
+                    'order_stat' => 2,
+                    'order_stat_desc' => $request->get('order_stat_desc'),
+                    'order_stat_datetime' => now(),
+                    'user_id' => $request->user_id,
+                    'remarks' => '',
+                    'product_id' => $productId,
+                ]);
+
+                // Stock management
+                if (isset($item->size_id) || isset($item->color_id)) {
+                    Productstock::where('product_id', $productId)
+                        ->where('size_id', $item->size_id)
+                        ->where('color_id', $item->color_id)
+                        ->decrement('quantities', $item->quantity);
+                }
+
+                $product->decrement('quantity', $qty);
+            }
+
+            DB::commit();
+
+            return redirect()
+                ->route('backend.orders.index')
+                ->with($this->create_success_message);
+
+        } catch (\Throwable $e) {
+
+            DB::rollBack();
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function order_assign(Request $request){
+        $products = Order::whereIn('id', $request->input('order_ids'))->update(['user_id' => $request->user_id]);
+        return response()->json(['status'=>'success','message'=>'Order user id assign']);
+    }
+
+    public function order_status(Request $request){
+
+        $orders = Order::whereIn('id', $request->input('order_ids'))->get();
+
+        foreach ($orders as $order) {
+            $order->order_status = $request->order_status;
+            $order->update();
+        }
+
+        if($request->order_status == 9){
+            $orders = Order::whereIn('id', $request->input('order_ids'))->get();
+            foreach($orders as $order){
+                $orders_details = OrderDetail::select('id','order_id','product_id')->where('order_id',$order->id)->get();
+                foreach($orders_details as $order_details){
+                    $product = \App\Modules\Backend\ProductManagement\Entities\Product::select('id','stock')->find($order_details->product_id);
+                    $product->quantity -= $order_details->qty;
+                    $product->save();
+                }
+            }
+        }
+        return response()->json(['status'=>'success','message'=>'Order status change successfully']);
+    }
+
+    public function bulk_destroy(Request $request){
+        $orders_id = $request->order_ids;
+
+        foreach($orders_id as $order_id){
+            $order = Order::where('id',$order_id)->delete();
+            $order_details = OrderDetail::where('order_id',$order_id)->delete();
+        }
+        return response()->json(['status'=>'success','message'=>'Order delete successfully']);
+    }
+
+    public function order_print(Request $request){
+        $orders = Order::whereIn('id', $request->input('order_ids'))->with('details','newOrderStatus','payment','customer')->get();
+        $view = view('frontend.order-invoice', ['orders' => $orders])->render();
+        return response()->json(['status' => 'success', 'view' => $view]);
+    }
+
+    public function bulk_courier($slug, Request $request)
+    {
+        $courier_info = CourierApis::where(['status' => 1, 'type' => $slug])->first();
+
+        if ($courier_info) {
+            $orders_ids = $request->order_ids;
+            $successOrders = [];
+            $failedOrders = [];
+
+            foreach ($orders_ids as $order_id) {
+                $order = Order::find($order_id);
+
+                if ($order && $request->status == 9 && $order->order_status != 9) {
+                    $consignmentData = [
+                        'invoice' => $order->invoice_id,
+                        'recipient_name' => $order->shipping ? $order->shipping->name : 'InboxHat',
+                        'recipient_phone' => $order->shipping ? $order->shipping->phone : '01750578495',
+                        'recipient_address' => $order->shipping ? $order->shipping->address : 'Address not provided',
+                        'cod_amount' => $order->amount
+                    ];
+
+                    $client = new Client();
+                    try {
+                        $response = $client->post($courier_info->url, [
+                            'json' => $consignmentData,
+                            'headers' => [
+                                'Api-Key' => $courier_info->api_key,
+                                'Secret-Key' => $courier_info->secret_key,
+                                'Accept' => 'application/json',
+                            ],
+                        ]);
+
+                        $responseData = json_decode($response->getBody(), true);
+
+                        if ($responseData['status'] == 200) {
+                            $order->order_status = 9;
+                            $order->save();
+                            $successOrders[] = [
+                                'order_id' => $order_id,
+                                'message' => $responseData['message'] ?? 'Order placed successfully'
+                            ];
+                        } else {
+                            $failedOrders[] = [
+                                'order_id' => $order_id,
+                                'message' => $responseData['message'] ?? 'Failed to place order'
+                            ];
+                        }
+                    } catch (\Exception $e) {
+                        // Add to failed orders if there's an exception
+                        $failedOrders[] = [
+                            'order_id' => $order_id,
+                            'message' => $e->getMessage()
+                        ];
+                    }
+                }
+            }
+
+            // Return summary of success and failure
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Your order place to courier successfully',
+                'success' => json_encode($successOrders),
+                'failed' => json_encode($failedOrders)
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Courier information not found.'
+            ]);
+        }
     }
 
     public function index(Request $request)

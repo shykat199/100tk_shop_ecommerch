@@ -1,0 +1,372 @@
+<?php $__env->startSection('title','Orders - '); ?>
+<?php $__env->startPush('css'); ?>
+    <?php echo $__env->make('backend.includes.datatable_css', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+
+    <style>
+        .card{
+            background: #ffff;
+        }
+        .custom-btn-list button {
+            background: transparent;
+            border: 0;
+        }
+
+        .custom-btn-list button i, .custom-btn-list a i {
+            color: #444;
+            font-size: 16px;
+        }
+
+        .button-list.custom-btn-list a, .button-list.custom-btn-list button {
+            margin: 3px 5px;
+            padding: 0;
+        }
+
+        .action2-btn {
+            margin: 0;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .action2-btn li {
+            display: inline-block;
+            list-style: none;
+            margin: 2px 0;
+        }
+    </style>
+<?php $__env->stopPush(); ?>
+<?php $__env->startSection('content'); ?>
+    <div class="content-body">
+
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box">
+                    <h4 class="page-title">Create New Order</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="row order_page">
+
+            <div class="card">
+                <div class="card-body">
+                    <form action="<?php echo e(route('backend.store-custom-order')); ?>" method="POST">
+                        <?php echo csrf_field(); ?>
+
+                        <div class="container mt-4">
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+
+                                    <!-- Products Select -->
+                                    <div class="mb-4">
+                                        <label class="form-label fw-semibold">Products *</label>
+                                        <select name="product_id" id="productSelect" class="form-select" required>
+                                            <option value="">Select Product..</option>
+                                            <?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <option value="<?php echo e($value->id); ?>"><?php echo e($value->name); ?></option>
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                        </select>
+                                        <?php $__errorArgs = ['product_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <span class="invalid-feedback" role="alert">
+                                         <strong><?php echo e($message); ?></strong>
+                                        </span>
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                    </div>
+
+                                    <!-- Products Table -->
+                                    <div class="table-responsive mb-4">
+                                        <table class="table table-bordered align-middle text-center">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Image</th>
+                                                    <th>Name</th>
+                                                    <th>Quantity</th>
+                                                    <th>Sell Price</th>
+                                                    <th>Discount</th>
+                                                    <th>Sub Total</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="cartTable">
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <!-- Customer + Summary -->
+                                    <div class="row g-4">
+
+                                        <!-- Customer Info -->
+                                        <div class="col-md-6">
+                                            <input type="text" name="first_name"
+                                                   class="form-control mb-3"
+                                                   placeholder="Customer First Name" required>
+                                            <?php $__errorArgs = ['first_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <span class="invalid-feedback" role="alert">
+                                             <strong><?php echo e($message); ?></strong>
+                                            </span>
+                                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+
+                                            <input type="text" name="last_name"
+                                                   class="form-control mb-3"
+                                                   placeholder="Customer Last Name" required>
+                                            <?php $__errorArgs = ['last_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <span class="invalid-feedback" role="alert">
+                                             <strong><?php echo e($message); ?></strong>
+                                            </span>
+                                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+
+                                            <input type="text" name="customer_number"
+                                                   class="form-control mb-3"
+                                                   placeholder="Customer Number" required>
+                                            <?php $__errorArgs = ['customer_number'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <span class="invalid-feedback" role="alert">
+                                             <strong><?php echo e($message); ?></strong>
+                                            </span>
+                                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+
+                                            <textarea name="address"
+                                                      class="form-control mb-3"
+                                                      rows="3"
+                                                      placeholder="Address"></textarea>
+                                            <?php $__errorArgs = ['address'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <span class="invalid-feedback" role="alert">
+                                             <strong><?php echo e($message); ?></strong>
+                                            </span>
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                        </div>
+
+                                        <!-- Order Summary -->
+                                        <div class="col-md-6">
+                                            <table class="table table-bordered">
+                                                <tbody>
+                                                <tr>
+                                                    <td>Sub Total</td>
+                                                    <td class="text-end">
+                                                        <span class="sub-total sub-total">0</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Shipping Fee</td>
+                                                    <td class="text-end">
+                                                        <input type="number"
+                                                               name="shipping_fee"
+                                                               class="form-control form-control-sm text-end shipping_fee"
+                                                               value="0">
+                                                    </td>
+                                                </tr>
+                                                <tr class="fw-semibold">
+                                                    <td>Total</td>
+                                                    <td class="text-end">
+                                                        <span class="grand-total">0</span>
+                                                    </td>
+
+                                                    <input type="text"
+                                                           name="grand_total"
+                                                           class="form-control form-control-sm text-end grand_total"
+                                                           value="0">
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Submit Button -->
+                                    <div class="mt-4">
+                                        <button type="submit" class="btn btn-success w-100 py-3 fw-semibold text-white">
+                                            Order Submit
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('js'); ?>
+
+    <script>
+            $(document).ready(function () {
+
+                const productUrl = "<?php echo e(route('backend.create-order-getProduct', ':id')); ?>";
+
+                $('#productSelect').on('change', function () {
+                    let productId = $(this).val();
+                    if (!productId) return;
+
+                    let url = productUrl.replace(':id', productId);
+
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function (product) {
+
+                            $('.no-product').remove();
+
+                            let imagesHtml = '';
+                            product.images.forEach(img => {
+                                imagesHtml += `
+                                <img src="${img}"
+                                     class="me-1 mb-1 rounded"
+                                     width="40" height="40">`;
+                                });
+
+                            let row = `
+                                <tr id="row-${product.id}">
+                                    <td>${imagesHtml}</td>
+                                    <td>
+                                        ${product.name}
+                                        <input type="hidden"
+                                               name="products[${product.id}][id]"
+                                               value="${product.id}">
+                                    </td>
+
+                                    <td>
+                                        <input type="number"
+                                               name="products[${product.id}][qty]"
+                                               class="form-control form-control-sm text-center qty"
+                                               value="1" min="1">
+                                    </td>
+
+                                    <td>
+                                        <input type="text"
+                                               class="form-control form-control-sm text-end price"
+                                               value="${product.sale_price}" readonly>
+                                    </td>
+
+                                    <td>
+                                        <input type="number"
+                                               name="products[${product.id}][discount]"
+                                               class="form-control form-control-sm text-end discount"
+                                               value="0">
+                                    </td>
+
+                                    <td class="fw-semibold text-end row-subtotal">
+                                        ${product.sale_price}
+                                    </td>
+
+                                    <td>
+                                        <button type="button"class="btn btn-sm btn-danger remove-row text-white"
+                                                data-id="${product.id}">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+
+                            $('.sub-total').text(product.sale_price.toFixed(2));
+                            $('.grand-total').text(product.sale_price.toFixed(2));
+                            $('.grand_total').val(product.sale_price);
+
+                            // prevent duplicate product
+                            if ($('#row-' + product.id).length === 0) {
+                                $('#cartTable').append(row);
+                            }
+                        }
+                    });
+                });
+
+                // remove row
+                $(document).on('click', '.remove-row', function () {
+                    let id = $(this).data('id');
+                    $('#row-' + id).remove();
+
+                    // If no products left
+                    if ($('#cartTable tr').length === 0) {
+                        $('#cartTable').html(`
+                            <tr class="no-product">
+                                <td colspan="7" class="text-muted">No products added</td>
+                            </tr>
+                        `);
+
+                        // Reset summary
+                        $('.sub-total').text('0');
+                        $('.grand-total').text('0');
+                        $('.grand_total').val('0');
+                        $('input[name="shipping_fee"]').val(0);
+
+                    } else {
+                        // Recalculate totals if products still exist
+                        calculateTotals();
+                    }
+                });
+
+
+            // when qty, discount, or shipping changes
+            $(document).on('input', '.qty, .discount, input[name="shipping_fee"]', function () {
+                calculateTotals();
+            });
+
+            function calculateTotals() {
+
+                let subTotal = 0;
+                let shippingFee = parseFloat($('input[name="shipping_fee"]').val()) || 0;
+
+                $('#cartTable tr').each(function () {
+
+                    let qty = parseFloat($(this).find('.qty').val()) || 0;
+                    let price = parseFloat($(this).find('.price').val()) || 0;
+                    let discount = parseFloat($(this).find('.discount').val()) || 0;
+
+                    let rowSubTotal = (qty * price) - discount;
+                    if (rowSubTotal < 0) rowSubTotal = 0;
+
+                    $(this).find('.row-subtotal').text(rowSubTotal.toFixed(2));
+
+                    subTotal += rowSubTotal;
+                });
+
+                let grandTotal = subTotal + shippingFee;
+
+                $('.sub-total').text(subTotal.toFixed(2));
+                $('.grand-total').text(grandTotal.toFixed(2));
+                $('.grand_total').val(grandTotal);
+            }
+
+        });
+    </script>
+    <?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('backend.layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /var/www/html/100_shop/app/Modules/Backend/OrderManagement/Resources/views/orders/create-order.blade.php ENDPATH**/ ?>

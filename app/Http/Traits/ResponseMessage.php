@@ -56,4 +56,10 @@ Trait ResponseMessage
                 'alert-type' => 'error'
             ];
 
+    public $product_insufficient_message =
+        [
+            'message' => 'Sorry! Your product stock is not available.',
+            'alert-type' => 'error'
+        ];
+
 }

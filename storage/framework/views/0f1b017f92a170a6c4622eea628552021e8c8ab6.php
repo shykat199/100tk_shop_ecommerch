@@ -81,16 +81,8 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <form class="custom_form">
-                                    <div class="input-group">
-                                        <input type="text" name="keyword" class="form-control" placeholder="Search">
-                                        <button class="btn btn-info rounded-pill ms-3">Search</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+
+                        <?php echo $__env->make('frontend.includes.order-nav-bar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
                         <div class="table-responsive ">
                             <table id="datatable-buttons" class="table table-striped   w-100">

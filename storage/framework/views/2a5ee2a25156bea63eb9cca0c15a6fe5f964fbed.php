@@ -7,7 +7,7 @@
                 onmouseover="this.stop()"
                 onmouseout="this.start()"
                 style="color: #ffffff;">
-                <span class="px-4">
+                <span class="px-4" style="color: #FFFFFF">
                     <b><?php echo e($notice->headline ?? ''); ?>:&nbsp;</b><?php echo e($notice->description ?? ''); ?>
 
                 </span>

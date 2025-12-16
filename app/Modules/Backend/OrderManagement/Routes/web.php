@@ -13,6 +13,15 @@
 Route::group(['prefix' => 'admin', 'as' => 'backend.'], function () {
     Route::group(['middleware' => 'auth:admin'], function () {
         Route::post('search', 'OrderController@search')->name('search');
+        Route::get('create-order', 'OrderController@createCustomOrder')->name('create-order');
+        Route::get('get-product/{id}', 'OrderController@getProduct')->name('create-order-getProduct');
+        Route::post('store-order', 'OrderController@customOrderStore')->name('store-custom-order');
+        Route::get('order-assign', 'OrderController@order_assign')->name('order-assign');
+        Route::get('change-order-status', 'OrderController@order_status')->name('change-order-list-status');
+        Route::get('order-bulk-destroy', 'OrderController@bulk_destroy')->name('order-list-bulk_destroy');
+        Route::get('multi-order-print', 'OrderController@order_print')->name('multi-order-print');
+        Route::get('/page/{slug}', 'OrderController@page')->name('order-list-page');
+        Route::get('bulk-courier/{slug}', 'OrderController@bulk_courier')->name('order-bulk_courier');
         Route::get('order_list', 'OrderController@orderList')->name('orders.list');
         Route::get('cancel_order', 'OrderController@cancelOrder')->name('cancel_order');
         Route::get('change-status', 'OrderController@changeOrderStatus')->name('change-order-status');
