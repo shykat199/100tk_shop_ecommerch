@@ -225,6 +225,140 @@ class OrderController extends Controller
         }
     }
 
+    public function updateCustomOrder(Request $request, $orderId)
+    {
+        $request->validate([
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'customer_number' => 'required',
+            'address' => 'required',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+
+            $order = Order::with('details')->where('order_no',$orderId)->first();
+
+            /* ============================
+             | UPDATE ORDER BASIC INFO
+             ============================ */
+            $order->shipping_cost = $request->shipping_fee ?? 0;
+            $order->total_price  = $request->grand_total;
+            $order->shipping_name = $request->shipping_name;
+            $order->shipping_address_1 = $request->address;
+            $order->shipping_address_2 = $request->address;
+            $order->shipping_mobile = $request->customer_number;
+            $order->save();
+
+            $submittedProducts = $request->products ?? [];
+
+            /* ============================
+             | HANDLE EXISTING ORDER ITEMS
+             ============================ */
+            foreach ($order->details as $detail) {
+
+                // If product removed from order
+                if (!isset($submittedProducts[$detail->id])) {
+
+                    // Restore stock
+                    $detail->product->increment('quantity', $detail->qty);
+
+                    $detail->delete();
+                    continue;
+                }
+
+                $item = $submittedProducts[$detail->id];
+
+                $newQty = (int)$item['qty'];
+                $oldQty = (int)$detail->qty;
+                $difference = $newQty - $oldQty;
+
+                $product = $detail->product;
+
+                // If qty increased → check stock
+                if ($difference > 0 && $product->quantity < $difference) {
+                    throw new \Exception(
+                        "Insufficient stock for {$product->name}. Available: {$product->quantity}"
+                    );
+                }
+
+                // Update stock
+                if ($difference > 0) {
+                    $product->decrement('quantity', $difference);
+                } elseif ($difference < 0) {
+                    $product->increment('quantity', abs($difference));
+                }
+
+                // Update order detail
+                $detail->update([
+                    'qty' => $newQty,
+                    'discount' => $item['discount'] ?? 0,
+                    'total_price' => ($detail->sale_price * $newQty) - ($item['discount'] ?? 0),
+                    'grand_total' => (($detail->sale_price * $newQty) - ($item['discount'] ?? 0)) + $detail->total_shipping_cost,
+                ]);
+
+                unset($submittedProducts[$detail->id]);
+            }
+
+            /* ============================
+             | HANDLE NEWLY ADDED PRODUCTS
+             ============================ */
+            foreach ($submittedProducts as $key => $item) {
+
+                // skip invalid rows
+                if (!isset($item['product_id'], $item['qty'])) {
+                    continue;
+                }
+
+                $productId = (int) $item['product_id'];
+                $qty = (int) $item['qty'];
+                $discount = (float) ($item['discount'] ?? 0);
+
+                $product = Product::findOrFail($productId);
+
+                if ($product->is_manage_stock && $product->quantity < $qty) {
+                    throw new \Exception(
+                        "Insufficient stock for {$product->name}. Available: {$product->quantity}"
+                    );
+                }
+
+                $salePrice = CartItem::price($productId);
+
+                OrderDetail::create([
+                    'order_id'    => $order->id,
+                    'user_id'    => $order->user_id,
+                    'order_stat'    => 1,
+                    'product_id'  => $productId,
+                    'sale_price'  => $salePrice,
+                    'qty'         => $qty,
+                    'discount'    => $discount,
+                    'total_price' => ($salePrice * $qty) - $discount,
+                    'grand_total' => ($salePrice * $qty) - $discount,
+                ]);
+
+                $product->decrement('quantity', $qty);
+            }
+
+            DB::commit();
+
+            return redirect()
+                ->route('backend.orders.index')
+                ->with($this->update_success_message);
+
+        } catch (\Throwable $e) {
+
+            dd($e->getMessage());
+
+            DB::rollBack();
+
+            return back()
+                ->withInput()
+                ->withErrors(['error' => $e->getMessage()]);
+        }
+    }
+
+
     public function order_assign(Request $request){
         $products = Order::whereIn('id', $request->input('order_ids'))->update(['user_id' => $request->user_id]);
         return response()->json(['status'=>'success','message'=>'Order user id assign']);
@@ -1929,14 +2063,17 @@ class OrderController extends Controller
     // edit order
     public function edit(string $order_no)
     {
-        $order = Order::where('order_no', $order_no)->get()->first();
+
+
+        $products = \App\Modules\Backend\ProductManagement\Entities\Product::with(['images'])->select('id','name','discount','unit_price','sale_price','sku','minimum_qty','quantity')->where(['is_active'=>1])->get();
+        $order = Order::with(['details.product.images','customer'])->where('order_no', $order_no)->get()->first();
         $countries = DB::table('countries')->get();
 
         // foreach($order->details as $key => $product){
         //     dump($product->product->images);
         // }
         // exit;
-        return view('ordermanagement::orders.edit_order', compact('order', 'countries'));
+        return view('ordermanagement::orders.edit_order', compact('order', 'countries','products'));
     }
 
 

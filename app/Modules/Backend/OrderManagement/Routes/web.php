@@ -16,6 +16,7 @@ Route::group(['prefix' => 'admin', 'as' => 'backend.'], function () {
         Route::get('create-order', 'OrderController@createCustomOrder')->name('create-order');
         Route::get('get-product/{id}', 'OrderController@getProduct')->name('create-order-getProduct');
         Route::post('store-order', 'OrderController@customOrderStore')->name('store-custom-order');
+        Route::post('update-order/{id}', 'OrderController@updateCustomOrder')->name('update-custom-order');
         Route::get('order-assign', 'OrderController@order_assign')->name('order-assign');
         Route::get('change-order-status', 'OrderController@order_status')->name('change-order-list-status');
         Route::get('order-bulk-destroy', 'OrderController@bulk_destroy')->name('order-list-bulk_destroy');
