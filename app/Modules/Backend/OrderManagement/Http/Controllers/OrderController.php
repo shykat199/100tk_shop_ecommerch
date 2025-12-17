@@ -16,6 +16,7 @@ use App\Models\OrderDetails;
 use App\Models\Payment;
 use App\Models\Productstock;
 use App\Models\Shipping;
+use App\Models\ShippingArea;
 use App\Models\SmsGateway;
 use App\Modules\Backend\OrderManagement\Entities\OrderStatus;
 use GuzzleHttp\Client;
@@ -57,8 +58,10 @@ class OrderController extends Controller
     public function createCustomOrder()
     {
         $products = \App\Modules\Backend\ProductManagement\Entities\Product::with('images')->select('id','name','discount','unit_price','sale_price','sku','minimum_qty','quantity')->where(['is_active'=>1])->get();
-
-        return view('ordermanagement::orders.create-order',compact('products'));
+        $shipping_areas = ShippingArea::where('status', 1)
+            ->orderBy('id', 'asc')
+            ->get();
+        return view('ordermanagement::orders.create-order',compact('products','shipping_areas'));
     }
 
     public function getProduct($id)
@@ -347,8 +350,6 @@ class OrderController extends Controller
                 ->with($this->update_success_message);
 
         } catch (\Throwable $e) {
-
-            dd($e->getMessage());
 
             DB::rollBack();
 
@@ -2068,12 +2069,15 @@ class OrderController extends Controller
         $products = \App\Modules\Backend\ProductManagement\Entities\Product::with(['images'])->select('id','name','discount','unit_price','sale_price','sku','minimum_qty','quantity')->where(['is_active'=>1])->get();
         $order = Order::with(['details.product.images','customer'])->where('order_no', $order_no)->get()->first();
         $countries = DB::table('countries')->get();
+        $shipping_areas = ShippingArea::where('status', 1)
+            ->orderBy('id', 'asc')
+            ->get();
 
         // foreach($order->details as $key => $product){
         //     dump($product->product->images);
         // }
         // exit;
-        return view('ordermanagement::orders.edit_order', compact('order', 'countries','products'));
+        return view('ordermanagement::orders.edit_order', compact('order', 'countries','products', 'shipping_areas'));
     }
 
 

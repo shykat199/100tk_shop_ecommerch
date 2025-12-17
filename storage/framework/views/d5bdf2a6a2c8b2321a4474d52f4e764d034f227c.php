@@ -153,6 +153,13 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
 
+                                            <select name="shipping_areas" id="shipping_areas_select" class="form-select mb-3">
+                                                <option value="">Select area..</option>
+                                                <?php $__currentLoopData = $shipping_areas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $area): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option data-charge = <?php echo e($area->charge); ?> value="<?php echo e($area->id); ?>"><?php echo e($area->name); ?> - charge <?php echo e($area->charge); ?></option>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                            </select>
+
                                             <textarea name="address"
                                                       class="form-control mb-3"
                                                       rows="3"
@@ -380,6 +387,22 @@ unset($__errorArgs, $__bag); ?>
                     $('.grand-total').text(grandTotal.toFixed(2));
                     $('.grand_total').val(grandTotal.toFixed(2));
                 }
+
+                $('#shipping_areas_select').on('change', function () {
+
+                    let charge = $(this).find(':selected').data('charge');
+
+                    // If no area selected
+                    if (charge === undefined) {
+                        charge = 0;
+                    }
+
+                    // Update shipping fee input
+                    $('input[name="shipping_fee"]').val(parseFloat(charge).toFixed(2));
+
+                    // Recalculate totals
+                    calculateTotals();
+                });
 
         });
     </script>

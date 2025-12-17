@@ -437,6 +437,14 @@
                                             </span>
                                     @enderror
 
+
+                                    <select name="shipping_areas" id="shipping_areas_select" class="form-select mb-3">
+                                        <option value="">Select area..</option>
+                                        @foreach($shipping_areas as $area)
+                                            <option data-charge = {{$area->charge}} value="{{$area->id}}">{{$area->name}} - charge {{$area->charge}}</option>
+                                        @endforeach
+                                    </select>
+
                                     <textarea name="address"
                                               class="form-control mb-3"
                                               rows="3"
@@ -699,6 +707,22 @@
             $('.grand-total').text(grandTotal.toFixed(2));
             $('.grand_total').val(grandTotal.toFixed(2));
         }
+
+        $('#shipping_areas_select').on('change', function () {
+
+            let charge = $(this).find(':selected').data('charge');
+
+            // If no area selected
+            if (charge === undefined) {
+                charge = 0;
+            }
+
+            // Update shipping fee input
+            $('input[name="shipping_fee"]').val(parseFloat(charge).toFixed(2));
+
+            // Recalculate totals
+            calculateTotals();
+        });
 
     });
 </script>
