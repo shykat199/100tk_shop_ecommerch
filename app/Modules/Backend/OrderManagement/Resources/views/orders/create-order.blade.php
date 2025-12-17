@@ -60,7 +60,7 @@
                                     <!-- Products Select -->
                                     <div class="mb-4">
                                         <label class="form-label fw-semibold">Products *</label>
-                                        <select name="product_id" id="productSelect" class="form-select" required>
+                                        <select name="product_id" id="productSelect" class="form-select">
                                             <option value="">Select Product..</option>
                                             @foreach($products as $value)
                                                 <option value="{{$value->id}}">{{$value->name}}</option>
@@ -80,6 +80,7 @@
                                                 <tr>
                                                     <th>Image</th>
                                                     <th>Name</th>
+                                                    <th>Product Qty</th>
                                                     <th>Quantity</th>
                                                     <th>Sell Price</th>
                                                     <th>Discount</th>
@@ -161,7 +162,7 @@
                                                         <span class="grand-total">0</span>
                                                     </td>
 
-                                                    <input type="text"
+                                                    <input type="hidden"
                                                            name="grand_total"
                                                            class="form-control form-control-sm text-end grand_total"
                                                            value="0">
@@ -198,6 +199,7 @@
                 const productUrl = "{{ route('backend.create-order-getProduct', ':id') }}";
 
                 $('#productSelect').on('change', function () {
+
                     let productId = $(this).val();
                     if (!productId) return;
 
@@ -211,125 +213,139 @@
 
                             $('.no-product').remove();
 
+                            // Prevent duplicate product
+                            if ($('#row-' + product.id).length) {
+                                $('#productSelect').val('');
+                                return;
+                            }
+
                             let imagesHtml = '';
                             product.images.forEach(img => {
                                 imagesHtml += `
-                                <img src="${img}"
-                                     class="me-1 mb-1 rounded"
-                                     width="40" height="40">`;
-                                });
+                        <img src="${img}"
+                             class="me-1 mb-1 rounded"
+                             width="40" height="40">
+                    `;
+                            });
 
                             let row = `
-                                <tr id="row-${product.id}">
-                                    <td>${imagesHtml}</td>
-                                    <td>
-                                        ${product.name}
-                                        <input type="hidden"
-                                               name="products[${product.id}][id]"
-                                               value="${product.id}">
-                                    </td>
+                    <tr id="row-${product.id}">
+                        <td>${imagesHtml}</td>
 
-                                    <td>
-                                        <input type="number"
-                                               name="products[${product.id}][qty]"
-                                               class="form-control form-control-sm text-center qty"
-                                               value="1" min="1">
-                                    </td>
+                        <td>
+                            ${product.name}
+                            <input type="hidden"
+                                   name="products[${product.id}][id]"
+                                   value="${product.id}">
+                        </td>
+                        <td>
+                            ${product.quantity}
+                        </td>
 
-                                    <td>
-                                        <input type="text"
-                                               class="form-control form-control-sm text-end price"
-                                               value="${product.sale_price}" readonly>
-                                    </td>
+                        <td>
+                            <input type="number"
+                                   name="products[${product.id}][qty]"
+                                   class="form-control form-control-sm text-center qty"
+                                   value="1" min="1">
+                        </td>
 
-                                    <td>
-                                        <input type="number"
-                                               name="products[${product.id}][discount]"
-                                               class="form-control form-control-sm text-end discount"
-                                               value="0">
-                                    </td>
+                        <td>
+                            <input type="text"
+                                   class="form-control form-control-sm text-end price"
+                                   value="${product.sale_price}"
+                                   readonly>
+                        </td>
 
-                                    <td class="fw-semibold text-end row-subtotal">
-                                        ${product.sale_price}
-                                    </td>
+                        <td>
+                            <input type="number"
+                                   name="products[${product.id}][discount]"
+                                   class="form-control form-control-sm text-end discount"
+                                   value="0" min="0">
+                        </td>
 
-                                    <td>
-                                        <button type="button"class="btn btn-sm btn-danger remove-row text-white"
-                                                data-id="${product.id}">
-                                            <i class="fa fa-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            `;
+                        <td class="fw-semibold text-end row-subtotal">
+                            ${parseFloat(product.sale_price).toFixed(2)}
+                        </td>
 
-                            $('.sub-total').text(product.sale_price.toFixed(2));
-                            $('.grand-total').text(product.sale_price.toFixed(2));
-                            $('.grand_total').val(product.sale_price);
+                        <td>
+                            <button type="button"
+                                    class="btn btn-sm btn-danger remove-row text-white"
+                                    data-id="${product.id}">
+                                <i class="fa fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
 
-                            // prevent duplicate product
-                            if ($('#row-' + product.id).length === 0) {
-                                $('#cartTable').append(row);
-                            }
+                            $('#cartTable').append(row);
+
+                            calculateTotals(); // ✅ recalculate totals
+                            $('#productSelect').val('');
                         }
                     });
                 });
 
                 // remove row
                 $(document).on('click', '.remove-row', function () {
+
                     let id = $(this).data('id');
                     $('#row-' + id).remove();
 
-                    // If no products left
                     if ($('#cartTable tr').length === 0) {
                         $('#cartTable').html(`
-                            <tr class="no-product">
-                                <td colspan="7" class="text-muted">No products added</td>
-                            </tr>
-                        `);
+                <tr class="no-product">
+                    <td colspan="7" class="text-muted text-center">
+                        No products added
+                    </td>
+                </tr>
+            `);
 
-                        // Reset summary
-                        $('.sub-total').text('0');
-                        $('.grand-total').text('0');
-                        $('.grand_total').val('0');
+                        // Reset totals
+                        $('.sub-total').text('0.00');
+                        $('.grand-total').text('0.00');
+                        $('.grand_total').val(0);
                         $('input[name="shipping_fee"]').val(0);
 
-                    } else {
-                        // Recalculate totals if products still exist
-                        calculateTotals();
+                        return;
                     }
+
+                    calculateTotals();
                 });
 
 
             // when qty, discount, or shipping changes
-            $(document).on('input', '.qty, .discount, input[name="shipping_fee"]', function () {
-                calculateTotals();
-            });
-
-            function calculateTotals() {
-
-                let subTotal = 0;
-                let shippingFee = parseFloat($('input[name="shipping_fee"]').val()) || 0;
-
-                $('#cartTable tr').each(function () {
-
-                    let qty = parseFloat($(this).find('.qty').val()) || 0;
-                    let price = parseFloat($(this).find('.price').val()) || 0;
-                    let discount = parseFloat($(this).find('.discount').val()) || 0;
-
-                    let rowSubTotal = (qty * price) - discount;
-                    if (rowSubTotal < 0) rowSubTotal = 0;
-
-                    $(this).find('.row-subtotal').text(rowSubTotal.toFixed(2));
-
-                    subTotal += rowSubTotal;
+                $(document).on('input', '.qty, .discount, input[name="shipping_fee"]', function () {
+                    calculateTotals();
                 });
 
-                let grandTotal = subTotal + shippingFee;
+                function calculateTotals() {
 
-                $('.sub-total').text(subTotal.toFixed(2));
-                $('.grand-total').text(grandTotal.toFixed(2));
-                $('.grand_total').val(grandTotal);
-            }
+                    let subTotal = 0;
+                    let shippingFee = parseFloat($('input[name="shipping_fee"]').val()) || 0;
+
+                    $('#cartTable tr').each(function () {
+
+                        // Skip empty row
+                        if (!$(this).find('.qty').length) return;
+
+                        let qty = parseFloat($(this).find('.qty').val()) || 0;
+                        let price = parseFloat($(this).find('.price').val()) || 0;
+                        let discount = parseFloat($(this).find('.discount').val()) || 0;
+
+                        let rowSubTotal = (qty * price) - discount;
+                        if (rowSubTotal < 0) rowSubTotal = 0;
+
+                        $(this).find('.row-subtotal').text(rowSubTotal.toFixed(2));
+
+                        subTotal += rowSubTotal;
+                    });
+
+                    let grandTotal = subTotal + shippingFee;
+
+                    $('.sub-total').text(subTotal.toFixed(2));
+                    $('.grand-total').text(grandTotal.toFixed(2));
+                    $('.grand_total').val(grandTotal.toFixed(2));
+                }
 
         });
     </script>

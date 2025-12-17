@@ -2,10 +2,41 @@
 @section('title','Cancelled Orders - ')
 @push('css')
     @include('backend.includes.datatable_css')
+    <style>
+        .card{
+            background: #ffff;
+        }
+        .custom-btn-list button {
+            background: transparent;
+            border: 0;
+        }
+
+        .custom-btn-list button i, .custom-btn-list a i {
+            color: #444;
+            font-size: 16px;
+        }
+
+        .button-list.custom-btn-list a, .button-list.custom-btn-list button {
+            margin: 3px 5px;
+            padding: 0;
+        }
+
+        .action2-btn {
+            margin: 0;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .action2-btn li {
+            display: inline-block;
+            list-style: none;
+            margin: 2px 0;
+        }
+    </style>
 @endpush
 @section('content')
     <div class="content-body">
-        @include('ordermanagement::orders.order_overview')
+{{--        @include('ordermanagement::orders.order_overview')--}}
 
         <!-- Tab Content Start -->
 {{--        <div class="tab-content order-content" id="nav-tabContent">--}}
@@ -34,7 +65,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">Cancel Orders ({{$order_overview[7]??0}})</h4>
+                    <h4 class="page-title">Cancel Orders ({{$order_overview??0}})</h4>
                 </div>
             </div>
         </div>
@@ -101,7 +132,7 @@
                                         <td>{{$value->shipping_mobile?$value->shipping_mobile:''}}</td>
                                         <td> <a target="_blank" style="text-decoration: underline" href="https://greenviewit.com/check-fraud-customer" >Fraud Customer Check</a></td>
                                         <td>৳{{$value->total_price}}</td>
-                                        <td>{{$value->details && !empty($value->details[0]) && $value->details[0]->orderStatus?$value->details[0]->orderStatus->name:'N/A'}}</td>
+{{--                                        <td>{{$value->details && !empty($value->details[0]) && $value->details[0]->orderStatus?$value->details[0]->orderStatus->name:'N/A'}}</td>--}}
 
                                     </tr>
                                 @endforeach

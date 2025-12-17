@@ -1,8 +1,18 @@
 <!-- Left side column. contains the name and sidebar -->
-<nav class="side-bar no-print">
+<style>
+    ul li a {
+        color: #000 !important;
+        text-decoration: none;
+    }
+    ul li a:hover {
+        color: #BE1E2D !important;
+    }
+
+</style>
+<nav class="side-bar no-print" style="background: #ffff">
     <div class="side-bar-logo">
         <a href="{{ route('backend.home') }}">
-            <img src="{{ asset('uploads') }}/{{ maanAppearance('backend_logo') }}" alt="logo">
+            <img src="{{ asset('uploads') }}/logo.svg" alt="logo">
         </a>
         <button class="close-btn"></button>
     </div>
@@ -25,7 +35,8 @@
             <!--start orders -->
             @if (Module::has('OrderManagement') && Module::find('OrderManagement')->isEnabled())
                 @if (auth()->user()->can('browse_order_management') || auth()->user()->hasRole('super-admin'))
-                    <li class="@if (Request::is('admin/*_orders', 'admin/orders', 'admin/orders/*')) active @endif ">
+                    <li class="@if (Request::is('admin/*_orders', 'admin/orders', 'admin/orders/*','admin/pending','admin/confirmed','admin/processing','admin/picked','admin/shipped'
+,'admin/courier','admin/delivered','admin/cancelled','admin/returned')) active @endif ">
                         <a href="javascript:void(0)">
                             <span class="icon">
                                 <svg viewBox="0 0 16 14" xmlns="http://www.w3.org/2000/svg">
@@ -59,50 +70,50 @@
                                 </li>
                             @endif
                             @if (auth()->user()->can('browse_pending_orders') || auth()->user()->hasRole('super-admin'))
-                                <li><a class="@if (Request::is('admin/pending_orders')) active @endif" href="{{ route('backend.pending_orders') }}">
+                                <li><a class="@if (Request::is('admin/pending')) active @endif" href="{{ route('backend.pending_orders') }}">
                                         {{ __('Pending') }}
                                     </a>
                                 </li>
                             @endif
                             @if (auth()->user()->can('browse_confirmed_orders') || auth()->user()->hasRole('super-admin'))
                                 <li>
-                                    <a class="@if (Request::is('admin/confirmed_orders')) active @endif" href="{{ route('backend.confirmed_orders') }}">
+                                    <a class="@if (Request::is('admin/confirmed')) active @endif" href="{{ route('backend.confirmed_orders') }}">
                                         {{ __('Confirmed') }}
                                     </a>
                                 </li>
                             @endif
                             @if (auth()->user()->can('browse_processing_orders') || auth()->user()->hasRole('super-admin'))
                                 <li>
-                                    <a class="@if (Request::is('admin/processing_orders')) active @endif" href="{{ route('backend.processing_orders') }}">
+                                    <a class="@if (Request::is('admin/processing')) active @endif" href="{{ route('backend.processing_orders') }}">
                                         {{ __('Processing') }}
                                     </a>
                                 </li>
                             @endif
                             @if (auth()->user()->can('browse_picked_orders') || auth()->user()->hasRole('super-admin'))
                                 <li>
-                                    <a class="@if (Request::is('admin/courier_orders')) active @endif" href="{{ route('backend.courier_orders') }}">
+                                    <a class="@if (Request::is('admin/courier')) active @endif" href="{{ route('backend.courier_orders') }}">
                                         {{ __('Courier Orders') }}
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="@if (Request::is('admin/picked_orders')) active @endif" href="{{ route('backend.picked_orders') }}">
+                                    <a class="@if (Request::is('admin/picked')) active @endif" href="{{ route('backend.picked_orders') }}">
                                         {{ __('Picked') }}
                                     </a>
                                 </li>
                             @endif
                             @if (auth()->user()->can('browse_shipped_orders') || auth()->user()->hasRole('super-admin'))
-                                <li><a class="@if (Request::is('admin/shipped_orders')) active @endif" href="{{ route('backend.shipped_orders') }}">
+                                <li><a class="@if (Request::is('admin/shipped')) active @endif" href="{{ route('backend.shipped_orders') }}">
                                         {{ __('Shipped') }}
                                     </a>
                                 </li>
                             @endif
                             @if (auth()->user()->can('browse_delivered_orders') || auth()->user()->hasRole('super-admin'))
-                                <li><a class="@if (Request::is('admin/delivered_orders')) active @endif" href="{{ route('backend.delivered_orders') }}">
+                                <li><a class="@if (Request::is('admin/delivered')) active @endif" href="{{ route('backend.delivered_orders') }}">
                                         {{ __('Delivered') }} </a>
                                 </li>
                             @endif
                             @if (auth()->user()->can('browse_cancelled_orders') || auth()->user()->hasRole('super-admin'))
-                                <li><a class="@if (Request::is('admin/cancelled_orders')) active @endif" href="{{ route('backend.cancelled_orders') }}">
+                                <li><a class="@if (Request::is('admin/cancelled')) active @endif" href="{{ route('backend.cancelled_orders') }}">
                                         {{ __('Cancelled') }} </a>
                                 </li>
                             @endif

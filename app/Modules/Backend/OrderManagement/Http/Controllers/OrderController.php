@@ -72,7 +72,7 @@ class OrderController extends Controller
                 'sale_price',
                 'sku',
                 'minimum_qty',
-                'quantity'
+                'quantity',
             )
             ->where('is_active', 1)
             ->findOrFail($id);
@@ -80,6 +80,7 @@ class OrderController extends Controller
         return response()->json([
             'id' => $product->id,
             'name' => $product->name,
+            'quantity' => $product->quantity,
             'sale_price' => $product->sale_price,
             'discount' => $product->discount,
             'images' => $product->images->map(function ($img) {
@@ -122,10 +123,11 @@ class OrderController extends Controller
 
             $order = new Order();
             $order->order_no = 'INV' . ($order_no + 1);
-            $order->discount = $request->shipping_fee ?? 0;
+            $order->discount = 0;
             $order->shipping_cost = $request->shipping_fee;
             $order->total_price = $request->grand_total;
             $order->payment_status = 1;
+            $order->order_status = 2;
             $order->payment_by = 'COD';
             $order->user_id = $exits_customer ? $customer_id : Auth::id();
             $order->shipping_address_1 = $request->address;
@@ -342,7 +344,7 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $searchValue = '';
-        $order_overview = $this->orderOverview();
+        $order_overview = Order::count();
         $record = $this->orderList($request);
         $show_data = $record['record'];
         $totalRecords = $record['totalRecords'];
@@ -398,6 +400,11 @@ class OrderController extends Controller
             'record' =>$records,
             'totalRecords' =>$totalRecords,
         ];
+    }
+
+    public function returnedOrder()
+    {
+
     }
 
     /* Process ajax request */
@@ -519,7 +526,9 @@ class OrderController extends Controller
 
     public function pendingOrder(Request  $request)
     {
-        $order_overview = $this->orderOverview();
+        $segment = strtoupper($request->segment(2));
+        $order_status = OrderStatus::where('name',$segment)->withCount('orders')->first();
+        $order_overview = $order_status->orders_count;
         $record = $this->pendingOrderList($request);
        $show_data = $record['record'] ?? [];
        $totalRecords = $record['totalRecords'] ?? 0;
@@ -672,7 +681,9 @@ class OrderController extends Controller
 
     public function confirmedOrder(Request $request)
     {
-        $order_overview = $this->orderOverview();
+        $segment = strtoupper($request->segment(2));
+        $order_status = OrderStatus::where('name',$segment)->withCount('orders')->first();
+        $order_overview = $order_status->orders_count;
         $record = $this->pendingOrderList($request);
         $show_data = $record['record'] ?? [];
         $totalRecords = $record['totalRecords'] ?? 0;
@@ -835,7 +846,9 @@ class OrderController extends Controller
 
     public function processingOrder(Request  $request)
     {
-        $order_overview = $this->orderOverview();
+        $segment = strtoupper($request->segment(2));
+        $order_status = OrderStatus::where('name',$segment)->withCount('orders')->first();
+        $order_overview = $order_status->orders_count;
         $record = $this->processingOrderList($request);
         $show_data = $record['record'] ?? [];
         $totalRecords = $record['totalRecords'] ?? 0;
@@ -859,10 +872,7 @@ class OrderController extends Controller
         $searchValue = $request->get('keyword');
 
         $query = Order::query();
-        $query
-            ->whereHas('details', function ($query) {
-                $query->where('order_stat', 3);
-            });
+        $query->where('order_status', 3);
         // specific seller
         if (auth('seller')->user() && auth('seller')->user()->getRoleNames()->first() == 'Seller') {
             $query
@@ -1001,7 +1011,9 @@ class OrderController extends Controller
 
     public function courierOrder(Request $request)
     {
-        $order_overview = $this->orderOverview();
+        $segment = strtoupper($request->segment(2));
+        $order_status = OrderStatus::where('name',$segment)->withCount('orders')->first();
+        $order_overview = $order_status->orders_count;
         $record = $this->courierOrderList($request);
         $show_data = $record['record'] ?? [];
         $totalRecords = $record['totalRecords'] ?? 0;
@@ -1064,7 +1076,9 @@ class OrderController extends Controller
 
     public function pickedOrder(Request $request)
     {
-        $order_overview = $this->orderOverview();
+        $segment = strtoupper($request->segment(2));
+        $order_status = OrderStatus::where('name',$segment)->withCount('orders')->first();
+        $order_overview = $order_status->orders_count;
         $record = $this->pickedOrderList($request);
         $show_data = $record['record'] ?? [];
         $totalRecords = $record['totalRecords'] ?? 0;
@@ -1088,10 +1102,7 @@ class OrderController extends Controller
         $searchValue = $request->get('keyword');
 
         $query = Order::query();
-        $query
-            ->whereHas('details', function ($query) {
-                $query->where('order_stat', 4);
-            });
+        $query->where('order_status', 4);
 
         // specific seller
         if (auth('seller')->user() && auth('seller')->user()->getRoleNames()->first() == 'Seller') {
@@ -1230,7 +1241,9 @@ class OrderController extends Controller
 
     public function shippedOrder(Request $request)
     {
-        $order_overview = $this->orderOverview();
+        $segment = strtoupper($request->segment(2));
+        $order_status = OrderStatus::where('name',$segment)->withCount('orders')->first();
+        $order_overview = $order_status->orders_count;
         $record = $this->shippedOrderList($request);
         $show_data = $record['record'] ?? [];
         $totalRecords = $record['totalRecords'] ?? 0;
@@ -1254,9 +1267,7 @@ class OrderController extends Controller
         $searchValue = $request->get('keyword');
 
         $query = Order::query();
-        $query->whereHas('details', function ($query) {
-                $query->where('order_stat', 5);
-            });
+        $query->where('order_status', 5);
         // specific seller
         if (auth('seller')->user() && auth('seller')->user()->getRoleNames()->first() == 'Seller') {
             $query
@@ -1402,7 +1413,9 @@ class OrderController extends Controller
 
     public function deliveredOrder(Request $request)
     {
-        $order_overview = $this->orderOverview();
+        $segment = strtoupper($request->segment(2));
+        $order_status = OrderStatus::where('name',$segment)->withCount('orders')->first();
+        $order_overview = $order_status->orders_count;
         $record = $this->deliveredOrderList($request);
         $show_data = $record['record'] ?? [];
         $totalRecords = $record['totalRecords'] ?? 0;
@@ -1426,9 +1439,7 @@ class OrderController extends Controller
         $searchValue = $request->get('keyword');
 
         $query = Order::query();
-        $query->whereHas('details', function ($query) {
-                $query->where('order_stat', 6);
-            });
+        $query->where('order_status', 6);
         // specific seller
         if (auth('seller')->user() && auth('seller')->user()->getRoleNames()->first() == 'Seller') {
             $query->whereHas('details', function ($query) {
@@ -1563,7 +1574,9 @@ class OrderController extends Controller
 
     public function cancelledOrder(Request $request)
     {
-        $order_overview = $this->orderOverview();
+        $segment = strtoupper($request->segment(2));
+        $order_status = OrderStatus::where('name',$segment)->withCount('orders')->first();
+        $order_overview = $order_status->orders_count;
         $record = $this->cancelledOrderList($request);
         $show_data = $record['record'] ?? [];
         $totalRecords = $record['totalRecords'] ?? 0;

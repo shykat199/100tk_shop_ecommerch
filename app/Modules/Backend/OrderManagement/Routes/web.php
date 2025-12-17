@@ -51,14 +51,15 @@ Route::group(['prefix' => 'admin', 'as' => 'backend.'], function () {
 
         Route::group(['middleware' => ['check_permission']], function () {
             Route::resource('orders', 'OrderController')->except('create','store', 'edit');
-            Route::get('pending_orders', 'OrderController@pendingOrder')->name('pending_orders');
-            Route::get('confirmed_orders', 'OrderController@confirmedOrder')->name('confirmed_orders');
-            Route::get('processing_orders', 'OrderController@processingOrder')->name('processing_orders');
-            Route::get('picked_orders', 'OrderController@pickedOrder')->name('picked_orders');
-            Route::get('shipped_orders', 'OrderController@shippedOrder')->name('shipped_orders');
-            Route::get('courier_orders', 'OrderController@courierOrder')->name('courier_orders');
-            Route::get('delivered_orders', 'OrderController@deliveredOrder')->name('delivered_orders');
-            Route::get('cancelled_orders', 'OrderController@cancelledOrder')->name('cancelled_orders');
+            Route::get('pending', 'OrderController@pendingOrder')->name('pending_orders');
+            Route::get('confirmed', 'OrderController@confirmedOrder')->name('confirmed_orders');
+            Route::get('processing', 'OrderController@processingOrder')->name('processing_orders');
+            Route::get('picked', 'OrderController@pickedOrder')->name('picked_orders');
+            Route::get('shipped', 'OrderController@shippedOrder')->name('shipped_orders');
+            Route::get('courier', 'OrderController@courierOrder')->name('courier_orders');
+            Route::get('delivered', 'OrderController@deliveredOrder')->name('delivered_orders');
+            Route::get('cancelled', 'OrderController@cancelledOrder')->name('cancelled_orders');
+            Route::get('returned', 'OrderController@returnedOrder')->name('returned_orders');
             Route::get('process_orders/{id}', 'OrderController@processOrder')->name('process_orders');
             Route::post('orders_change', 'OrderController@orderProcess')->name('order_change');
         });

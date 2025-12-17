@@ -1,8 +1,18 @@
 <!-- Left side column. contains the name and sidebar -->
-<nav class="side-bar no-print">
+<style>
+    ul li a {
+        color: #000 !important;
+        text-decoration: none;
+    }
+    ul li a:hover {
+        color: #BE1E2D !important;
+    }
+
+</style>
+<nav class="side-bar no-print" style="background: #ffff">
     <div class="side-bar-logo">
         <a href="<?php echo e(route('backend.home')); ?>">
-            <img src="<?php echo e(asset('uploads')); ?>/<?php echo e(maanAppearance('backend_logo')); ?>" alt="logo">
+            <img src="<?php echo e(asset('uploads')); ?>/logo.svg" alt="logo">
         </a>
         <button class="close-btn"></button>
     </div>
@@ -25,7 +35,8 @@
             <!--start orders -->
             <?php if(Module::has('OrderManagement') && Module::find('OrderManagement')->isEnabled()): ?>
                 <?php if(auth()->user()->can('browse_order_management') || auth()->user()->hasRole('super-admin')): ?>
-                    <li class="<?php if(Request::is('admin/*_orders', 'admin/orders', 'admin/orders/*')): ?> active <?php endif; ?> ">
+                    <li class="<?php if(Request::is('admin/*_orders', 'admin/orders', 'admin/orders/*','admin/pending','admin/confirmed','admin/processing','admin/picked','admin/shipped'
+,'admin/courier','admin/delivered','admin/cancelled','admin/returned')): ?> active <?php endif; ?> ">
                         <a href="javascript:void(0)">
                             <span class="icon">
                                 <svg viewBox="0 0 16 14" xmlns="http://www.w3.org/2000/svg">
@@ -60,7 +71,7 @@
                                 </li>
                             <?php endif; ?>
                             <?php if(auth()->user()->can('browse_pending_orders') || auth()->user()->hasRole('super-admin')): ?>
-                                <li><a class="<?php if(Request::is('admin/pending_orders')): ?> active <?php endif; ?>" href="<?php echo e(route('backend.pending_orders')); ?>">
+                                <li><a class="<?php if(Request::is('admin/pending')): ?> active <?php endif; ?>" href="<?php echo e(route('backend.pending_orders')); ?>">
                                         <?php echo e(__('Pending')); ?>
 
                                     </a>
@@ -68,7 +79,7 @@
                             <?php endif; ?>
                             <?php if(auth()->user()->can('browse_confirmed_orders') || auth()->user()->hasRole('super-admin')): ?>
                                 <li>
-                                    <a class="<?php if(Request::is('admin/confirmed_orders')): ?> active <?php endif; ?>" href="<?php echo e(route('backend.confirmed_orders')); ?>">
+                                    <a class="<?php if(Request::is('admin/confirmed')): ?> active <?php endif; ?>" href="<?php echo e(route('backend.confirmed_orders')); ?>">
                                         <?php echo e(__('Confirmed')); ?>
 
                                     </a>
@@ -76,7 +87,7 @@
                             <?php endif; ?>
                             <?php if(auth()->user()->can('browse_processing_orders') || auth()->user()->hasRole('super-admin')): ?>
                                 <li>
-                                    <a class="<?php if(Request::is('admin/processing_orders')): ?> active <?php endif; ?>" href="<?php echo e(route('backend.processing_orders')); ?>">
+                                    <a class="<?php if(Request::is('admin/processing')): ?> active <?php endif; ?>" href="<?php echo e(route('backend.processing_orders')); ?>">
                                         <?php echo e(__('Processing')); ?>
 
                                     </a>
@@ -84,32 +95,32 @@
                             <?php endif; ?>
                             <?php if(auth()->user()->can('browse_picked_orders') || auth()->user()->hasRole('super-admin')): ?>
                                 <li>
-                                    <a class="<?php if(Request::is('admin/courier_orders')): ?> active <?php endif; ?>" href="<?php echo e(route('backend.courier_orders')); ?>">
+                                    <a class="<?php if(Request::is('admin/courier')): ?> active <?php endif; ?>" href="<?php echo e(route('backend.courier_orders')); ?>">
                                         <?php echo e(__('Courier Orders')); ?>
 
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="<?php if(Request::is('admin/picked_orders')): ?> active <?php endif; ?>" href="<?php echo e(route('backend.picked_orders')); ?>">
+                                    <a class="<?php if(Request::is('admin/picked')): ?> active <?php endif; ?>" href="<?php echo e(route('backend.picked_orders')); ?>">
                                         <?php echo e(__('Picked')); ?>
 
                                     </a>
                                 </li>
                             <?php endif; ?>
                             <?php if(auth()->user()->can('browse_shipped_orders') || auth()->user()->hasRole('super-admin')): ?>
-                                <li><a class="<?php if(Request::is('admin/shipped_orders')): ?> active <?php endif; ?>" href="<?php echo e(route('backend.shipped_orders')); ?>">
+                                <li><a class="<?php if(Request::is('admin/shipped')): ?> active <?php endif; ?>" href="<?php echo e(route('backend.shipped_orders')); ?>">
                                         <?php echo e(__('Shipped')); ?>
 
                                     </a>
                                 </li>
                             <?php endif; ?>
                             <?php if(auth()->user()->can('browse_delivered_orders') || auth()->user()->hasRole('super-admin')): ?>
-                                <li><a class="<?php if(Request::is('admin/delivered_orders')): ?> active <?php endif; ?>" href="<?php echo e(route('backend.delivered_orders')); ?>">
+                                <li><a class="<?php if(Request::is('admin/delivered')): ?> active <?php endif; ?>" href="<?php echo e(route('backend.delivered_orders')); ?>">
                                         <?php echo e(__('Delivered')); ?> </a>
                                 </li>
                             <?php endif; ?>
                             <?php if(auth()->user()->can('browse_cancelled_orders') || auth()->user()->hasRole('super-admin')): ?>
-                                <li><a class="<?php if(Request::is('admin/cancelled_orders')): ?> active <?php endif; ?>" href="<?php echo e(route('backend.cancelled_orders')); ?>">
+                                <li><a class="<?php if(Request::is('admin/cancelled')): ?> active <?php endif; ?>" href="<?php echo e(route('backend.cancelled_orders')); ?>">
                                         <?php echo e(__('Cancelled')); ?> </a>
                                 </li>
                             <?php endif; ?>

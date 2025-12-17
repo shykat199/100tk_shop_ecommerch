@@ -199,7 +199,9 @@ unset($__errorArgs, $__bag); ?>
 
 <?php $__env->startSection('script'); ?>
 <script>
-
+    $(".checkall").on('change',function(){
+        $(".checkbox").prop('checked',$(this).is(":checked"));
+    });
 </script>
 <?php $__env->stopSection(); ?>
 

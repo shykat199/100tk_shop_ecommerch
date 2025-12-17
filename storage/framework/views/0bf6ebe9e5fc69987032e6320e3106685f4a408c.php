@@ -37,7 +37,7 @@
 <?php $__env->stopPush(); ?>
 <?php $__env->startSection('content'); ?>
     <div class="content-body">
-    <?php echo $__env->make('ordermanagement::orders.order_overview', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+
     <!-- Tab Content Start -->
 
 
@@ -71,7 +71,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">Pending Orders (<?php echo e($order_overview[1]??0); ?>)</h4>
+                    <h4 class="page-title">Pending Orders (<?php echo e($order_overview??0); ?>)</h4>
                 </div>
             </div>
         </div>
@@ -138,7 +138,7 @@
                                         <td><?php echo e($value->shipping_mobile?$value->shipping_mobile:''); ?></td>
                                         <td> <a target="_blank" style="text-decoration: underline" href="https://greenviewit.com/check-fraud-customer" >Fraud Customer Check</a></td>
                                         <td>৳<?php echo e($value->total_price); ?></td>
-                                        <td><?php echo e($value->details && !empty($value->details[0]) && $value->details[0]->orderStatus?$value->details[0]->orderStatus->name:'N/A'); ?></td>
+
 
                                     </tr>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>

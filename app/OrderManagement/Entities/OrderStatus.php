@@ -2,6 +2,7 @@
 
 namespace App\Modules\Backend\OrderManagement\Entities;
 
+use App\Models\Order;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -18,5 +19,9 @@ class OrderStatus extends Model
             self::$listStatus = self::pluck('name', 'id')->all();
         }
         return self::$listStatus;
+    }
+
+    public function orders(){
+        return $this->hasMany(\App\Modules\Backend\OrderManagement\Entities\Order::class, 'order_status','id');
     }
 }

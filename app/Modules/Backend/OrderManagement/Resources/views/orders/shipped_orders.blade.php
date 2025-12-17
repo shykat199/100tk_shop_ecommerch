@@ -36,7 +36,7 @@
 @endpush
 @section('content')
     <div class="content-body">
-    @include('ordermanagement::orders.order_overview')
+{{--    @include('ordermanagement::orders.order_overview')--}}
     <!-- Tab Content Start -->
 {{--        <div class="tab-content order-content" id="nav-tabContent">--}}
 {{--            <div class="tab-pane fade show active" id="shipped" role="tabpanel" Area-labelledby="shipped-tab">--}}
@@ -67,7 +67,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">Shipped Orders ({{$order_overview[5]??0}})</h4>
+                    <h4 class="page-title">Shipped Orders ({{$order_overview??0}})</h4>
                 </div>
             </div>
         </div>

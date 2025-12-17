@@ -37,7 +37,7 @@
 <?php $__env->stopPush(); ?>
 <?php $__env->startSection('content'); ?>
     <div class="content-body">
-    <?php echo $__env->make('ordermanagement::orders.order_overview', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+
     <!-- Tab Content Start -->
 
 
@@ -67,7 +67,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">Processing Orders (<?php echo e($order_overview[3]??0); ?>)</h4>
+                    <h4 class="page-title">Processing Orders (<?php echo e($order_overview??0); ?>)</h4>
                 </div>
             </div>
         </div>
@@ -76,16 +76,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <form class="custom_form">
-                                    <div class="input-group">
-                                        <input type="text" name="keyword" class="form-control" placeholder="Search">
-                                        <button class="btn btn-info rounded-pill ms-3">Search</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                        <?php echo $__env->make('frontend.includes.order-nav-bar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
                         <div class="table-responsive ">
                             <table id="datatable-buttons" class="table table-striped   w-100">
@@ -143,7 +134,7 @@
                                         <td><?php echo e($value->shipping_mobile?$value->shipping_mobile:''); ?></td>
                                         <td> <a target="_blank" style="text-decoration: underline" href="https://greenviewit.com/check-fraud-customer" >Fraud Customer Check</a></td>
                                         <td>৳<?php echo e($value->total_price); ?></td>
-                                        <td><?php echo e($value->details && !empty($value->details[0]) && $value->details[0]->orderStatus?$value->details[0]->orderStatus->name:'N/A'); ?></td>
+
 
                                     </tr>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>

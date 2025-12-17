@@ -400,6 +400,10 @@ unset($__errorArgs, $__bag); ?>
 
 <?php $__env->startSection('script'); ?>
 <script>
+
+    $(".checkall").on('change',function(){
+        $(".checkbox").prop('checked',$(this).is(":checked"));
+    });
     $(document).ready(function() {
         var order_id = <?php echo json_encode($order->id, 15, 512) ?>;
         let typingTimer;

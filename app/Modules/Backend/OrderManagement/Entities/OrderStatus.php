@@ -19,4 +19,8 @@ class OrderStatus extends Model
         }
         return self::$listStatus;
     }
+
+    public function orders(){
+        return $this->hasMany(\App\Modules\Backend\OrderManagement\Entities\Order::class, 'order_status','id');
+    }
 }
