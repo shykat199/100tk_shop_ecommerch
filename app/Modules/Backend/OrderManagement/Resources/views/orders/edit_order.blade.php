@@ -463,7 +463,7 @@
                                         <tr>
                                             <td>Sub Total</td>
                                             <td class="text-end">
-                                                <span class="sub-total sub-total">{{$order->total_price}}</span>
+                                                <span class="sub-total sub-total">{{$totalPrice = $order->details->sum('total_price')}}</span>
                                             </td>
                                         </tr>
                                         <tr>
@@ -478,7 +478,7 @@
                                         <tr class="fw-semibold">
                                             <td>Total</td>
                                             <td class="text-end">
-                                                <span class="grand-total">{{ $order->total_price + ($order->shipping_cost ?? 0)}}</span>
+                                                <span class="grand-total">{{ $order->total_price }}</span>
                                             </td>
 
                                             <input type="hidden"
