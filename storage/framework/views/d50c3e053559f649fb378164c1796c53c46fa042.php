@@ -7,7 +7,7 @@
                 <div class="col-lg-7 col-lg-6 text-center">
                     <h3><?php echo e(__('Thank you for your purchase')); ?></h3>
                     <p class="h4"><?php echo e(__('Your order no is')); ?> <b><?php echo e($order->order_no); ?></b></p>
-                    <h3><?php echo e(currency(($order->total_amount), 2)); ?></h3>
+                    <h3><?php echo e(currency(($order->total_price), 2)); ?></h3>
                     <p class="mt-5"></p>
                     <table class="table table-bordered">
                         <?php $__currentLoopData = $order->items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>

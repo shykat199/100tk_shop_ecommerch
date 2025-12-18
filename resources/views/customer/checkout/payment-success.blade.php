@@ -9,7 +9,7 @@
                 <div class="col-lg-7 col-lg-6 text-center">
                     <h3>{{ __('Thank you for your purchase') }}</h3>
                     <p class="h4">{{ __('Your order no is') }} <b>{{ $order->order_no }}</b></p>
-                    <h3>{{ currency(($order->total_amount), 2) }}</h3>
+                    <h3>{{ currency(($order->total_price), 2) }}</h3>
                     <p class="mt-5"></p>
                     <table class="table table-bordered">
                         @foreach($order->items as $item)
