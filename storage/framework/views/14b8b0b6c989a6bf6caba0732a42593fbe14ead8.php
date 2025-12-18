@@ -4,7 +4,7 @@
 
     <!-- LEFT: Add New Order Button -->
     <div class="col-md-6">
-        <a href="{{route('backend.create-order')}}"
+        <a href="<?php echo e(route('backend.create-order')); ?>"
            class="btn btn-success rounded-pill text-white">
             <i class="fa fa-plus me-1"></i> Add New Order
         </a>
@@ -38,15 +38,15 @@
                 <i class="fa fa-exchange me-1"></i> Change Status
             </button>
 
-            <a class="btn btn-danger rounded-pill text-white order_delete" href="{{route('backend.order-list-bulk_destroy')}}">
+            <a class="btn btn-danger rounded-pill text-white order_delete" href="<?php echo e(route('backend.order-list-bulk_destroy')); ?>">
                 <i class="fa fa-trash me-1"></i> Delete All
             </a>
 
-            <a class="btn btn-info rounded-pill text-white multi_order_print" href="{{route('backend.multi-order-print')}}">
+            <a class="btn btn-info rounded-pill text-white multi_order_print" href="<?php echo e(route('backend.multi-order-print')); ?>">
                 <i class="fa fa-print me-1"></i> Print
             </a>
 
-            <a class="btn btn-info rounded-pill text-white multi_order_courier" href="{{route('backend.order-bulk_courier', 'steadfast')}}?status=9">
+            <a class="btn btn-info rounded-pill text-white multi_order_courier" href="<?php echo e(route('backend.order-bulk_courier', 'steadfast')); ?>?status=9">
                 <i class="fa fa-truck me-1"></i> Steadfast
             </a>
 
@@ -57,10 +57,10 @@
         </div>
     </div>
 </div>
-@php
+<?php
     $users = \App\Models\Frontend\User::get();
     $orderstatus = \App\Models\Frontend\OrderStatus::get();
-@endphp
+?>
 
 <div class="modal fade" id="asignUser" tabindex="-1">
     <div class="modal-dialog">
@@ -69,14 +69,14 @@
                 <h5 class="modal-title">Assign User</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{route('backend.order-assign')}}" id="order_assign">
+            <form action="<?php echo e(route('backend.order-assign')); ?>" id="order_assign">
                 <div class="modal-body">
                     <div class="form-group">
                         <select name="user_id" id="user_id" class="form-control">
                             <option value="">Select..</option>
-                            @foreach($users as $key=>$value)
-                                <option value="{{$value->id}}">{{$value->first_name}} {{$value->last_name}}</option>
-                            @endforeach
+                            <?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key=>$value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($value->id); ?>"><?php echo e($value->first_name); ?> <?php echo e($value->last_name); ?></option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </select>
                     </div>
                 </div>
@@ -96,14 +96,14 @@
                 <h5 class="modal-title">Assign User</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{route('backend.change-order-list-status')}}" id="order_status_form">
+            <form action="<?php echo e(route('backend.change-order-list-status')); ?>" id="order_status_form">
                 <div class="modal-body">
                     <div class="form-group">
                         <select name="order_status" id="order_status" class="form-control">
                             <option value="">Select..</option>
-                            @foreach($orderstatus as $key=>$value)
-                                <option value="{{$value->id}}">{{$value->name}}</option>
-                            @endforeach
+                            <?php $__currentLoopData = $orderstatus; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key=>$value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($value->id); ?>"><?php echo e($value->name); ?></option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </select>
                     </div>
                 </div>
@@ -130,58 +130,58 @@
                         <label for="pathaostore" class="form-label">Store</label>
                         <select name="pathaostore" id="pathaostore" class="pathaostore form-control" >
                             <option value="">Select Store...</option>
-                            @if(isset($pathaostore['data']['data']))
-                                @foreach($pathaostore['data']['data'] as $key=>$store)
-                                    <option value="{{$store['store_id']}}">{{$store['store_name']}}</option>
-                                @endforeach
-                            @else
-                            @endif
+                            <?php if(isset($pathaostore['data']['data'])): ?>
+                                <?php $__currentLoopData = $pathaostore['data']['data']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key=>$store): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($store['store_id']); ?>"><?php echo e($store['store_name']); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            <?php else: ?>
+                            <?php endif; ?>
                         </select>
-                        @if ($errors->has('pathaostore'))
+                        <?php if($errors->has('pathaostore')): ?>
                             <span class="invalid-feedback" role="alert">
-                                <strong>{{ $errors->first('pathaostore') }}</strong>
+                                <strong><?php echo e($errors->first('pathaostore')); ?></strong>
                             </span>
-                        @endif
+                        <?php endif; ?>
                     </div>
                     <!-- form group end -->
                     <div class="form-group mt-3">
                         <label for="pathaocity" class="form-label">City</label>
                         <select name="pathaocity" id="pathaocity" class="chosen-select pathaocity form-control" style="width:100%" >
                             <option value="">Select City...</option>
-                            @if(isset($pathaocities['data']['data']))
-                                @foreach($pathaocities['data']['data'] as $key=>$city)
-                                    <option value="{{$city['city_id']}}">{{$city['city_name']}}</option>
-                                @endforeach
-                            @else
-                            @endif
+                            <?php if(isset($pathaocities['data']['data'])): ?>
+                                <?php $__currentLoopData = $pathaocities['data']['data']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key=>$city): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($city['city_id']); ?>"><?php echo e($city['city_name']); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            <?php else: ?>
+                            <?php endif; ?>
                         </select>
-                        @if ($errors->has('pathaocity'))
+                        <?php if($errors->has('pathaocity')): ?>
                             <span class="invalid-feedback" role="alert">
-                                <strong>{{ $errors->first('pathaocity') }}</strong>
+                                <strong><?php echo e($errors->first('pathaocity')); ?></strong>
                             </span>
-                        @endif
+                        <?php endif; ?>
                     </div>
                     <!-- form group end -->
                     <div class="form-group mt-3">
                         <label for="" class="form-label">Zone</label>
-                        <select name="pathaozone" id="pathaozone" class="pathaozone chosen-select form-control  {{ $errors->has('pathaozone') ? ' is-invalid' : '' }}" value="{{ old('pathaozone') }}"  style="width:100%">
+                        <select name="pathaozone" id="pathaozone" class="pathaozone chosen-select form-control  <?php echo e($errors->has('pathaozone') ? ' is-invalid' : ''); ?>" value="<?php echo e(old('pathaozone')); ?>"  style="width:100%">
                         </select>
-                        @if ($errors->has('pathaozone'))
+                        <?php if($errors->has('pathaozone')): ?>
                             <span class="invalid-feedback" role="alert">
-                                <strong>{{ $errors->first('pathaozone') }}</strong>
+                                <strong><?php echo e($errors->first('pathaozone')); ?></strong>
                             </span>
-                        @endif
+                        <?php endif; ?>
                     </div>
                     <!-- form group end -->
                     <div class="form-group mt-3">
                         <label for="" class="form-label">Area</label>
-                        <select name="pathaoarea" id="pathaoarea" class="pathaoarea chosen-select form-control  {{ $errors->has('pathaoarea') ? ' is-invalid' : '' }}" value="{{ old('pathaoarea') }}"  style="width:100%">
+                        <select name="pathaoarea" id="pathaoarea" class="pathaoarea chosen-select form-control  <?php echo e($errors->has('pathaoarea') ? ' is-invalid' : ''); ?>" value="<?php echo e(old('pathaoarea')); ?>"  style="width:100%">
                         </select>
-                        @if ($errors->has('pathaoarea'))
+                        <?php if($errors->has('pathaoarea')): ?>
                             <span class="invalid-feedback" role="alert">
-                                <strong>{{ $errors->first('pathaoarea') }}</strong>
+                                <strong><?php echo e($errors->first('pathaoarea')); ?></strong>
                             </span>
-                        @endif
+                        <?php endif; ?>
                     </div>
                     <!-- form group end -->
                 </div>
@@ -469,3 +469,4 @@
 
     });
 </script>
+<?php /**PATH /var/www/html/100tk_shop_ecommerch/resources/views/frontend/includes/order-nav-bar.blade.php ENDPATH**/ ?>

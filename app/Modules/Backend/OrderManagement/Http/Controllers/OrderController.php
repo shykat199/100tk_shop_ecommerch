@@ -398,10 +398,19 @@ class OrderController extends Controller
         return response()->json(['status'=>'success','message'=>'Order delete successfully']);
     }
 
-    public function order_print(Request $request){
-        $orders = Order::whereIn('id', $request->input('order_ids'))->with('details','newOrderStatus','payment','customer')->get();
-        $view = view('frontend.order-invoice', ['orders' => $orders])->render();
-        return response()->json(['status' => 'success', 'view' => $view]);
+//    public function order_print(Request $request){
+//        $orders = Order::whereIn('id', $request->input('order_ids'))->with('details','newOrderStatus','payment','customer')->get();
+//        $view = view('frontend.order-invoice', ['orders' => $orders])->render();
+//        return response()->json(['status' => 'success', 'view' => $view]);
+//    }
+
+    public function order_print(Request $request)
+    {
+        $orders = Order::with('details','payment','customer')
+            ->whereIn('id', $request->order_ids)
+            ->get();
+
+        return view('frontend.order-invoice', compact('orders'));
     }
 
     public function bulk_courier($slug, Request $request)
