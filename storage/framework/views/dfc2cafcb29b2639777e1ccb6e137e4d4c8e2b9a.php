@@ -1,13 +1,11 @@
-@extends('frontend.layouts.front')
+<?php $__env->startSection('title', 'Checkout'); ?>
 
-@section('title', 'Checkout')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 
     <!-- Billing Details Start -->
     <section class="billing-details bg-light">
-        <form action="{{ route('customer.payment') }}" method="post" class="ajaxform_instant_reload">
-            @csrf
+        <form action="<?php echo e(route('customer.payment')); ?>" method="post" class="ajaxform_instant_reload">
+            <?php echo csrf_field(); ?>
             <div class="container">
                 <div class="row">
                     <div class="col-lg-6">
@@ -15,7 +13,7 @@
                             <div class="card-body">
                                 <div class="buy-more-check">
                                     <h4 class="text-center">Order Submit OR</h4>
-                                    <h5 class="text-center"><a class="text-primary" href="{{ url('/') }}">Buy More</a>
+                                    <h5 class="text-center"><a class="text-primary" href="<?php echo e(url('/')); ?>">Buy More</a>
                                         <span class="animation-pulse"></span></h5>
                                 </div>
                                 <div class="login-form mt-4">
@@ -23,17 +21,17 @@
                                         <div class="col-lg-12">
                                             <div class="input-group">
                                                 <input type="text" name="first_name" value="">
-                                                <span class="label">{{ __('নাম') }} <span
+                                                <span class="label"><?php echo e(__('নাম')); ?> <span
                                                         class="text-danger">*</span></span>
                                             </div>
                                         </div>
-                                        @if(Auth::user())
-                                            <input type="hidden" name="user_id" value="{{auth()->user()->id}}">
-                                        @endif
+                                        <?php if(Auth::user()): ?>
+                                            <input type="hidden" name="user_id" value="<?php echo e(auth()->user()->id); ?>">
+                                        <?php endif; ?>
                                         <div class="col-12">
                                             <div class="input-group">
                                                 <input type="number" name="mobile">
-                                                <span class="label">{{ __('মোবাইল') }} <span
+                                                <span class="label"><?php echo e(__('মোবাইল')); ?> <span
                                                         class="text-danger">*</span></span>
                                             </div>
                                         </div>
@@ -41,29 +39,30 @@
                                         <div class="col-12">
                                             <div class="input-group">
                                                 <input type="text" name="billing_address"
-                                                    value="{{ $billing->address_1 ?? null }}">
-                                                <span class="label">{{ __('ঠিকানা') }} <span
+                                                    value="<?php echo e($billing->address_1 ?? null); ?>">
+                                                <span class="label"><?php echo e(__('ঠিকানা')); ?> <span
                                                         class="text-danger">*</span></span>
                                             </div>
                                         </div>
                                         <div class="col-sm-12 mb-4">
-                                            <span class="label">{{ __('শিপিং এরিয়া') }} <span
+                                            <span class="label"><?php echo e(__('শিপিং এরিয়া')); ?> <span
                                                     class="text-danger">*</span></span>
 
                                             <div class="col-12">
                                                 <select name="shipping_cost" id="shipping_cost">
-                                                    @foreach ($shipping_areas as $shipping_area)
-                                                        <option value="{{ $shipping_area->charge }}">
-                                                            {{ $shipping_area->name }} - {{ $shipping_area->charge }}
+                                                    <?php $__currentLoopData = $shipping_areas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $shipping_area): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <option value="<?php echo e($shipping_area->charge); ?>">
+                                                            <?php echo e($shipping_area->name); ?> - <?php echo e($shipping_area->charge); ?>
+
                                                         </option>
-                                                    @endforeach
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                 </select>
                                             </div>
 
                                         </div>
                                         <div class="col-12 text-center mb-3">
                                             <button type="submit"
-                                                class="btn-anime w-50 submit-btn">{{ __('অর্ডার কনফার্ম করুন') }}</button>
+                                                class="btn-anime w-50 submit-btn"><?php echo e(__('অর্ডার কনফার্ম করুন')); ?></button>
                                         </div>
                                     </div>
                                 </div>
@@ -74,7 +73,7 @@
                         <div class="card shadow">
                             <div class="card-body">
                                 <div style="display: flex; align-items: center; justify-content: space-between;">
-                                    <h4 class="text-center">{{ __('ORDER SUMMARY') }}</h4>
+                                    <h4 class="text-center"><?php echo e(__('ORDER SUMMARY')); ?></h4>
                                     <div>
                                         <input type="text" placeholder="Search Product" id="search-product">
                                         <ul id="show-product" class="list-group"
@@ -87,58 +86,60 @@
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                                <th>{{ __('Items') }}</th>
-                                                <th>{{ __('Quantity') }}</th>
-                                                <th>{{ __('Amount') }}</th>
-                                                <th>{{ __('Action') }}</th>
+                                                <th><?php echo e(__('Items')); ?></th>
+                                                <th><?php echo e(__('Quantity')); ?></th>
+                                                <th><?php echo e(__('Amount')); ?></th>
+                                                <th><?php echo e(__('Action')); ?></th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @if ($carts ?? false)
-                                                @foreach ($carts as $key => $cart)
-                                                    <tr id="cart-row-{{ $key }}">
+                                            <?php if($carts ?? false): ?>
+                                                <?php $__currentLoopData = $carts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $cart): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <tr id="cart-row-<?php echo e($key); ?>">
                                                         <th scope="row">
-                                                            <img src="{{ asset('uploads/products/galleries') }}/{{ CartItem::thumbnail($cart->id) }}"
-                                                                class="b-1" alt="{{ CartItem::name($cart->id) }}">
+                                                            <img src="<?php echo e(asset('uploads/products/galleries')); ?>/<?php echo e(CartItem::thumbnail($cart->id)); ?>"
+                                                                class="b-1" alt="<?php echo e(CartItem::name($cart->id)); ?>">
                                                             <p>
-                                                                {{ CartItem::name($cart->id) }}
-                                                                @if ($cart->color)
+                                                                <?php echo e(CartItem::name($cart->id)); ?>
+
+                                                                <?php if($cart->color): ?>
                                                                     <span
-                                                                        class="badge bg-light text-dark">({{ $cart->color }})</span>
-                                                                @endif
-                                                                @if ($cart->size)
+                                                                        class="badge bg-light text-dark">(<?php echo e($cart->color); ?>)</span>
+                                                                <?php endif; ?>
+                                                                <?php if($cart->size): ?>
                                                                     - <span
-                                                                        class="badge bg-light text-dark">({{ $cart->size }})</span>
-                                                                @endif
+                                                                        class="badge bg-light text-dark">(<?php echo e($cart->size); ?>)</span>
+                                                                <?php endif; ?>
                                                             </p>
                                                         </th>
                                                         <td class="table-quantity">
                                                             <div class="quantity">
                                                                 <input type="button" value="-" class="minus"
-                                                                    data-key="{{ $key }}"
-                                                                    data-id="{{ $cart->id }}"
+                                                                    data-key="<?php echo e($key); ?>"
+                                                                    data-id="<?php echo e($cart->id); ?>"
                                                                     onclick="updateCart($(this))">
                                                                 <input type="number" class="input-number w-25 qty"
                                                                     min="1" name="quantity"
-                                                                    value="{{ $cart->quantity }}"
+                                                                    value="<?php echo e($cart->quantity); ?>"
                                                                     onchange="updateCart($(this))"
                                                                     oninput="updateCart($(this))"
-                                                                    data-key="{{ $key }}"
-                                                                    data-id="{{ $cart->id }}"
-                                                                    data-product-stock="{{ $cart->product_stock }}">
+                                                                    data-key="<?php echo e($key); ?>"
+                                                                    data-id="<?php echo e($cart->id); ?>"
+                                                                    data-product-stock="<?php echo e($cart->product_stock); ?>">
                                                                 <input type="button" value="+" class="plus"
-                                                                    data-key="{{ $key }}"
-                                                                    data-id="{{ $cart->id }}"
-                                                                    data-product-stock="{{ $cart->product_stock }}"
+                                                                    data-key="<?php echo e($key); ?>"
+                                                                    data-id="<?php echo e($cart->id); ?>"
+                                                                    data-product-stock="<?php echo e($cart->product_stock); ?>"
                                                                     onclick="updateCart($(this))">
                                                             </div>
                                                         </td>
                                                         <td class="total">
-                                                            {{ currency(CartItem::price($cart->id, $cart->quantity), 2) }}
+                                                            <?php echo e(currency(CartItem::price($cart->id, $cart->quantity), 2)); ?>
+
                                                         </td>
                                                         <td class="table-close-btn">
                                                             <button type="button"
-                                                                onclick="removeFromCart(`{{ $key }}`,{{ $cart->id }})">
+                                                                onclick="removeFromCart(`<?php echo e($key); ?>`,<?php echo e($cart->id); ?>)">
                                                                 <svg xmlns="http://www.w3.org/2000/svg"
                                                                     viewBox="0 0 511.995 511.995">
                                                                     <path d="M437.126,74.939c-99.826-99.826-262.307-99.826-362.133,0C26.637,123.314,0,187.617,0,256.005
@@ -156,115 +157,122 @@
                                                             </button>
                                                         </td>
                                                     </tr>
-                                                @endforeach
-                                            @else
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                            <?php else: ?>
                                                 <tr>
                                                     <td colspan="7">
-                                                        <p class="text-center">{{ __('No available item in cart') }}</p>
+                                                        <p class="text-center"><?php echo e(__('No available item in cart')); ?></p>
                                                     </td>
                                                 </tr>
-                                            @endif
+                                            <?php endif; ?>
                                         </tbody>
                                     </table>
 
                                     <div class="order-cart mt-4">
-{{--                                        <ul id="order-details">--}}
-{{--                                            <li>{{ __('Subtotal') }}<span class="sub-total"--}}
-{{--                                                    data-sub-total="{{ Cookie::get('subTotal') }}">{{ currency(Cookie::get('subTotal'), 2) }}</span>--}}
-{{--                                            </li>--}}
-{{--                                            <li>{{ __('Shipping Charge') }}--}}
-{{--                                                @if (Cookie::get('totalShipping') == 0)--}}
-{{--                                                    <span class="total-shipping">{{ __('Free') }}</span>--}}
-{{--                                                @else--}}
-{{--                                                    <span--}}
-{{--                                                        class="total-shipping">{{ currency(Cookie::get('totalShipping'), 2) }}</span>--}}
-{{--                                                @endif--}}
-{{--                                            </li>--}}
-{{--                                            @if (Cookie::get('coupon_discount'))--}}
-{{--                                                <li>{{ __('Coupon') }}<span>{{ currency(Cookie::get('coupon_discount'), 2) }}</span>--}}
-{{--                                                </li>--}}
-{{--                                            @endif--}}
-{{--                                            <li>{{ __('Total') }}<span--}}
-{{--                                                    class="grand-total">{{ currency(Cookie::get('total') - Cookie::get('coupon_discount'), 2) }}</span>--}}
-{{--                                            </li>--}}
-{{--                                        </ul>--}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                                         <ul id="order-details">
                                             <li>
-                                                {{ __('Subtotal') }}
-                                                <span class="sub-total" data-sub-total="{{ session('subTotal', 0) }}">
-                                                    {{ currency(session('subTotal', 0), 2) }}
+                                                <?php echo e(__('Subtotal')); ?>
+
+                                                <span class="sub-total" data-sub-total="<?php echo e(session('subTotal', 0)); ?>">
+                                                    <?php echo e(currency(session('subTotal', 0), 2)); ?>
+
                                                 </span>
                                             </li>
 
                                             <li>
-                                                {{ __('Shipping Charge') }}
-                                                @if (session('totalShipping', 0) == 0)
-                                                    <span class="total-shipping">{{ __('Free') }}</span>
-                                                @else
+                                                <?php echo e(__('Shipping Charge')); ?>
+
+                                                <?php if(session('totalShipping', 0) == 0): ?>
+                                                    <span class="total-shipping"><?php echo e(__('Free')); ?></span>
+                                                <?php else: ?>
                                                 <span class="total-shipping">
-                                                    {{ currency(session('totalShipping', 0), 2) }}
+                                                    <?php echo e(currency(session('totalShipping', 0), 2)); ?>
+
                                                 </span>
-                                                @endif
+                                                <?php endif; ?>
                                             </li>
 
-                                            @if (session()->has('coupon_discount'))
+                                            <?php if(session()->has('coupon_discount')): ?>
                                                 <li>
-                                                    {{ __('Coupon') }}
-                                                    <span>{{ currency(session('coupon_discount'), 2) }}</span>
+                                                    <?php echo e(__('Coupon')); ?>
+
+                                                    <span><?php echo e(currency(session('coupon_discount'), 2)); ?></span>
                                                 </li>
-                                            @endif
+                                            <?php endif; ?>
 
                                             <li>
-                                                {{ __('Total') }}
+                                                <?php echo e(__('Total')); ?>
+
                                                 <span class="grand-total">
-                                                    {{ currency(
+                                                    <?php echo e(currency(
                                                         session('total', 0) - session('coupon_discount', 0),
                                                         2
-                                                    ) }}
+                                                    )); ?>
+
                                                 </span>
                                             </li>
                                         </ul>
                                     </div>
 
-                                    <h5 class="mb-2">{{ __('Promotional Code') }} ({{ __('Have a coupon?') }})</h5>
-                                    @if (Cookie::get('coupon_infos'))
-                                        @php
+                                    <h5 class="mb-2"><?php echo e(__('Promotional Code')); ?> (<?php echo e(__('Have a coupon?')); ?>)</h5>
+                                    <?php if(Cookie::get('coupon_infos')): ?>
+                                        <?php
                                             $coupon_infos = json_decode(Cookie::get('coupon_infos'));
-                                        @endphp
+                                        ?>
                                         <div class="right-search input-group mb-0">
                                             <input type="text" name="code" id="code"
-                                                placeholder="Enter your coupon code" value="{{ $coupon_infos->code }}">
+                                                placeholder="Enter your coupon code" value="<?php echo e($coupon_infos->code); ?>">
                                             <button type="button" class="btn-anime"
-                                                id="apply-coupon">{{ __('Apply Coupon') }}</button>
+                                                id="apply-coupon"><?php echo e(__('Apply Coupon')); ?></button>
                                         </div>
                                         <div class="row mb-2 coupon-infos">
                                             <div class="col-11">
-                                                <h5 class="text-warning">{{ $coupon_infos->code }}</h5>
+                                                <h5 class="text-warning"><?php echo e($coupon_infos->code); ?></h5>
                                             </div>
                                             <div class="col-1">
                                                 <h5><a href="javascript:void(0)" onclick="removeCoupon()"><i
                                                             class="fa-solid fa-xmark text-danger"></i></a></h5>
                                             </div>
                                         </div>
-                                    @else
+                                    <?php else: ?>
                                         <div class="right-search input-group mb-0">
                                             <input type="text" name="code" id="code"
                                                 placeholder="Enter your coupon code">
                                             <button type="button" class="btn-anime"
-                                                id="apply-coupon">{{ __('Apply Coupon') }}</button>
+                                                id="apply-coupon"><?php echo e(__('Apply Coupon')); ?></button>
                                         </div>
                                         <div class="row mb-2 coupon-infos">
-                                            {{-- AJAX --}}
+                                            
                                         </div>
-                                    @endif
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            {{-- @push('modal') --}}
+            
             <div class="modal fade" id="pay-modal" tabindex="-1" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog">
@@ -303,20 +311,20 @@
                     </div>
                 </div>
             </div>
-            {{-- @endpush --}}
+            
         </form>
     </section>
     <!-- Billing Details End -->
 
-@stop
+<?php $__env->stopSection(); ?>
 
-@push('script')
+<?php $__env->startPush('script'); ?>
     <script>
         $("#apply-coupon").click(function() {
             var code = $("#code").val();
-            var csrf = "{{ @csrf_token() }}"
+            var csrf = "<?php echo e(@csrf_token()); ?>"
             $.ajax({
-                url: "{{ route('customer.coupon') }}",
+                url: "<?php echo e(route('customer.coupon')); ?>",
                 data: {
                     _token: csrf,
                     code: code
@@ -344,10 +352,10 @@
             $('.total-shipping').text('৳' + shipping_cost);
             $('.grand-total').text('৳' + grand_total);
 
-            var csrf = "{{ @csrf_token() }}"
+            var csrf = "<?php echo e(@csrf_token()); ?>"
 
             $.ajax({
-                url: `{{route('customer.updateShipping')}}`,
+                url: `<?php echo e(route('customer.updateShipping')); ?>`,
                 type: 'POST',
                 data: {
                     shipping_cost: shipping_cost,
@@ -361,9 +369,9 @@
         });
 
         function removeCoupon() {
-            var csrf = "{{ @csrf_token() }}"
+            var csrf = "<?php echo e(@csrf_token()); ?>"
             $.ajax({
-                url: "{{ route('customer.coupon.remove') }}",
+                url: "<?php echo e(route('customer.coupon.remove')); ?>",
                 data: {
                     _token: csrf
                 },
@@ -376,38 +384,38 @@
             });
         }
 
-        {{--function removeFromCart(key, id) {--}}
-        {{--    swal({--}}
-        {{--        title: "{{ __('Really!?') }}",--}}
-        {{--        text: "{{ __('Are you sure you want remove this form cart?') }}",--}}
-        {{--        icon: "warning",--}}
-        {{--        buttons: true,--}}
-        {{--        dangerMode: true,--}}
-        {{--    }).then((whileDelete) => {--}}
-        {{--        if (whileDelete) {--}}
-        {{--            var csrf = "{{ csrf_token() }}";--}}
-        {{--            $.ajax({--}}
-        {{--                url: "{{ route('customer.removeFromCart') }}",--}}
-        {{--                data: {--}}
-        {{--                    _token: csrf,--}}
-        {{--                    key: key,--}}
-        {{--                    id: id--}}
-        {{--                },--}}
-        {{--                type: "POST"--}}
-        {{--            }).done(function(e) {--}}
-        {{--                swal("{{ __('Poof! Your item has been removed!') }}", {--}}
-        {{--                    icon: "success",--}}
-        {{--                }).then(value => {--}}
-        {{--                    $("#cart-count").text(e.count);--}}
-        {{--                    $(".sub-total").text(e.sub_total);--}}
-        {{--                    $(".grand-total").text(e.grand_total);--}}
-        {{--                    $(".total-shipping").text(e.totalShipping);--}}
-        {{--                    $("#cart-row-" + key).remove();--}}
-        {{--                });--}}
-        {{--            })--}}
-        {{--        }--}}
-        {{--    })--}}
-        {{--}--}}
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
         function removeFromCart(key, id) {
             Swal.fire({
@@ -420,10 +428,10 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: "{{ route('customer.removeFromCart') }}",
+                        url: "<?php echo e(route('customer.removeFromCart')); ?>",
                         type: "POST",
                         data: {
-                            _token: "{{ csrf_token() }}",
+                            _token: "<?php echo e(csrf_token()); ?>",
                             key: key,
                             id: id
                         },
@@ -466,10 +474,10 @@
             if(qty.val() == 1){
                 elem.val('-').prop('disabled', true);
             }
-            var csrf = "{{ csrf_token() }}";
+            var csrf = "<?php echo e(csrf_token()); ?>";
             if (qty.val() > 0) {
                 $.ajax({
-                    url: "{{ route('customer.updateCart') }}",
+                    url: "<?php echo e(route('customer.updateCart')); ?>",
                     type: "post",
                     data: {
                         _token: csrf,
@@ -485,7 +493,7 @@
                         elem.closest('tr').find('.total').text(e.productTotal);
                     } else {
                         qty.val(parseInt(qty.val()) - 1);
-                        swal("{{ __('Sorry!') }}", e, "error");
+                        swal("<?php echo e(__('Sorry!')); ?>", e, "error");
                     }
                 }).fail(function(jqXHR, textStatus, errorThrown) {
                     console.error("AJAX error:", textStatus, errorThrown);
@@ -528,7 +536,7 @@
                 typingTimer = setTimeout(function() {
                     var keyword = $('#search-product').val();
                     $.ajax({
-                        url: `{{ url('/get-product') }}`,
+                        url: `<?php echo e(url('/get-product')); ?>`,
                         data: {
                             name: keyword
                         },
@@ -558,4 +566,6 @@
             });
         });
     </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('frontend.layouts.front', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /var/www/my/100_shop/resources/views/customer/checkout/checkout_guest.blade.php ENDPATH**/ ?>

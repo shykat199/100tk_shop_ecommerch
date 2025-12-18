@@ -90,6 +90,8 @@ class GuestPaymentController extends Controller
 
         $cart = session()->get('cart', []);
 
+        $this->orderStore($request);
+
         if (empty($cart)) {
             return response()->json([
                 'message' => __('The cart is empty.'),
@@ -286,7 +288,16 @@ class GuestPaymentController extends Controller
         $subTotal = session('subTotal', 0);
         $total_discount = session('total_discount', 0) + session('coupon_discount', 0);
         $total_vat = session('total_vat', 0);
-        $totalShipping = session('totalShipping', 0);
+//        $totalShipping = session('totalShipping', 0);
+        $totalShipping = $request->shipping_cost;
+
+        if ($totalShipping){
+            $subTotal += $totalShipping;
+        }
+
+        if ($total_discount){
+            $subTotal -= $totalShipping;
+        }
 
         // Email (optional)
         if ($request->get('email') != null) {
@@ -320,9 +331,10 @@ class GuestPaymentController extends Controller
             'shipping_address_1' => $request->billing_address,
             'shipping_address_2' => $request->billing_address,
             'shipping_mobile' => $request->mobile,
-            'payment_by' => $request->payment_by,
-            'user_id' => $request->user_id,
+            'payment_by' => $request->payment_by ?? 'COD',
+            'user_id' => $request->user_id ??  0,
             'user_first_name' => $name,
+            'paid_amount' => 0,
             'user_address_1' => $request->address_line_one,
             'user_mobile' => $request->mobile,
         ];
@@ -378,7 +390,7 @@ class GuestPaymentController extends Controller
 
             $details = OrderDetail::create([
                 'seller_id' => $product->seller_id ?? null,
-                'user_id' => $request->user_id,
+                'user_id' => $request->user_id ?? 0,
                 'order_id' => $order->id,
                 'order_stat' => 1,
                 'product_id' => $item->id,
@@ -402,7 +414,7 @@ class GuestPaymentController extends Controller
                 'order_stat' => 2,
                 'order_stat_desc' => $request->get('order_stat_desc'),
                 'order_stat_datetime' => now(),
-                'user_id' => $request->user_id,
+                'user_id' => $request->user_id ?? 0,
                 'remarks' => '',
                 'product_id' => $item->id,
             ]);

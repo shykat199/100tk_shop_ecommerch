@@ -37,6 +37,8 @@ Route::post('customer/add-to-wishlist',[WishlistController::class,'store'])->nam
 
 Route::post('customer/add-to-cart', [CartController::class,'addToCart'])->name('customer.addToCart');
 Route::post('customer/update-cart', [CartController::class,'updateCart'])->name('customer.updateCart');
+Route::post('update-shipping-amount', [CartController::class, 'updateShipping'])->name('customer.updateShipping');
+
 Route::post('customer/remove-from-cart', [CartController::class,'removeFromCart'])->name('customer.removeFromCart');
 
 // Buy Now

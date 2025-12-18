@@ -455,7 +455,6 @@
                                             </span>
                                     @enderror
                                 </div>
-{{--                                @dd($order)--}}
 
                                 <!-- Order Summary -->
                                 <div class="col-md-6">
@@ -464,7 +463,7 @@
                                         <tr>
                                             <td>Sub Total</td>
                                             <td class="text-end">
-                                                <span class="sub-total sub-total">{{$order->total_price - $order->shipping_cost}}</span>
+                                                <span class="sub-total sub-total">{{$order->total_price}}</span>
                                             </td>
                                         </tr>
                                         <tr>
@@ -479,7 +478,7 @@
                                         <tr class="fw-semibold">
                                             <td>Total</td>
                                             <td class="text-end">
-                                                <span class="grand-total">{{ $order->total_price}}</span>
+                                                <span class="grand-total">{{ $order->total_price + ($order->shipping_cost ?? 0)}}</span>
                                             </td>
 
                                             <input type="hidden"

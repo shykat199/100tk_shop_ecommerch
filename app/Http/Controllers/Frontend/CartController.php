@@ -334,6 +334,16 @@ class CartController extends Controller
         ]);
     }
 
+    public function updateShipping(Request $request)
+    {
+        session()->put('totalShipping', $request->shipping_cost);
+
+        return response()->json([
+            'success' => true,
+            'totalShipping' => session('totalShipping')
+        ]);
+    }
+
     /**
      * Remove item form cart by ajax
      *
