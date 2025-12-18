@@ -94,7 +94,7 @@
                     </div>
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="ShopGrid" style="margin-top: -15px">
-                            <div class="row auto-margin-3">
+                            <div class="row auto-margin-3 mb-3">
                                 <!-- ** ajax loader start ** -->
                                 <div id="product-loader">
                                     <div class="overlay-content">

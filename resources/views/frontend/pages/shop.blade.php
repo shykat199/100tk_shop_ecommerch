@@ -3,7 +3,7 @@
 @section('title', $title ?? 'Shop')
 
 @section('content')
-    
+
     <!-- Breadcrumb Start -->
     <nav class="breadcrumb-manu maan-shop-breadcrumb" Area-label="breadcrumb" data-background="{{ asset('frontend/img/breadcrumb.png') }}">
         <h3>{{ $title ?? 'Shop' }}</h3>
@@ -94,7 +94,7 @@
                     </div>
                     <div class="tab-content">
                         <div class="tab-pane fade show active" id="ShopGrid" style="margin-top: -15px">
-                            <div class="row auto-margin-3">
+                            <div class="row auto-margin-3 mb-3">
                                 <!-- ** ajax loader start ** -->
                                 <div id="product-loader">
                                     <div class="overlay-content">
@@ -118,7 +118,7 @@
 
                         <!-- shop list items -->
                         <div class="tab-pane fade" id="ShopList">
-                            <div class="row auto-margin-3" id="product-area">
+                            <div class="row auto-margin-3 mb-3" id="product-area">
                                 @if ($products->count() == 0)
                                     <div class="text-center" style="margin-top: 25px">
                                         <p>{{ __('Not available. Try search with different keyword') }}</p>
