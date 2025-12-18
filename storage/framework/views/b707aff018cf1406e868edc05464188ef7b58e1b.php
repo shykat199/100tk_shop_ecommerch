@@ -149,7 +149,7 @@
 
                                 </span>
                                 <span class="number" id="cart-count">
-                                    <?php echo e(Cookie::has('cart') ? count(get_object_vars(json_decode(Cookie::get('cart')))) : 0); ?>
+                                    <?php echo e(session()->has('cart') ? count(session('cart')) : 0); ?>
 
                                 </span>
                             </a>
@@ -166,4 +166,4 @@
     </div>
 </div>
 <!-- Mid Bar End -->
-<?php /**PATH /var/www/my/100_shop/resources/views/frontend/includes/mid-bar.blade.php ENDPATH**/ ?>
+<?php /**PATH /var/www/html/100tk_shop_ecommerch/resources/views/frontend/includes/mid-bar.blade.php ENDPATH**/ ?>

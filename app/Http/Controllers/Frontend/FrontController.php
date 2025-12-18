@@ -329,7 +329,10 @@ class FrontController extends Controller
     {
         $product = Product::query()
             ->where('slug', $slug)
-            ->with('images', 'reviews', 'details', 'seller', 'productstock.color', 'productstock.size', 'productstock', 'video')
+            ->with(['images', 'reviews', 'details', 'seller', 'productstock.color', 'productstock.size', 'productstock'=>function ($q) {
+                $q->whereNotNull('color_id');
+                $q->whereNotNull('size_id');
+            }, 'video'])
             ->firstOrFail();
         // $variant_images = $product->productstock;
         // dd($variant_images);

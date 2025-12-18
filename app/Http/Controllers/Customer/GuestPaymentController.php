@@ -11,6 +11,7 @@ use App\Models\Frontend\CartItem;
 use Illuminate\Contracts\View\View;
 use App\Http\Controllers\Controller;
 use App\Models\Frontend\OrderDetail;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Frontend\OrderTimeline;
 use Illuminate\Support\Facades\Cookie;
@@ -89,8 +90,6 @@ class GuestPaymentController extends Controller
         ]);
 
         $cart = session()->get('cart', []);
-
-        $this->orderStore($request);
 
         if (empty($cart)) {
             return response()->json([
@@ -274,172 +273,174 @@ class GuestPaymentController extends Controller
 
     public function orderStore(Request $request)
     {
-        // 🔁 Get cart from SESSION
-        $cart = json_decode(json_encode(session()->get('cart', [])));
+        return DB::transaction(function () use ($request) {
+            // 🔁 Get cart from SESSION
+            $cart = json_decode(json_encode(session()->get('cart', [])));
 
-        $name = $request->first_name;
+            $name = $request->first_name;
 
-        // Generate order number
-        $order_no = Order::latest()->first()->order_no ?? 1000;
-        $order_no = substr($order_no, 3);
-        $order_no = 'INV' . ($order_no + 1);
+            // Generate order number
+            $order_no = Order::latest()->first()->order_no ?? 1000;
+            $order_no = substr($order_no, 3);
+            $order_no = 'INV' . ($order_no + 1);
 
-        // Totals from SESSION
-        $subTotal = session('subTotal', 0);
-        $total_discount = session('total_discount', 0) + session('coupon_discount', 0);
-        $total_vat = session('total_vat', 0);
+            // Totals from SESSION
+            $subTotal = session('subTotal', 0);
+            $total_discount = session('total_discount', 0) + session('coupon_discount', 0);
+            $total_vat = session('total_vat', 0);
 //        $totalShipping = session('totalShipping', 0);
-        $totalShipping = $request->shipping_cost;
+            $totalShipping = $request->shipping_cost;
 
-        if ($totalShipping){
-            $subTotal += $totalShipping;
-        }
-
-        if ($total_discount){
-            $subTotal -= $totalShipping;
-        }
-
-        // Email (optional)
-        if ($request->get('email') != null) {
-            try {
-                Mail::to(auth('customer')->user()->email)->send(
-                    new OrderPending([
-                        'request' => $request,
-                        'name' => $name,
-                        'order_no' => $order_no,
-                        'subTotal' => $subTotal,
-                        'cart' => $cart
-                    ])
-                );
-            } catch (\Swift_TransportException $e) {
-                Session::flash('error', $e->getMessage());
-            }
-        }
-
-        /* ===========================
-           CREATE ORDER
-        =========================== */
-        $data = [
-            'order_no' => $order_no,
-            'discount' => $total_discount,
-            'vat' => $total_vat,
-            'coupon_discount' => session('coupon_discount'),
-            'shipping_cost' => $totalShipping,
-            'total_price' => $subTotal,
-            'coupon_id' => session('coupon_id'),
-            'shipping_name' => $name,
-            'shipping_address_1' => $request->billing_address,
-            'shipping_address_2' => $request->billing_address,
-            'shipping_mobile' => $request->mobile,
-            'payment_by' => $request->payment_by ?? 'COD',
-            'user_id' => $request->user_id ??  0,
-            'user_first_name' => $name,
-            'paid_amount' => 0,
-            'user_address_1' => $request->address_line_one,
-            'user_mobile' => $request->mobile,
-        ];
-
-        $order = Order::create($data + [
-                'payment_status' => $request->payment_by === 'COD' ? 'unpaid' : 'paid',
-                'paid_amount' => $request->payment_by === 'COD' ? 0 : $request->paid_amount,
-                'meta' => [
-                    'bank' => $request->bank,
-                    'transaction_id' => $request->transaction_id,
-                ]
-            ]);
-
-        session()->put('order_id', $order->id);
-
-        /* ===========================
-           COUPON USAGE
-        =========================== */
-        $coupon_id = session('coupon_id');
-
-        if (!empty($coupon_id)) {
-            CouponUsage::create([
-                'user_id' => $data['user_id'],
-                'coupon_id' => $coupon_id
-            ]);
-
-            $couponInfo = Coupon::find($coupon_id);
-
-            if ($couponInfo && $couponInfo->type === 'product') {
-                $couponProductIds = json_decode($couponInfo->details)->product_id ?? [];
-            }
-        }
-
-        /* ===========================
-           ORDER ITEMS
-        =========================== */
-        foreach ($cart as $item) {
-            $product = Product::findOrFail($item->id);
-
-            if ($product->is_manage_stock && $product->quantity < $item->quantity) {
-                continue;
+            if ($totalShipping) {
+                $subTotal += $totalShipping;
             }
 
-            // Coupon discount per product
-            $coupon_discount = 0;
-            if (!empty($coupon_id) && isset($couponInfo) && $couponInfo->type === 'product') {
-                if (in_array($item->id, $couponProductIds ?? [])) {
-                    $coupon_discount = $couponInfo->discount_type === 'percent'
-                        ? CartItem::price($item->id, $item->quantity) * ($couponInfo->discount / 100)
-                        : $couponInfo->discount;
+            if ($total_discount) {
+                $subTotal -= $totalShipping;
+            }
+
+            // Email (optional)
+            if ($request->get('email') != null) {
+                try {
+                    Mail::to(auth('customer')->user()->email)->send(
+                        new OrderPending([
+                            'request' => $request,
+                            'name' => $name,
+                            'order_no' => $order_no,
+                            'subTotal' => $subTotal,
+                            'cart' => $cart
+                        ])
+                    );
+                } catch (\Swift_TransportException $e) {
+                    Session::flash('error', $e->getMessage());
                 }
             }
 
-            $details = OrderDetail::create([
-                'seller_id' => $product->seller_id ?? null,
+            /* ===========================
+               CREATE ORDER
+            =========================== */
+            $data = [
+                'order_no' => $order_no,
+                'discount' => $total_discount,
+                'vat' => $total_vat,
+                'coupon_discount' => session('coupon_discount'),
+                'shipping_cost' => $totalShipping,
+                'total_price' => $subTotal,
+                'coupon_id' => session('coupon_id'),
+                'shipping_name' => $name,
+                'shipping_address_1' => $request->billing_address,
+                'shipping_address_2' => $request->billing_address,
+                'shipping_mobile' => $request->mobile,
+                'payment_by' => $request->payment_by ?? 'COD',
                 'user_id' => $request->user_id ?? 0,
-                'order_id' => $order->id,
-                'order_stat' => 1,
-                'product_id' => $item->id,
-                'sale_price' => CartItem::price($item->id),
-                'qty' => $item->quantity,
-                'color' => $item->color ?? null,
-                'size' => $item->size ?? null,
-                'discount' => $product->discount,
-                'coupon_discount' => $coupon_discount,
-                'shipping_cost' => CartItem::shipping($item->id),
-                'total_shipping_cost' => CartItem::shipping($item->id, $item->quantity),
-                'total_price' => CartItem::price($item->id, $item->quantity),
-                'grand_total' => CartItem::price($item->id, $item->quantity)
-                    + CartItem::shipping($item->id, $item->quantity),
-                'inside_shipping_days' => CartItem::estimatedShippingDays($item->id),
-            ]);
+                'user_first_name' => $name,
+                'paid_amount' => 0,
+                'user_address_1' => $request->address_line_one,
+                'user_mobile' => $request->mobile,
+            ];
 
-            // Order timeline
-            OrderTimeline::create([
-                'order_detail_id' => $details->id,
-                'order_stat' => 2,
-                'order_stat_desc' => $request->get('order_stat_desc'),
-                'order_stat_datetime' => now(),
-                'user_id' => $request->user_id ?? 0,
-                'remarks' => '',
-                'product_id' => $item->id,
-            ]);
+            $order = Order::create($data + [
+                    'payment_status' => $request->payment_by === 'COD' ? 'unpaid' : 'paid',
+                    'paid_amount' => $request->payment_by === 'COD' ? 0 : $request->paid_amount,
+                    'meta' => [
+                        'bank' => $request->bank,
+                        'transaction_id' => $request->transaction_id,
+                    ]
+                ]);
 
-            // Stock management
-            if (isset($item->size_id) || isset($item->color_id)) {
-                Productstock::where('product_id', $item->id)
-                    ->where('size_id', $item->size_id)
-                    ->where('color_id', $item->color_id)
-                    ->decrement('quantities', $item->quantity);
+            session()->put('order_id', $order->id);
+
+            /* ===========================
+               COUPON USAGE
+            =========================== */
+            $coupon_id = session('coupon_id');
+
+            if (!empty($coupon_id)) {
+                CouponUsage::create([
+                    'user_id' => $data['user_id'],
+                    'coupon_id' => $coupon_id
+                ]);
+
+                $couponInfo = Coupon::find($coupon_id);
+
+                if ($couponInfo && $couponInfo->type === 'product') {
+                    $couponProductIds = json_decode($couponInfo->details)->product_id ?? [];
+                }
             }
 
-            $product->decrement('quantity', $item->quantity);
-        }
+            /* ===========================
+               ORDER ITEMS
+            =========================== */
+            foreach ($cart as $item) {
+                $product = Product::findOrFail($item->id);
 
-        /* ===========================
-           CLEAR SESSION COUPON DATA
-        =========================== */
-        session()->forget([
-            'coupon_discount',
-            'total_vat',
-            'shipping',
-        ]);
+                if ($product->is_manage_stock && $product->quantity < $item->quantity) {
+                    continue;
+                }
 
-        return $order;
+                // Coupon discount per product
+                $coupon_discount = 0;
+                if (!empty($coupon_id) && isset($couponInfo) && $couponInfo->type === 'product') {
+                    if (in_array($item->id, $couponProductIds ?? [])) {
+                        $coupon_discount = $couponInfo->discount_type === 'percent'
+                            ? CartItem::price($item->id, $item->quantity) * ($couponInfo->discount / 100)
+                            : $couponInfo->discount;
+                    }
+                }
+
+                $details = OrderDetail::create([
+                    'seller_id' => $product->seller_id ?? null,
+                    'user_id' => $request->user_id ?? 0,
+                    'order_id' => $order->id,
+                    'order_stat' => 1,
+                    'product_id' => $item->id,
+                    'sale_price' => CartItem::price($item->id),
+                    'qty' => $item->quantity,
+                    'color' => $item->color ?? null,
+                    'size' => $item->size ?? null,
+                    'discount' => $product->discount,
+                    'coupon_discount' => $coupon_discount,
+                    'shipping_cost' => CartItem::shipping($item->id),
+                    'total_shipping_cost' => CartItem::shipping($item->id, $item->quantity),
+                    'total_price' => CartItem::price($item->id, $item->quantity),
+                    'grand_total' => CartItem::price($item->id, $item->quantity)
+                        + CartItem::shipping($item->id, $item->quantity),
+                    'inside_shipping_days' => CartItem::estimatedShippingDays($item->id),
+                ]);
+
+                // Order timeline
+                OrderTimeline::create([
+                    'order_detail_id' => $details->id,
+                    'order_stat' => 2,
+                    'order_stat_desc' => $request->get('order_stat_desc'),
+                    'order_stat_datetime' => now(),
+                    'user_id' => $request->user_id ?? 0,
+                    'remarks' => '',
+                    'product_id' => $item->id,
+                ]);
+
+                // Stock management
+                if (isset($item->size_id) || isset($item->color_id)) {
+                    Productstock::where('product_id', $item->id)
+                        ->where('size_id', $item->size_id)
+                        ->where('color_id', $item->color_id)
+                        ->decrement('quantities', $item->quantity);
+                }
+
+                $product->decrement('quantity', $item->quantity);
+            }
+
+            /* ===========================
+               CLEAR SESSION COUPON DATA
+            =========================== */
+            session()->forget([
+                'coupon_discount',
+                'total_vat',
+                'shipping',
+            ]);
+
+            return $order;
+        });
     }
 
     /**

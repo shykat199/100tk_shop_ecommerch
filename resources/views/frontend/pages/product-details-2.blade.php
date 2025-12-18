@@ -119,8 +119,8 @@
                             </div>
                         </div>
 
-                        @if ($product->productstock->count() > 0)
-                            @if ($product->productstock[0]->color ?? false)
+                        @if (!empty($product->productstock) && $product->productstock->count() > 0)
+{{--                            @if ($product->productstock[0]->color ?? false)--}}
                                 <div class="product-size-wrap product-size-v2">
                                     <h6>Color:</h6>
                                     <ul>
@@ -128,7 +128,7 @@
                                             @if ($productstock->color->name ?? false)
                                                 <li>
                                                     <label class="product-size">
-                                                        <input name="color" {{-- {{ $loop->first ? 'checked':'' }} --}} value="{{ $productstock->color->name }}" type="radio" data-color_qty="{{ $productstock->quantities }}" data-color_id="{{ $productstock->color->id }}" class="color-vAreation" data-variantimage="{{ $productstock->variant_image }}">
+                                                        <input name="color" {{-- {{ $loop->first ? 'checked':'' }} --}} value="{{ $productstock->color->name }}" type="radio" data-color_qty="{{ $productstock->quantities }}" data-color_id="{{ $productstock->color_id }}" class="color-vAreation" data-variantimage="{{ $productstock->variant_image }}">
                                                         <span class="checkmark product-color" style="background-color: {{ $productstock->color->hex }}"></span>
                                                     </label>
                                                 </li>
@@ -136,8 +136,8 @@
                                         @endforeach
                                     </ul>
                                 </div>
-                            @endif
-                            @if ($product->productstock[0]->size ?? false)
+{{--                            @endif--}}
+{{--                            @if ($product->productstock[0]->size ?? false)--}}
                                 <div class="product-size-wrap product-size-v2">
                                     <h6>Size:</h6>
                                     <ul>
@@ -145,7 +145,7 @@
                                             @if ($productstock->size->name ?? false)
                                                 <li>
                                                     <label class="product-size">
-                                                        <input type="radio" {{-- {{ $loop->first ? 'checked':'' }} --}} name="size" value="{{ $productstock->size->name ?? '' }}" data-size_id="{{ $productstock->size->id }}" class="size-vAreation">
+                                                        <input type="radio" {{-- {{ $loop->first ? 'checked':'' }} --}} name="size" value="{{ $productstock->size->name ?? '' }}" data-size_id="{{ $productstock->size_id }}" class="size-vAreation">
                                                         <span class="checkmark">{{ $productstock->size->name ?? '' }}</span>
                                                     </label>
                                                 </li>
@@ -153,7 +153,7 @@
                                         @endforeach
                                     </ul>
                                 </div>
-                            @endif
+{{--                            @endif--}}
                         @endif
                         <div class="new-quantity-area">
                             {{-- <div class="new-quantity-item">
@@ -216,17 +216,35 @@
                             <ul>
                                 <li>
                                     <a href="https://wa.me/?text={{ urlencode(url()->full()) }}"
-                                        target="_blank"
-                                        title="Share on WhatsApp">
+                                       target="_blank"
+                                       title="Share on WhatsApp">
                                         <i class="fa-brands fa-whatsapp"></i>
                                     </a>
                                 </li>
 
                                 <li>
                                     <a href="https://t.me/share/url?url={{ urlencode(url()->full()) }}&text={{ urlencode($product->name ?? '') }}"
-                                        target="_blank"
-                                        title="Share on Telegram">
+                                       target="_blank"
+                                       title="Share on Telegram">
                                         <i class="fa-brands fa-telegram"></i>
+                                    </a>
+                                </li>
+
+                                <!-- Facebook -->
+                                <li>
+                                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(url()->full()) }}"
+                                       target="_blank"
+                                       title="Share on Facebook">
+                                        <i class="fa-brands fa-facebook"></i>
+                                    </a>
+                                </li>
+
+                                <!-- YouTube (no direct share, links to channel/video) -->
+                                <li>
+                                    <a href="https://www.youtube.com/"
+                                       target="_blank"
+                                       title="Open YouTube">
+                                        <i class="fa-brands fa-youtube"></i>
                                     </a>
                                 </li>
                             </ul>

@@ -7,7 +7,7 @@
                 onmouseover="this.stop()"
                 onmouseout="this.start()"
                 style="color: #ffffff;">
-                <span class="px-4">
+                <span class="px-4" style="color: #FFFFFF">
                     <b><?php echo e($notice->headline ?? ''); ?>:&nbsp;</b><?php echo e($notice->description ?? ''); ?>
 
                 </span>
@@ -15,4 +15,4 @@
         </div>
     </div>
 </section>
-<?php /**PATH /var/www/my/100_shop/resources/views/frontend/_notice.blade.php ENDPATH**/ ?>
+<?php /**PATH /var/www/html/100tk_shop_ecommerch/resources/views/frontend/_notice.blade.php ENDPATH**/ ?>

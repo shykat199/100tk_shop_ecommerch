@@ -17,7 +17,7 @@
             </div>
             <div class="col-lg-4">
                 <div class="input-group">
-                    <input type="number" id="minimum_qty" name="minimum_qty" class="form-control" min="1" value="1" value="{{ $product->minimum_qty ?? '' }}" required>
+                    <input type="number" id="minimum_qty" name="minimum_qty" class="form-control" min="1" value="{{ $product->minimum_qty ?? '' }}" required>
                 </div>
             </div>
             <div class="col-lg-2">
@@ -373,7 +373,7 @@
                         </div>
                         <div class="col-lg-8">
                             <div class="input-group overflow-visible">
-                                <input name="quantity" min="1" type="number" class="form-control" placeholder="0" value="{{ $product->quantity }}" required>
+                                <input name="quantity" id="available_qty" min="1" type="number" class="form-control" placeholder="0" value="{{ $product->quantity }}" required>
                             </div>
                         </div>
                         {{-- <div class="col-lg-4">
@@ -807,7 +807,7 @@
             totalQty = totalQty > 0 ? totalQty : 1;
 
             // Update minimum quantity input
-            $('#minimum_qty')
+            $('#available_qty')
                 .val(totalQty)
                 .attr('max', totalQty); // optional safety
         });

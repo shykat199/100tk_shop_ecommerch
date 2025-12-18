@@ -44,4 +44,4 @@
         </ul>
     </nav>
 <?php endif; ?>
-<?php /**PATH /var/www/my/100_shop/resources/views/vendor/pagination/bootstrap-4.blade.php ENDPATH**/ ?>
+<?php /**PATH /var/www/html/100tk_shop_ecommerch/resources/views/vendor/pagination/bootstrap-4.blade.php ENDPATH**/ ?>
