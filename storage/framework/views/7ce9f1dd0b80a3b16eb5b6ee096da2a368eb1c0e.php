@@ -1,4 +1,28 @@
 <!-- Menu Bar Start -->
+<style>
+    .category-scroll {
+        display: flex;
+        gap: 20px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+
+        cursor: grab;
+    }
+
+    .category-scroll::-webkit-scrollbar {
+        display: none;
+    }
+
+    .category-scroll li {
+        flex-shrink: 0;
+    }
+
+
+</style>
 <div class="manu-bar">
     <div class="container">
         <div class="row align-items-center">
@@ -12,16 +36,16 @@
                             <?php $__currentLoopData = menus(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $menu): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <li>
                                     <a class="px-0" href="<?php echo e(route('category',$menu->slug??'undefined')); ?>" >
-                                        <img
-                                            src="<?php echo e(asset('uploads/categories/32x32')); ?>/<?php echo e($menu->icon); ?>"
-                                            alt="img"
-                                            style="
-                                            width: 30px;
-                                            height: 30px;
-                                            border-radius: 50%;
-                                            object-fit: cover;
-                                            margin-right: 6px;
-                                        ">
+
+
+
+
+
+
+
+
+
+
                                         <span class="text" style="font-size: 15px"><?php echo e($menu->name); ?></span>
                                         <span class="arrow"><svg viewBox="0 0 451.8 451.8"><path d="M354.7,225.9c0,8.1-3.1,16.2-9.3,22.4L151.2,442.6c-12.4,12.4-32.4,12.4-44.8,0c-12.4-12.4-12.4-32.4,0-44.7l171.9-171.9 L106.4,54c-12.4-12.4-12.4-32.4,0-44.7c12.4-12.4,32.4-12.4,44.7,0l194.3,194.3C351.6,209.7,354.7,217.8,354.7,225.9z"/></svg></span></a>
                                     <div class="mega-manu">
@@ -66,10 +90,10 @@
                         <li>
                             <a href="<?php echo e(url('shop')); ?>" class="<?php echo e(isActiveMenu('shop')); ?>"><?php echo e(__('All Products')); ?></a>
                         </li>
-                        <li>
-                            <a href="<?php echo e(route('frontend.new.arrival')); ?>"
-                               class="<?php echo e(Route::is('frontend.new.arrival') ? 'active' : ''); ?>"><?php echo e(__('New Arrivals')); ?></a>
-                        </li>
+
+
+
+
 
                         <?php $__currentLoopData = menubars(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $menubar): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <li>

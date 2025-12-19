@@ -309,8 +309,8 @@ class FrontController extends Controller
         $products = Product::query()
             ->whereIn('category_id', $cats)
             ->where('is_active', 1)
-            ->orderByRaw('quantity = 0, quantity')
-            ->orderByDesc('id')
+            ->orderByRaw('CASE WHEN quantity = 0 THEN 1 ELSE 0 END')
+            ->orderBy('created_at', 'DESC')
             ->paginate(50);
 
         $sizes = Size::query()->where('is_active', 1)->get();

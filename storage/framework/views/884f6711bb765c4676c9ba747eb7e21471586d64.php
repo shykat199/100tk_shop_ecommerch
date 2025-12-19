@@ -595,6 +595,73 @@
     });
 </script>
 
+<script>
+    const slider = document.querySelector('.category-scroll');
+
+    let targetScroll = slider.scrollLeft;
+    let isAnimating = false;
+
+    function smoothScroll() {
+        if (!isAnimating) return;
+
+        slider.scrollLeft += (targetScroll - slider.scrollLeft) * 0.15;
+
+        if (Math.abs(targetScroll - slider.scrollLeft) < 0.5) {
+            slider.scrollLeft = targetScroll;
+            isAnimating = false;
+            return;
+        }
+
+        requestAnimationFrame(smoothScroll);
+    }
+
+    /* Mouse wheel → smooth horizontal slide */
+    slider.addEventListener('wheel', (e) => {
+        e.preventDefault();
+
+        targetScroll += e.deltaY * 1.5;
+        targetScroll = Math.max(
+            0,
+            Math.min(targetScroll, slider.scrollWidth - slider.clientWidth)
+        );
+
+        if (!isAnimating) {
+            isAnimating = true;
+            smoothScroll();
+        }
+    }, { passive: false });
+
+    /* Drag slider */
+    let isDown = false;
+    let startX;
+    let scrollStart;
+
+    slider.addEventListener('mousedown', (e) => {
+        isDown = true;
+        slider.style.cursor = 'grabbing';
+        startX = e.pageX;
+        scrollStart = slider.scrollLeft;
+    });
+
+    slider.addEventListener('mouseup', () => {
+        isDown = false;
+        slider.style.cursor = 'grab';
+    });
+
+    slider.addEventListener('mouseleave', () => {
+        isDown = false;
+        slider.style.cursor = 'grab';
+    });
+
+    slider.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        const walk = (e.pageX - startX) * 1.3;
+        slider.scrollLeft = scrollStart - walk;
+        targetScroll = slider.scrollLeft;
+    });
+</script>
+
+
 <?php if(Session::has('success')): ?>
     <script>
         swal("<?php echo e(__('Subscribed!')); ?>","<?php echo e(Session::get('success')); ?>","success");

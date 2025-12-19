@@ -1,6 +1,24 @@
 <?php $__env->startSection('title', 'Checkout'); ?>
 
 <?php $__env->startSection('content'); ?>
+    <style>
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        /*.form-control,*/
+        /*.form-select {*/
+        /*    padding: 10px 12px;*/
+        /*    border-radius: 6px;*/
+        /*}*/
+
+        .submit-btn {
+            border-radius: 30px;
+            font-size: 16px;
+        }
+
+    </style>
 
     <!-- Billing Details Start -->
     <section class="billing-details bg-light">
@@ -17,52 +35,75 @@
                                         <span class="animation-pulse"></span></h5>
                                 </div>
                                 <div class="login-form mt-4">
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <div class="input-group">
-                                                <input type="text" name="first_name" value="">
-                                                <span class="label"><?php echo e(__('নাম')); ?> <span
-                                                        class="text-danger">*</span></span>
-                                            </div>
+                                    <div class="row g-3">
+
+                                        <!-- Level -->
+                                        <div class="col-12">
+                                            <label for="level" class="form-label">
+                                                <?php echo e(__('নাম')); ?> <span class="text-danger">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="level"
+                                                name="first_name"
+                                                value="<?php echo e(old('first_name')); ?>"
+                                                class="form-control"
+                                                required
+                                            >
                                         </div>
+
+                                        <!-- User ID -->
                                         <?php if(Auth::user()): ?>
                                             <input type="hidden" name="user_id" value="<?php echo e(auth()->user()->id); ?>">
                                         <?php endif; ?>
+
+                                        <!-- Mobile -->
                                         <div class="col-12">
-                                            <div class="input-group">
-                                                <input type="number" name="mobile">
-                                                <span class="label"><?php echo e(__('মোবাইল')); ?> <span
-                                                        class="text-danger">*</span></span>
-                                            </div>
+                                            <label for="mobile" class="form-label">
+                                                <?php echo e(__('মোবাইল')); ?> <span class="text-danger">*</span>
+                                            </label>
+                                            <input
+                                                type="number"
+                                                id="mobile"
+                                                name="mobile"
+                                                class="form-control"
+                                                required
+                                            >
                                         </div>
 
+                                        <!-- Billing Address -->
                                         <div class="col-12">
-                                            <div class="input-group">
-                                                <input type="text" name="billing_address"
-                                                    value="<?php echo e($billing->address_1 ?? null); ?>">
-                                                <span class="label"><?php echo e(__('ঠিকানা')); ?> <span
-                                                        class="text-danger">*</span></span>
-                                            </div>
+                                            <label for="billing_address" class="form-label">
+                                                <?php echo e(__('ঠিকানা')); ?> <span class="text-danger">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="billing_address"
+                                                name="billing_address"
+                                                value="<?php echo e($billing->address_1 ?? ''); ?>"
+                                                class="form-control"
+                                                required
+                                            >
                                         </div>
-                                        <div class="col-sm-12 mb-4">
-                                            <span class="label"><?php echo e(__('শিপিং এরিয়া')); ?> <span
-                                                    class="text-danger">*</span></span>
 
-                                            <div class="col-12">
-                                                <select name="shipping_cost" id="shipping_cost">
-                                                    <?php $__currentLoopData = $shipping_areas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $shipping_area): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                        <option value="<?php echo e($shipping_area->charge); ?>">
-                                                            <?php echo e($shipping_area->name); ?> - <?php echo e($shipping_area->charge); ?>
+                                        <!-- Shipping Area -->
+                                        <div class="col-12 mt-4">
+                                            <select name="shipping_cost" id="shipping_cost">
+                                                <?php $__currentLoopData = $shipping_areas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $shipping_area): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($shipping_area->charge); ?>">
+                                                        <?php echo e($shipping_area->name); ?> - <?php echo e($shipping_area->charge); ?>
 
-                                                        </option>
-                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                                </select>
-                                            </div>
-
+                                                    </option>
+                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                            </select>
                                         </div>
-                                        <div class="col-12 text-center mb-3">
-                                            <button type="submit"
-                                                class="btn-anime w-50 submit-btn"><?php echo e(__('অর্ডার কনফার্ম করুন')); ?></button>
+
+                                        <!-- Submit Button -->
+                                        <div class="col-12 text-center mt-4">
+                                            <button type="submit" class="btn btn-primary px-5 py-2 submit-btn">
+                                                <?php echo e(__('অর্ডার কনফার্ম করুন')); ?>
+
+                                            </button>
                                         </div>
                                     </div>
                                 </div>

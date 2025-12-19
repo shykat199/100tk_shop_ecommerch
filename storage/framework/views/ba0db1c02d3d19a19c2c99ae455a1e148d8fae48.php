@@ -56,12 +56,17 @@
             display: none !important;
         }
 
-        .invoice-bar {
-            transform: none !important;
+        .invoice-bar.invoice-text {
+            background: #BE1E2D !important;
         }
 
         .customer-invoice {
             page-break-inside: avoid;
+        }
+
+        thead {
+            background: #BE1E2D !important;
+            color: #ffffff !important;
         }
     }
 
@@ -91,7 +96,7 @@
                                     </div>
                                 </td>
                                 <td  style="width:60%;float: left;">
-                                    <div class="invoice-bar" style=" background: #BE1E2D; transform: skew(38deg); width: 100%; margin-left: 65px; padding: 20px 60px; ">
+                                    <div class="invoice-bar invoice-text" style=" background: #BE1E2D; transform: skew(38deg); width: 100%; margin-left: 65px; padding: 20px 60px; ">
                                         <p style="font-size: 30px; color: #fff; transform: skew(-38deg); text-transform: uppercase; text-align: right; font-weight: bold;">Invoice</p>
                                     </div>
                                     <div class="invoice-bar" style="background: #fff; transform: skew(36deg); width: 72%; margin-left: 182px; padding: 12px 32px; margin-top: 6px;">

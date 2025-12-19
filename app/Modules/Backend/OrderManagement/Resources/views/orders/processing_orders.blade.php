@@ -127,6 +127,7 @@
                                         <td>{{$value->order_no}}</td>
                                         <td>{{date('d-m-Y', strtotime($value->updated_at))}}<br> {{date('h:i:s a', strtotime($value->updated_at))}}</td>
                                         <td>
+                                            <strong>{{$value->cuatomer?$value->cuatomer->first_name ." ".$value->cuatomer->last_name :$value->shipping_name}}</strong> <br/>
                                             <strong>{{$value->shipping_address_1?$value->shipping_address_1:''}}</strong>
                                             <p>{{$value->shipping_post?$value->shipping_post:''}}</p>
                                             <p>{{$value->shipping_town?$value->shipping_town:''}}</p>

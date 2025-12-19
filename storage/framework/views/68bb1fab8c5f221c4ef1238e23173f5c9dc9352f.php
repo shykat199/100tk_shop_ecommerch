@@ -1,18 +1,22 @@
 <section class="notice-section">
-    <div class="container" style="background: var(--color-orange)">
-        <div class="notice-section-wrapper">
-            <marquee
-                behavior="scroll"
-                direction="left"
-                onmouseover="this.stop()"
-                onmouseout="this.start()"
-                style="color: #ffffff;">
-                <span class="px-4" style="color: #FFFFFF">
-                    <b><?php echo e($notice->headline ?? ''); ?>:&nbsp;</b><?php echo e($notice->description ?? ''); ?>
+    <div class="container"
+         style="background:black; height:40px; display:flex; align-items:center; justify-content:center;">
 
-                </span>
-            </marquee>
-        </div>
+        <marquee
+            behavior="scroll"
+            direction="left"
+            onmouseover="this.stop()"
+            onmouseout="this.start()"
+            style="color:#ffffff; font-size:18px; width:100%; font-weight: 700">
+
+        <span style="padding:0 16px;">
+            <b><?php echo e($notice->headline ?? ''); ?>:</b>
+            <?php echo e($notice->description ?? ''); ?>
+
+        </span>
+
+        </marquee>
+
     </div>
 </section>
 <?php /**PATH /var/www/html/100tk_shop_ecommerch/resources/views/frontend/_notice.blade.php ENDPATH**/ ?>

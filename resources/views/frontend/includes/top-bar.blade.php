@@ -1,14 +1,26 @@
 <!-- Top Bar Start -->
+<style>
+    .top-bar {
+        height: 40px;
+        background: black;
+    }
+    .top-bar .top-bar-left li {
+        padding: 0 30px !important;
+    }
+    .fa-1x {
+        font-size: 22px;
+    }
+</style>
 <div class="top-bar">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-sm-7">
                 <div class="top-bar-left">
                     <ul>
-                        <li>
+                        <li style="background: white; height: 40px;">
                             <a href="#">
                                             <span class="icon">
-											<svg viewBox="0 0 473.806 473.806" style="fill: var(--color-white);"><path d="M374.456,293.506c-9.7-10.1-21.4-15.5-33.8-15.5c-12.3,0-24.1,5.3-34.2,15.4l-31.6,31.5c-2.6-1.4-5.2-2.7-7.7-4
+											<svg viewBox="0 0 473.806 473.806" style="fill: var(--color-orange); height: 45px"><path d="M374.456,293.506c-9.7-10.1-21.4-15.5-33.8-15.5c-12.3,0-24.1,5.3-34.2,15.4l-31.6,31.5c-2.6-1.4-5.2-2.7-7.7-4
 			c-3.6-1.8-7-3.5-9.9-5.3c-29.6-18.8-56.5-43.3-82.3-75c-12.5-15.8-20.9-29.1-27-42.6c8.2-7.5,15.8-15.3,23.2-22.8
 			c2.8-2.8,5.6-5.7,8.4-8.5c21-21,21-48.2,0-69.2l-27.3-27.3c-3.1-3.1-6.3-6.3-9.3-9.5c-6-6.2-12.3-12.6-18.8-18.6
 			c-9.7-9.6-21.3-14.7-33.5-14.7s-24,5.1-34,14.7c-0.1,0.1-0.1,0.1-0.2,0.2l-34,34.3c-12.8,12.8-20.1,28.4-21.7,46.5
@@ -30,14 +42,14 @@
 			c0.8,0,1.5-0.1,2.3-0.2C469.556,223.306,474.556,216.306,473.256,209.006z"/>
 											</svg>
 										</span>
-                                <strong class="text text-white">{{ maanAppearance('hotline_number') }}</strong>
+                                <strong class="text text-black" style="font-size: 20px">{{ maanAppearance('hotline_number') }}</strong>
                             </a>
                         </li>
                         @if(maanHeader('enable_tracking_order'))
-                            <li>
+                            <li style="background: white; height: 40px;">
                                 <a href="{{ route('customer.order') }}">
                                             <span class="icon">
-											<svg  viewBox="0 0 512 512" style="fill: var(--color-white);"><path d="M386.689,304.403c-35.587,0-64.538,28.951-64.538,64.538s28.951,64.538,64.538,64.538
+											<svg  viewBox="0 0 512 512" style="fill: var(--color-orange); height: 45px"><path d="M386.689,304.403c-35.587,0-64.538,28.951-64.538,64.538s28.951,64.538,64.538,64.538
 			c35.593,0,64.538-28.951,64.538-64.538S422.276,304.403,386.689,304.403z M386.689,401.21c-17.796,0-32.269-14.473-32.269-32.269
 			c0-17.796,14.473-32.269,32.269-32.269c17.796,0,32.269,14.473,32.269,32.269C418.958,386.738,404.485,401.21,386.689,401.21z"/><path d="M166.185,304.403c-35.587,0-64.538,28.951-64.538,64.538s28.951,64.538,64.538,64.538s64.538-28.951,64.538-64.538
 			S201.772,304.403,166.185,304.403z M166.185,401.21c-17.796,0-32.269-14.473-32.269-32.269c0-17.796,14.473-32.269,32.269-32.269
@@ -51,7 +63,7 @@
 			c8.912,0,16.134-7.223,16.134-16.134S162.727,208.134,153.815,208.134z"/><path d="M180.168,144.672H42.487c-8.912,0-16.134,7.223-16.134,16.134c0,8.912,7.223,16.134,16.134,16.134h137.681
 			c8.912,0,16.134-7.223,16.134-16.134C196.303,151.895,189.08,144.672,180.168,144.672z"/></svg>
 										</span>
-                                    <strong class="text text-white">{{ __('Track Your Order') }}</strong>
+                                    <strong class="text text-black" style="font-size: 20px">{{ __('Track Your Order') }}</strong>
                                 </a>
                             </li>
                         @endif
@@ -60,18 +72,18 @@
             </div>
             <div class="col-sm-5">
                 <div class="top-bar-right">
-                    <ul class="bg-dark">
-                        <li class="bg-dark">
+                    <ul class="">
+                        <li class="">
                             <div class="top-social-links">
                                 <a href="{{ maanAppearance('facebook_link') }}">
-                                    <i class="fa-brands fa-facebook-f text-white"></i>
+                                    <i class="fa-brands fa-facebook-f text-white fa-1x"></i>
                                 </a>
                             </div>
                         </li>
-                        <li class="bg-dark">
+                        <li class="">
                             <div class="top-social-links">
                                 <a href="{{ maanAppearance('youtube_link') }}">
-                                    <i class="fab fa-youtube text-white"></i>
+                                    <i class="fab fa-youtube text-white fa-1x"></i>
                                 </a>
                             </div>
                         </li>

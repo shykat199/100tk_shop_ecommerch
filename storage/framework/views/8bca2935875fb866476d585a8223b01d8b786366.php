@@ -1,4 +1,4 @@
-<?php $__env->startSection('title','Orders - '); ?>
+<?php $__env->startSection('title','Pending Orders - '); ?>
 <?php $__env->startPush('css'); ?>
     <?php echo $__env->make('backend.includes.datatable_css', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
@@ -67,11 +67,10 @@
 
         <!-- Tab Content End -->
 
-        <!-- start page title -->
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    <h4 class="page-title">All Orders (<?php echo e($order_overview??0); ?>)</h4>
+                    <h4 class="page-title">Pending Orders (<?php echo e($order_overview??0); ?>)</h4>
                 </div>
             </div>
         </div>
@@ -80,7 +79,6 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-
                         <?php echo $__env->make('frontend.includes.order-nav-bar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
                         <div class="table-responsive ">
@@ -97,7 +95,7 @@
                                     <th style="width:10%">Phone</th>
                                     <th style="width:10%">Check</th>
                                     <th style="width:10%">Amount</th>
-                                    <th style="width:10%">Status</th>
+
                                 </tr>
                                 </thead>
 
@@ -140,7 +138,7 @@
                                         <td><?php echo e($value->shipping_mobile?$value->shipping_mobile:''); ?></td>
                                         <td> <a target="_blank" style="text-decoration: underline" href="https://greenviewit.com/check-fraud-customer" >Fraud Customer Check</a></td>
                                         <td>৳<?php echo e($value->total_price); ?></td>
-                                        <td><?php echo e($value->newOrderStatus->name ?? 'Unknown'); ?></td>
+
 
                                     </tr>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -157,44 +155,15 @@
             </div><!-- end col-->
         </div>
     </div>
-
-
-
-
-    <!-- edit modal -->
-
-    <!-- Button trigger modal -->
-
-
-<!-- Modal -->
-<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startPush('js'); ?>
     <?php echo $__env->make('backend.includes.datatable_js', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
     <script>
+
         $(".checkall").on('change',function(){
             $(".checkbox").prop('checked',$(this).is(":checked"));
         });
-
         
         
 
@@ -209,23 +178,13 @@
         
         
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
 
+        
+        
+        
         
         
     </script>
 <?php $__env->stopPush(); ?>
 
-<?php echo $__env->make('backend.layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /var/www/html/100tk_shop_ecommerch/app/Modules/Backend/OrderManagement/Resources/views/orders/index.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('backend.layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /var/www/html/100tk_shop_ecommerch/app/Modules/Backend/OrderManagement/Resources/views/orders/pending_orders.blade.php ENDPATH**/ ?>

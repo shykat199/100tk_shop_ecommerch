@@ -535,7 +535,7 @@ class OrderController extends Controller
                 ->orWhere('payment_by', 'like', '%' . $searchValue . '%');
         }
         $records = $query
-            ->with('newOrderStatus','details.orderStatus')
+            ->with('newOrderStatus','details.orderStatus','customer')
 //            ->skip($start)
 //            ->take($rowperpage)
             ->paginate(20);
@@ -703,7 +703,7 @@ class OrderController extends Controller
                 });
         }
         $query
-            ->with('orderStatus', 'country')
+            ->with('orderStatus', 'country','customer')
             ->withSum('details', 'qty');
         $totalRecords = $query->count();
         if (!empty($searchValue)) {
@@ -874,7 +874,7 @@ class OrderController extends Controller
                 });
         }
         $records = $query
-            ->with('orderStatus', 'customer')
+            ->with('orderStatus', 'customer','customer')
             ->withSum('details', 'qty')
 //            ->orderBy($columnName, $columnSortOrder)
 //            ->skip($start)
@@ -1038,7 +1038,7 @@ class OrderController extends Controller
                 });
         }
         $records = $query
-            ->with('orderStatus', 'country')
+            ->with('orderStatus', 'country','customer')
             ->withSum('details', 'qty')
 //            ->orderBy($columnName, $columnSortOrder)
 //            ->skip($start)
@@ -1206,7 +1206,7 @@ class OrderController extends Controller
         }
         $records = $query
             ->with('orderStatus', 'country')
-            ->withSum('details', 'qty')
+            ->withSum('details', 'qty','customer')
 //            ->orderBy($columnName, $columnSortOrder)
 //            ->skip($start)
 //            ->take($rowperpage)
@@ -1270,7 +1270,7 @@ class OrderController extends Controller
 //            $totalRecordswithFilter = $query->count();
         }
         $records = $query
-            ->with('orderStatus', 'country')
+            ->with('orderStatus', 'country','customer')
             ->withSum('details', 'qty')
 //            ->orderBy($columnName, $columnSortOrder)
 //            ->skip($start)
@@ -1420,7 +1420,7 @@ class OrderController extends Controller
                 });
         }
         $query
-            ->with('orderStatus')
+            ->with('orderStatus','customer')
             ->withSum('details', 'qty');
 
         // Total records
@@ -1602,7 +1602,7 @@ class OrderController extends Controller
                 });
         }
         $records = $query
-            ->with('orderStatus', 'country')
+            ->with('orderStatus', 'country','customer')
             ->withSum('details', 'qty')
 //            ->orderBy($columnName, $columnSortOrder)
 //            ->skip($start)
@@ -1769,7 +1769,7 @@ class OrderController extends Controller
                 });
         }
         $records = $query
-            ->with('orderStatus')
+            ->with('orderStatus','customer')
             ->withSum('details', 'qty')
 //            ->orderBy($columnName, $columnSortOrder)
 //            ->skip($start)
