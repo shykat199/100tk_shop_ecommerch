@@ -16,13 +16,13 @@
                                             src="{{ asset('uploads/categories/32x32') }}/{{ $menu->icon }}"
                                             alt="img"
                                             style="
-                                            width: 40px;
-                                            height: 40px;
+                                            width: 30px;
+                                            height: 30px;
                                             border-radius: 50%;
                                             object-fit: cover;
                                             margin-right: 6px;
                                         ">
-                                        <span class="text">{{ $menu->name }}</span>
+                                        <span class="text" style="font-size: 15px">{{ $menu->name }}</span>
                                         <span class="arrow"><svg viewBox="0 0 451.8 451.8"><path d="M354.7,225.9c0,8.1-3.1,16.2-9.3,22.4L151.2,442.6c-12.4,12.4-32.4,12.4-44.8,0c-12.4-12.4-12.4-32.4,0-44.7l171.9-171.9 L106.4,54c-12.4-12.4-12.4-32.4,0-44.7c12.4-12.4,32.4-12.4,44.7,0l194.3,194.3C351.6,209.7,354.7,217.8,354.7,225.9z"/></svg></span></a>
                                     <div class="mega-manu">
                                         <div class="row">
@@ -31,13 +31,13 @@
                                                     <ul>
                                                         @if ($subMenu->subCategories->take(4)->count() > 0)
                                                         <li>
-                                                            <a href="{{ route('category', $subMenu->slug ?? 'undefined') }}">
+                                                            <a href="{{ route('category', $subMenu->slug ?? 'undefined') }}" style="font-size: 15px">
                                                                 <h6 class="title">{{ $subMenu->name }}</h6>
                                                             </a>
                                                         </li>
                                                         @foreach($subMenu->subCategories->take(4) as $subSubMenu)
                                                         <li>
-                                                            <a href="{{ route('category',$subSubMenu->slug??'undefined') }}">{{ $subSubMenu->name }}</a>
+                                                            <a href="{{ route('category',$subSubMenu->slug??'undefined') }}" style="font-size: 15px">{{ $subSubMenu->name }}</a>
                                                         </li>
                                                         @endforeach
                                                         @else

@@ -247,17 +247,18 @@
                                     </div>
                                     <div class="mybazar-total-info">
                                         <ul>
+
                                             <li><?php echo e(__('Item(s) Subtotal')); ?>
 
-                                                :<span><?php echo e($order->productPriceWithCurrency()); ?></span></li>
+                                                :<span><?php echo e(number_format($order->details->sum('total_price'),2)); ?> ৳</span></li>
                                             <li><?php echo e(__('Shipping Charge')); ?>
 
-                                                :<span><?php echo e($order->costWithCurrency()); ?></span></li>
+                                                :<span><?php echo e(number_format($order->shipping_cost,2)); ?> ৳</span></li>
                                             <li>-------------------------------------------</li>
-                                            <li><?php echo e(__('SubTotal')); ?>:<span><?php echo e($order->totalWithCurrency()); ?></span></li>
-                                            <li><?php echo e(__('Coupon')); ?>:<span><?php echo e($order->totalCouponDiscount()); ?></span></li>
+                                            <li><?php echo e(__('SubTotal')); ?>:<span><?php echo e(number_format($order->details->sum('total_price'),2)); ?> ৳</span></li>
+                                            <li><?php echo e(__('Coupon')); ?>:<span><?php echo e(number_format($order->shipping_cost,2)); ?> ৳</span></li>
                                             <li>-------------------------------------------</li>
-                                            <li><?php echo e(__('Total')); ?>:<span><?php echo e($order->totalWithCurrency()); ?></span></li>
+                                            <li><?php echo e(__('Total')); ?>:<span><?php echo e(number_format($order->total_price,2)); ?> ৳</span></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -537,7 +538,7 @@
         <a href="" class="logo" style="text-decoration: none;">
             <img src="<?php if($website->logo): ?><?php echo e(URL::to('uploads').'/'.$website->logo); ?> <?php else: ?> 'uploads/logo.png' <?php endif; ?>" width="100" alt="logo" style="max-width: 100px;">
         </a>
-        
+
         <div class="customer-detail" style="text-align: right; font-size: 10px;">
             <p style="margin: 2px 0;"><b><?php echo e(ucfirst($website->website_name)); ?></b></p>
             <p style="margin: 2px 0;"><?php echo e($website->get_in_touch??''); ?></p>

@@ -256,15 +256,16 @@
                                     </div>
                                     <div class="mybazar-total-info">
                                         <ul>
+
                                             <li>{{__('Item(s) Subtotal')}}
-                                                :<span>{{$order->productPriceWithCurrency()}}</span></li>
+                                                :<span>{{number_format($order->details->sum('total_price'),2)}} ৳</span></li>
                                             <li>{{__('Shipping Charge')}}
-                                                :<span>{{$order->costWithCurrency()}}</span></li>
+                                                :<span>{{number_format($order->shipping_cost,2)}} ৳</span></li>
                                             <li>-------------------------------------------</li>
-                                            <li>{{__('SubTotal')}}:<span>{{ $order->totalWithCurrency() }}</span></li>
-                                            <li>{{__('Coupon')}}:<span>{{ $order->totalCouponDiscount() }}</span></li>
+                                            <li>{{__('SubTotal')}}:<span>{{ number_format($order->details->sum('total_price'),2) }} ৳</span></li>
+                                            <li>{{__('Coupon')}}:<span>{{ number_format($order->shipping_cost,2) }} ৳</span></li>
                                             <li>-------------------------------------------</li>
-                                            <li>{{__('Total')}}:<span>{{ $order->totalWithCurrency() }}</span></li>
+                                            <li>{{__('Total')}}:<span>{{ number_format($order->total_price,2) }} ৳</span></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -539,7 +540,7 @@
         <a href="" class="logo" style="text-decoration: none;">
             <img src="@if($website->logo){{URL::to('uploads').'/'.$website->logo}} @else 'uploads/logo.png' @endif" width="100" alt="logo" style="max-width: 100px;">
         </a>
-        
+
         <div class="customer-detail" style="text-align: right; font-size: 10px;">
             <p style="margin: 2px 0;"><b>{{ ucfirst($website->website_name)}}</b></p>
             <p style="margin: 2px 0;">{{$website->get_in_touch??''}}</p>
