@@ -43,7 +43,8 @@ class Order extends Model
         'user_country_id',
         'user_mobile',
         'user_email',
-        'payment_status'
+        'payment_status',
+        'order_status'
     ];
 
     public function full_name()

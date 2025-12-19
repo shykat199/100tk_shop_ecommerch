@@ -14,10 +14,10 @@
 use App\Http\Controllers\PathaoController;
 
 Route::get('/pathao/create-store', [PathaoController::class, 'createStoreFlow']);
-Route::get('/pathao/cities', [PathaoController::class, 'getCities']);
-Route::get('/pathao/zones/{city_id}', [PathaoController::class, 'getZones']);
-Route::get('/pathao/areas/{zone_id}', [PathaoController::class, 'getAreas']);
-Route::get('/pathao/stores', [PathaoController::class, 'getStores']);
+Route::get('/pathao/cities', [PathaoController::class, 'getCities'])->name('getCities');
+Route::get('/pathao/zones/{city_id}', [PathaoController::class, 'getZones'])->name('get-zones');
+Route::get('/pathao/areas/{zone_id}', [PathaoController::class, 'getAreas'])->name('areas');
+Route::get('/pathao/stores', [PathaoController::class, 'getStores'])->name('pathao.stores');
 Route::get('/pathao/orders/{consignment_id}/info', [PathaoController::class, 'getOrderShortInfo']);
 
 
@@ -47,6 +47,7 @@ Route::group(['prefix' => 'admin', 'as' => 'backend.'], function () {
         Route::get('cancelled_order_list', 'OrderController@cancelledOrderList')->name('cancelled_orders.list');
         Route::put('orders_details', 'OrderController@updateOrderDetails')->name('order_details.update');
         Route::get('orders_details_seller/{order_id}/{seller_id?}', 'OrderController@orderDetailsSeller')->name('order_details_seller');
+        Route::get('order-pathao', 'OrderController@order_pathao')->name('bulk-order.pathao');
 
 
         // edit order

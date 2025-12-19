@@ -123,19 +123,15 @@
                 <h5 class="modal-title">Pathao Courier</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="" id="order_sendto_pathao">
+            <form action="{{route('backend.bulk-order.pathao')}}" id="order_sendto_pathao" method="post">
+                @csrf
 
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="pathaostore" class="form-label">Store</label>
                         <select name="pathaostore" id="pathaostore" class="pathaostore form-control" >
                             <option value="">Select Store...</option>
-                            @if(isset($pathaostore['data']['data']))
-                                @foreach($pathaostore['data']['data'] as $key=>$store)
-                                    <option value="{{$store['store_id']}}">{{$store['store_name']}}</option>
-                                @endforeach
-                            @else
-                            @endif
+
                         </select>
                         @if ($errors->has('pathaostore'))
                             <span class="invalid-feedback" role="alert">
@@ -148,12 +144,6 @@
                         <label for="pathaocity" class="form-label">City</label>
                         <select name="pathaocity" id="pathaocity" class="chosen-select pathaocity form-control" style="width:100%" >
                             <option value="">Select City...</option>
-                            @if(isset($pathaocities['data']['data']))
-                                @foreach($pathaocities['data']['data'] as $key=>$city)
-                                    <option value="{{$city['city_id']}}">{{$city['city_name']}}</option>
-                                @endforeach
-                            @else
-                            @endif
                         </select>
                         @if ($errors->has('pathaocity'))
                             <span class="invalid-feedback" role="alert">
@@ -187,7 +177,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-success">Submit</button>
+                    <button type="submit" class="btn btn-success" id="pathao-submit-btn">Submit</button>
                 </div>
             </form>
         </div>
@@ -460,6 +450,199 @@
                     swal({
                         title: "Error!",
                         text: "Failed something wrong!",
+                        icon: "error",
+                        buttons: false,
+                    });
+                }
+            }
+        });
+
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: "{{route('pathao.stores')}}", // API route
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+                let storeSelect = $('#pathaostore');
+                storeSelect.html('<option value="">Select Store...</option>');
+
+                if (response?.data?.data?.length) {
+                    response.data.data.forEach(store => {
+                        storeSelect.append(
+                            `<option value="${store.store_id}">${store.store_name}</option>`
+                        );
+                    });
+                }
+            },
+            error: function () {
+                $('#pathaostore').html('<option value="">Failed to load stores</option>');
+            }
+        });
+        $.ajax({
+            url: "{{ route('getCities') }}",
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+
+                let citySelect = $('#pathaocity');
+                citySelect.empty();
+                citySelect.append('<option value="">Select City...</option>');
+
+                if (response.success && response.data.length > 0) {
+                    $.each(response.data, function (index, city) {
+                        citySelect.append(
+                            `<option value="${city.city_id}">${city.city_name}</option>`
+                        );
+                    });
+                } else {
+                    citySelect.append('<option value="">No cities found</option>');
+                }
+            },
+            error: function () {
+                $('#pathaocity').html('<option value="">Failed to load cities</option>');
+            }
+        });
+
+        $('#pathaocity').on('change', function () {
+
+            let cityId = $(this).val();
+            let zoneSelect = $('#pathaozone');
+            let areaSelect = $('#pathaoarea');
+
+            // Reset dropdowns
+            zoneSelect.html('<option value="">Loading zones...</option>');
+            areaSelect.html('<option value="">Select Area...</option>');
+
+            if (!cityId) {
+                zoneSelect.html('<option value="">Select Zone...</option>');
+                return;
+            }
+            let zoneUrl = "{{ route('get-zones', ':city_id') }}";
+            zoneUrl = zoneUrl.replace(':city_id', cityId);
+
+            $.ajax({
+                url: zoneUrl,
+                type: "GET",
+                success: function (response) {
+
+                    zoneSelect.empty();
+                    zoneSelect.append('<option value="">Select Zone...</option>');
+
+                    if (response.success && response.data.length > 0) {
+                        $.each(response.data, function (i, zone) {
+                            zoneSelect.append(
+                                `<option value="${zone.zone_id}">${zone.zone_name}</option>`
+                            );
+                        });
+                    } else {
+                        zoneSelect.append('<option value="">No zones found</option>');
+                    }
+                },
+                error: function () {
+                    zoneSelect.html('<option value="">Failed to load zones</option>');
+                }
+            });
+        });
+        $('#pathaozone').on('change', function () {
+
+            let zoneId = $(this).val();
+            let areaSelect = $('#pathaoarea');
+
+            areaSelect.html('<option value="">Loading areas...</option>');
+
+            if (!zoneId) {
+                areaSelect.html('<option value="">Select Area...</option>');
+                return;
+            }
+
+            let areaUrl = "{{ route('areas', ':zone_id') }}";
+            areaUrl = areaUrl.replace(':zone_id', zoneId);
+
+            $.ajax({
+                url: areaUrl,
+                type: "GET",
+                success: function (response) {
+
+                    areaSelect.empty();
+                    areaSelect.append('<option value="">Select Area...</option>');
+
+                    if (response.success && response.data.length > 0) {
+                        $.each(response.data, function (i, area) {
+                            areaSelect.append(
+                                `<option value="${area.area_id}">${area.area_name}</option>`
+                            );
+                        });
+                    } else {
+                        areaSelect.append('<option value="">No areas found</option>');
+                    }
+                },
+                error: function () {
+                    areaSelect.html('<option value="">Failed to load areas</option>');
+                }
+            });
+        });
+    });
+
+    $(document).on('submit', 'form#order_sendto_pathao', function(e){
+        e.preventDefault();
+        var url = $(this).attr('action');
+        var method = $(this).attr('method');
+
+        var order = $('input.checkbox:checked').map(function(){
+            return $(this).val();
+        });
+        var order_ids=order.get();
+
+        if(order_ids.length ==0){
+
+            swal({
+                title: "Error!",
+                text: 'Please Select An Order First !',
+                icon: "error",
+                buttons: false,
+            });
+
+            return ;
+        }
+
+        let $btn = $('#pathao-submit-btn');
+
+        $btn.prop('disabled', true).text('Processing...');
+
+        var store_id = $('#pathaostore').val();
+        var city_id  = $('#pathaocity').val();
+        var zone_id  = $('#pathaozone').val();
+        var area_id  = $('#pathaoarea').val();
+
+        $.ajax({
+            type:'GET',
+            url:url,
+            data:{
+                order_ids: order_ids,
+                store_id: store_id,
+                city_id: city_id,
+                zone_id: zone_id,
+                area_id: area_id
+            },
+            success:function(res){
+                if(res.status=='success'){
+                    swal({
+                        title: "Success!",
+                        text: res.message,
+                        icon: "success",
+                        buttons: false,
+                    });
+                    window.location.reload();
+
+                }else{
+
+                    swal({
+                        title: "Error!",
+                        text: 'Failed something wrong',
                         icon: "error",
                         buttons: false,
                     });

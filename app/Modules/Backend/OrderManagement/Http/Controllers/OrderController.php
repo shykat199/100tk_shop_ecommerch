@@ -2367,8 +2367,8 @@ class OrderController extends Controller
             $curl = curl_init();
 
             $token_postdata = [
-                'client_id'     => '7N1aMJQbWm',
-                'client_secret' => 'wRcaibZkUdSNz2EI9ZyuXLlNrnAv0TdPUPXMnD39',
+                'client_id'     => $courier_info->api_key,
+                'client_secret' => $courier_info->token,
                 'username'      => 'test@pathao.com',
                 'password'      => 'lovePathao',
                 'grant_type'    => 'password',
@@ -2436,5 +2436,94 @@ class OrderController extends Controller
 
         return $response->json();
     }
+
+
+    public function order_pathao(Request $request)
+    {
+        $orders_id = $request->order_ids;
+        $results = [];
+
+        foreach ($orders_id as $order_id) {
+
+            $order = Order::find($order_id);
+            $pathao_info = CourierApis::where(['status' => 1, 'type' => 'pathao'])->first();
+
+            if (!$order || !$pathao_info) {
+                continue;
+            }
+
+            $tokenData = $this->accessPathaoInfo();
+            $accessToken = $tokenData['access_token'] ?? null;
+
+            if (!$accessToken) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Failed to get Pathao access token'
+                ], 401);
+            }
+
+            $payload = [
+                'store_id'            => $request->store_id,
+                'merchant_order_id'   => $order->invoice_id,
+                'recipient_name'      => optional($order->shipping)->name ?? $order->shipping_name,
+                'recipient_phone'     => optional($order->shipping)->phone ?? $order->shipping_mobile,
+                'recipient_address'   => optional($order->shipping)->address ?? $order->shipping_address_1,
+
+                // ✅ Correct Pathao keys
+                'city_id'             => $request->city_id,
+                'zone_id'             => $request->zone_id,
+                'area_id'             => $request->area_id,
+
+                'delivery_type'       => 48,
+                'item_type'           => 2,
+                'item_quantity'       => 1,
+                'item_weight'         => '0.5',
+                'amount_to_collect'   => round($order->amount),
+                'item_description'    => 'Special note- product must be check after delivery',
+            ];
+
+            $curl = curl_init();
+
+            curl_setopt_array($curl, [
+                CURLOPT_URL => $pathao_info->url . "/aladdin/api/v1/orders",
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_CUSTOMREQUEST => "POST",
+                CURLOPT_POSTFIELDS => json_encode($payload),
+                CURLOPT_HTTPHEADER => [
+                    "Content-Type: application/json",
+                    "Authorization: Bearer {$accessToken}"
+                ],
+            ]);
+
+            $response = curl_exec($curl);
+            curl_close($curl);
+
+            $responseData = json_decode($response, true);
+
+            if (isset($responseData['data']['consignment_id'])) {
+                $results[] = [
+                    'order_id' => $order->id,
+                    'tracking_id' => $responseData['data']['consignment_id'],
+                    'status' => 'success'
+                ];
+            } else {
+                $results[] = [
+                    'order_id' => $order->id,
+                    'status' => 'failed',
+                    'message' => $responseData['message'] ?? 'Pathao order failed'
+                ];
+            }
+
+            $order->update([
+                'order_status' => 9
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'results' => $results
+        ]);
+    }
+
 
 }

@@ -57,40 +57,161 @@ class PathaoController extends Controller
     /* ==============================
        GET CITIES
     ===============================*/
-    public function getCities($token)
+//    public function getCities($token)
+//    {
+//        return $this->curlRequest(
+//            $this->baseUrl . '/aladdin/api/v1/city-list',
+//            'GET',
+//            [],
+//            $token
+//        );
+//    }
+
+    public function getCities()
     {
-        return $this->curlRequest(
-            $this->baseUrl . '/aladdin/api/v1/city-list',
-            'GET',
-            [],
-            $token
-        );
+        // Step 1: Get access token
+        $tokenData = $this->accessPathaoInfo();
+
+        if (!isset($tokenData['access_token'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Access token error'
+            ], 401);
+        }
+
+        $accessToken = $tokenData['access_token'];
+
+        // Step 2: Call Pathao city list API
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $this->baseUrl . '/aladdin/api/v1/city-list',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => [
+                "Content-Type: application/json; charset=UTF-8",
+                "Authorization: Bearer {$accessToken}"
+            ],
+        ]);
+
+        $response = curl_exec($curl);
+
+        if (curl_errno($curl)) {
+            return response()->json([
+                'success' => false,
+                'error' => curl_error($curl)
+            ], 500);
+        }
+
+        curl_close($curl);
+
+        $decoded = json_decode($response, true);
+
+        // ✅ Return ONLY city list (clean)
+        return response()->json([
+            'success' => true,
+            'data' => $decoded['data']['data'] ?? []
+        ]);
     }
 
     /* ==============================
        GET ZONES BY CITY
     ===============================*/
-    public function getZones($cityId, $token)
+    public function getZones($cityId)
     {
-        return $this->curlRequest(
-            $this->baseUrl . "/aladdin/api/v1/cities/{$cityId}/zone-list",
-            'GET',
-            [],
-            $token
-        );
+        // Step 1: Get access token
+        $tokenData = $this->accessPathaoInfo();
+
+        if (!isset($tokenData['access_token'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Access token error'
+            ], 401);
+        }
+
+        $accessToken = $tokenData['access_token'];
+
+        // Step 2: Call Pathao zone list API
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $this->baseUrl . "/aladdin/api/v1/cities/{$cityId}/zone-list",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => [
+                "Content-Type: application/json; charset=UTF-8",
+                "Authorization: Bearer {$accessToken}"
+            ],
+        ]);
+
+        $response = curl_exec($curl);
+
+        if (curl_errno($curl)) {
+            return response()->json([
+                'success' => false,
+                'error' => curl_error($curl)
+            ], 500);
+        }
+
+        curl_close($curl);
+
+        $decoded = json_decode($response, true);
+
+        // ✅ Return ONLY zone list
+        return response()->json([
+            'success' => true,
+            'data' => $decoded['data']['data'] ?? []
+        ]);
     }
 
     /* ==============================
        GET AREAS BY ZONE
     ===============================*/
-    public function getAreas($zoneId, $token)
+    public function getAreas($zoneId)
     {
-        return $this->curlRequest(
-            $this->baseUrl . "/aladdin/api/v1/zones/{$zoneId}/area-list",
-            'GET',
-            [],
-            $token
-        );
+        // Step 1: Get access token
+        $tokenData = $this->accessPathaoInfo();
+
+        if (!isset($tokenData['access_token'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Access token error'
+            ], 401);
+        }
+
+        $accessToken = $tokenData['access_token'];
+
+        // Step 2: Call Pathao area list API
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $this->baseUrl . "/aladdin/api/v1/zones/{$zoneId}/area-list",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => [
+                "Content-Type: application/json; charset=UTF-8",
+                "Authorization: Bearer {$accessToken}"
+            ],
+        ]);
+
+        $response = curl_exec($curl);
+
+        if (curl_errno($curl)) {
+            return response()->json([
+                'success' => false,
+                'error' => curl_error($curl)
+            ], 500);
+        }
+
+        curl_close($curl);
+
+        $decoded = json_decode($response, true);
+
+        // ✅ Return ONLY area list
+        return response()->json([
+            'success' => true,
+            'data' => $decoded['data']['data'] ?? []
+        ]);
     }
 
     /* ==============================
@@ -164,7 +285,7 @@ class PathaoController extends Controller
 
         $accessToken = $tokenData['access_token'];
 
-        // Step 2: Call stores API
+        // Step 2: Call Pathao stores API
         $curl = curl_init();
 
         curl_setopt_array($curl, [
@@ -188,9 +309,13 @@ class PathaoController extends Controller
 
         curl_close($curl);
 
+        // Decode Pathao response
+        $decoded = json_decode($response, true);
+
+        // Return ONLY store data
         return response()->json([
             'success' => true,
-            'stores' => json_decode($response, true)
+            'data' => $decoded['data'] ?? []
         ]);
     }
 
