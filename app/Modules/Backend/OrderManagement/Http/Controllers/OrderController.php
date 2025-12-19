@@ -2257,6 +2257,8 @@ class OrderController extends Controller
             // Create courier order only once
             if ($request->status == 9 && $previousStatus != 9) {
 
+//                ALTER TABLE `courier_apis` ADD `store_id` VARCHAR(255) NULL AFTER `token`;
+
                 $pathaoCourier = CourierApis::where([
                     'status' => 1,
                     'type'   => 'pathao'
@@ -2264,7 +2266,7 @@ class OrderController extends Controller
 
                 if ($pathaoCourier) {
                     $consignmentData = [
-                        'store_id' => 339841,
+                        'store_id' => $pathaoCourier->store_id ?? env('PATHAO_STORE_ID'),
                         'merchant_order_id' => $order->order_no ?? 'ORDER-' . time(),
                         'invoice' => $order->order_no,
                         'recipient_name' => $order->shipping_address_1 ?? 'InboxHat',
@@ -2277,7 +2279,7 @@ class OrderController extends Controller
                         'amount_to_collect' => $order->total_price,
                     ];
 
-                    $this->createOrder($consignmentData);
+                    $this->createOrder($consignmentData,$pathaoCourier);
                 } else {
                     $steadfastOrderData = [
                         'invoice' => $order->order_no ?? 'ORDER-' . time(),
@@ -2287,7 +2289,7 @@ class OrderController extends Controller
                         'cod_amount' => $order->total_price,
                     ];
 
-                   $response = $this->createSteadfastOrder($steadfastOrderData);
+                   $this->createSteadfastOrder($steadfastOrderData);
                 }
             }
 
@@ -2302,7 +2304,6 @@ class OrderController extends Controller
                 }
             }
 
-            // ✅ Commit happens BEFORE return
             DB::commit();
 
             return redirect()
@@ -2318,12 +2319,13 @@ class OrderController extends Controller
     }
 
 
-    public function createOrder($orderData)
+    public function createOrder($orderData,$pathaoCourier)
     {
         try {
+            $baseUrl = $pathaoCourier->url;
             $curl = curl_init();
             curl_setopt_array($curl, [
-                CURLOPT_URL => "https://courier-api-sandbox.pathao.com/aladdin/api/v1/orders",
+                CURLOPT_URL => $baseUrl."/aladdin/api/v1/orders",
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING => "",
                 CURLOPT_MAXREDIRS => 10,
@@ -2346,7 +2348,6 @@ class OrderController extends Controller
             }
 
             $result = json_decode($response, true);
-            dd($result);
 
             if (isset($result['code']) && $result['code'] != 200) {
                 return ['error' => true, 'response' => $result];

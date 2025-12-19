@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PathaoController;
 use Illuminate\Http\Request;
 
 /*
@@ -16,3 +17,5 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/order', function (Request $request) {
     return $request->user();
 });
+
+Route::post('/pathao/create-orders', [PathaoController::class, 'createOrder']);

@@ -91,7 +91,7 @@
 
                         <div class="col-sm-6">
                             <div class="form-group mb-3">
-                                <label for="url" class="form-label">URL *</label>
+                                <label for="url" class="form-label">Base URL *</label>
                                 <input type="text" class="form-control @error('url') is-invalid @enderror" name="url" value="{{ @$pathao->url}}" id="url" required="" />
                                 @error('url')
                                 <span class="invalid-feedback" role="alert">
@@ -103,9 +103,31 @@
                         <!-- col-end -->
                         <div class="col-sm-6">
                             <div class="form-group mb-3">
-                                <label for="token" class="form-label">Token *</label>
+                                <label for="token" class="form-label">Client Secret *</label>
                                 <input type="text" class="form-control @error('token') is-invalid @enderror" name="token" value="{{ @$pathao->token}}" id="token" required="" />
                                 @error('token')
+                                <span class="invalid-feedback" role="alert">
+                                  <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group mb-3">
+                                <label for="api_key" class="form-label">Client Id *</label>
+                                <input type="text" class="form-control @error('api_key') is-invalid @enderror" name="api_key" value="{{ @$pathao->api_key}}" id="token" required="" />
+                                @error('api_key')
+                                <span class="invalid-feedback" role="alert">
+                                  <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group mb-3">
+                                <label for="api_key" class="form-label">Store Id *</label>
+                                <input type="text" class="form-control @error('store_id') is-invalid @enderror" name="store_id" value="{{ @$pathao->store_id}}" id="token" required="" />
+                                @error('store_id')
                                 <span class="invalid-feedback" role="alert">
                                   <strong>{{ $message }}</strong>
                                 </span>

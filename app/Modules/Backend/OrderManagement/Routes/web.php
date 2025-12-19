@@ -10,6 +10,18 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+use App\Http\Controllers\PathaoController;
+
+Route::get('/pathao/create-store', [PathaoController::class, 'createStoreFlow']);
+Route::get('/pathao/cities', [PathaoController::class, 'getCities']);
+Route::get('/pathao/zones/{city_id}', [PathaoController::class, 'getZones']);
+Route::get('/pathao/areas/{zone_id}', [PathaoController::class, 'getAreas']);
+Route::get('/pathao/stores', [PathaoController::class, 'getStores']);
+Route::get('/pathao/orders/{consignment_id}/info', [PathaoController::class, 'getOrderShortInfo']);
+
+
+
 Route::group(['prefix' => 'admin', 'as' => 'backend.'], function () {
     Route::group(['middleware' => 'auth:admin'], function () {
         Route::post('search', 'OrderController@search')->name('search');

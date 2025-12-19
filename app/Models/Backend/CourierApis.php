@@ -16,5 +16,6 @@ class CourierApis extends Model
         'url',
         'token',
         'status',
+        'store_id'
     ];
 }
