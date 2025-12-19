@@ -9,7 +9,6 @@
 
         scrollbar-width: none;
         -ms-overflow-style: none;
-
         cursor: grab;
     }
 
@@ -21,7 +20,22 @@
         flex-shrink: 0;
     }
 
+    /* 🔽 Mobile view */
+    @media (max-width: 768px) {
+        .category-scroll {
+            display: block;        /* stack vertically */
+            overflow-x: hidden;
+            white-space: normal;
+        }
 
+        .category-scroll li {
+            margin-bottom: 12px;   /* spacing between items */
+        }
+
+        .category-scroll a {
+            display: block;        /* full-width tap area */
+        }
+    }
 </style>
 <div class="manu-bar">
     <div class="container">
@@ -90,6 +104,22 @@
                         <li>
                             <a href="<?php echo e(url('shop')); ?>" class="<?php echo e(isActiveMenu('shop')); ?>"><?php echo e(__('All Products')); ?></a>
                         </li>
+
+                        <li>
+                            <a href="<?php echo e(url('shop')); ?>" class="<?php echo e(isActiveMenu('shop')); ?>"><?php echo e(__('All Products')); ?></a>
+                        </li>
+
+                        <li>
+                            <a href="<?php echo e(url('shop')); ?>" class="<?php echo e(isActiveMenu('shop')); ?>"><?php echo e(__('All Products')); ?></a>
+                        </li>
+
+                        <li>
+                            <a href="<?php echo e(url('shop')); ?>" class="<?php echo e(isActiveMenu('shop')); ?>"><?php echo e(__('All Products')); ?></a>
+                        </li>
+                        <li>
+                            <a href="<?php echo e(url('shop')); ?>" class="<?php echo e(isActiveMenu('shop')); ?>"><?php echo e(__('All Products')); ?></a>
+                        </li>
+
 
 
 

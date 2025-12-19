@@ -340,7 +340,7 @@
                     <div class="contact-infos my-3">
                         @foreach (getContactsInfos() as $item)
                             <div class="single-item">
-                                <h6 class="d-inline-block my-1 contact-number">{{ $item->value['number'] ?? '' }}</h6> <small class="d-inline-block ms-2">{{ $item->value['title'] ?? '' }}</small>
+                                <h6 class="d-inline-block my-1 contact-number">{{ $item->value['number'] ?? '' }}</h6> <small class="d-inline-block ms-2" style="font-size: 13px; font-weight: 700">{{ $item->value['title'] ?? '' }}</small>
                             </div>
                         @endforeach
                     </div>

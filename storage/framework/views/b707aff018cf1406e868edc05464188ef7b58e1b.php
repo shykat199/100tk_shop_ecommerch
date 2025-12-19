@@ -1,7 +1,21 @@
 <!-- Mid Bar Start -->
 <style>
 
+    /* Tablet */
+    @media (max-width: 768px) {
+        .profile-icon {
+            width: 120px;
+            height: 120px;
+        }
+    }
 
+    /* Mobile */
+    @media (max-width: 480px) {
+        .profile-icon {
+            width: 20px;
+            height: 20px;
+        }
+    }
 </style>
 <div class="mid-bar" style="padding: 5px 0px">
     <div class="container">
@@ -44,6 +58,7 @@
                                             viewBox="0 0 512 512"
                                             width="220"
                                             height="220"
+                                            class="profile-icon"
                                             style="display:inline-block; fill:var(--color-orange);
                                             --svg-font-size:26px">
                                             <path d="M256,288.389c-153.837,0-238.56,72.776-238.56,204.925c0,10.321,8.365,18.686,18.686,18.686h439.747
@@ -86,6 +101,7 @@
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 -28 512.001 512"
+                                        class="profile-icon"
                                         width="220"
                                         height="220"
                                         style="display:inline-block;
@@ -111,6 +127,7 @@
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 512.001 512.001"
+                                        class="profile-icon"
                                         width="220"
                                         height="220"
                                         style="display:inline-block;
