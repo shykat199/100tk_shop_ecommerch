@@ -382,24 +382,65 @@
 <?php $__env->startPush('script'); ?>
     <script>
         $(document).ready(function() {
-            $('.color-vAreation').click(function(e) {
+            $('.color-vAreation').on('click', function () {
+
                 let color = $(this).data('variantimage');
-                let variantQty = $(this).data('color_qty');
-                let path = `<?php echo e(asset('/uploads/products/galleries/${color}')); ?>`
-                $('#show-img').attr('src', path);
-                $('#big-img').attr('src', path)
+                let variantQty = parseInt($(this).data('color_qty'));
 
-                if (variantQty !== undefined && variantQty !== null) {
+                let path = `<?php echo e(asset('/uploads/products/galleries')); ?>/${color}`;
+                $('#show-img, #big-img').attr('src', path);
+
+                selectedVariantStock = variantQty; // 🔥 IMPORTANT
+
+                if (variantQty > 0) {
                     $('#stock_value').text(variantQty);
+                    $('#stock_qty').removeClass('text-danger').addClass('text-success');
+                    $('.plus').prop('disabled', false);
+                } else {
+                    $('#stock_value').text('<?php echo e(__("Out of Stock")); ?>');
+                    $('#stock_qty').removeClass('text-success').addClass('text-danger');
+                    $('.plus').prop('disabled', true);
+                }
 
-                    if (variantQty > 0) {
-                        $('#stock_qty').removeClass('text-danger').addClass('text-success');
-                    } else {
-                        $('#stock_value').text('<?php echo e(__("Out of Stock")); ?>');
-                        $('#stock_qty').removeClass('text-success').addClass('text-danger');
-                    }
+                $('.input-number').val(1);
+            });
+
+            $('.plus').on('click', function () {
+
+                let input = $('.input-number');
+                let currentQty = parseInt(input.val());
+
+                if (selectedVariantStock !== null && currentQty >= selectedVariantStock) {
+                    $(this).prop('disabled', true);
+                    return false;
+                }
+
+                input.val(currentQty + 1);
+            });
+
+            $('.minus').on('click', function () {
+                let input = $('.input-number');
+                let currentQty = parseInt(input.val());
+
+                if (currentQty > 1) {
+                    input.val(currentQty - 1);
+                    $('.plus').prop('disabled', false);
                 }
             });
+
+            $('.input-number').on('input', function () {
+                let val = parseInt($(this).val());
+
+                if (selectedVariantStock !== null && val > selectedVariantStock) {
+                    $(this).val(selectedVariantStock);
+                }
+
+                if (val < 1 || isNaN(val)) {
+                    $(this).val(1);
+                }
+            });
+
+
         })
         $('.buynow-btn').on('click', function() {
             let size = $('.size-vAreation').val();

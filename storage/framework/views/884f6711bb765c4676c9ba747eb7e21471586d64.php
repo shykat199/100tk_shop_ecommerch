@@ -549,20 +549,13 @@
                 dataType:"json",
                 data:{'search':search},
                 success: function(data){
-                    //console.log('hello check');
-                    //var searchData = JSON.parse(data);
-
-                    //search suggestions code
                     $('.suggestion-wrap ul').empty();
-                    if (data){
-                        //alert(data[0]["name"]);
-                        console.log(data[0]["name"]);
-                    }
-                    let product = 'p'
+
+                    const productUrl = "<?php echo e(url('/p')); ?>";
                     $.each(data,function (index,element){
-                        //console.log(element.promotions_active[index]);
                         if (index<=4){
-                            $('.suggestion-wrap ul').append('<li class="unibox-selectable row"><a href="'+product+'/'+element.slug+'"><img src="<?php echo e(asset('uploads/products/galleries')); ?>/'+element.images[0].image+'" alt="" height="50" width="50" style="padding-right:2px;padding-bottom:2px;"/><div class="search-items-content"><p>'+element.name+'</p><b>'+symbol+element.sale_price+'</b><div class="sess-discount" id="sess-discount-'+index+'" >'+'</div></div></a></li>');
+                            $('.suggestion-wrap ul').append('<li class="unibox-selectable row">' +
+                                '<a href="'+productUrl+'/'+element.slug+'"><img src="<?php echo e(asset('uploads/products/galleries')); ?>/'+element.images[0].image+'" alt="" height="50" width="50" style="padding-right:2px;padding-bottom:2px;"/><div class="search-items-content"><p>'+element.name+'</p><b>'+symbol+element.sale_price+'</b><div class="sess-discount" id="sess-discount-'+index+'" >'+'</div></div></a></li>');
                             if(element.promotions_active[index]){
                                 $.each(element.promotions_active,function (index1,element1){
                                     if(element1.promotion_price){
@@ -580,7 +573,8 @@
 
                         }else{
                             if (index==5){
-                                $('.suggestion-wrap ul').append('<li class="unibox-selectable row"><form action="<?php echo e(url('shop')); ?>" method="get"><div class="input-group"><input t class="s" type="hidden" name="q" value="'+search+'"><button type="submit" class="product-serarch-btn">Sea all results</button></div></form></li>');
+                                $('.suggestion-wrap ul').append('<li class="unibox-selectable row">' +
+                                    '<form action="<?php echo e(route('frontend.shop')); ?>" method="get"><div class="input-group"><input t class="s" type="hidden" name="q" value="'+search+'"><button type="submit" class="product-serarch-btn">Sea all results</button></div></form></li>');
                             }
 
                         }

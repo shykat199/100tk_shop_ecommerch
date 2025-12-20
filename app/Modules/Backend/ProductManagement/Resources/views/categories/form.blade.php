@@ -46,6 +46,28 @@
                 </select>
             </div>
         </div>
+    @else
+
+        <div class="col-lg-3">
+            <p>{{__('Ordering Number')}}</p>
+        </div>
+
+        @php
+            $orderCount = \App\Models\Backend\Category::whereNull('category_id')->count() + 1;
+        @endphp
+        <div class="col-lg-7">
+            <div class="overflow-visible">
+                <select name="cat_order" class="parent form-select form-control">
+                    <option value="">Select Order</option>
+                    @for ($i = 1; $i <= $orderCount; $i++)
+                        <option value="{{ $i }}">
+                            {{ $i }}
+                        </option>
+                    @endfor
+                </select>
+            </div>
+        </div>
+
     @endif
     <div class="col-lg-3">
         <p>{{ __('Slug') }} <span class="text-red">*</span></p>
@@ -53,17 +75,6 @@
     <div class="col-lg-7">
         <div class="input-group">
             <input id="slug" type="text" class="form-control" name="slug" value="{{ $category->slug }}" required="" placeholder="Slug" autofocus="">
-        </div>
-    </div>
-    <div class="col-lg-3">
-        <p>{{('Ordering Number')}}</p>
-    </div>
-    <div class="col-lg-7">
-        <div class="sm-title-group">
-            <div class="oder-input">
-                <input name="order" min="0" max="1000" type="number" class="form-control" placeholder="Order Level" value="@if($category->order){{$category->order}}@else{{ old('order') }}@endif">
-            </div>
-            <span class="sm-text">{{__('Higher number has high priority')}}</span>
         </div>
     </div>
 

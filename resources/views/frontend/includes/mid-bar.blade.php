@@ -27,7 +27,7 @@
             </div>
             <div class="mobile-and-desktop-search col-lg-6">
                 <div class="mid-search">
-                    <form action="{{ url('shop') }}" method="get">
+                    <form action="{{ route('frontend.shop') }}" method="get">
                         <div class="input-group">
                             <input class="s" type="text" placeholder="Search product from all shop" name="q">
                             <button type="submit"><svg viewBox="0 0 511.999 511.999">

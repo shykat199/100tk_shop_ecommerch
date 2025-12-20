@@ -105,22 +105,6 @@
                             <a href="<?php echo e(url('shop')); ?>" class="<?php echo e(isActiveMenu('shop')); ?>"><?php echo e(__('All Products')); ?></a>
                         </li>
 
-                        <li>
-                            <a href="<?php echo e(url('shop')); ?>" class="<?php echo e(isActiveMenu('shop')); ?>"><?php echo e(__('All Products')); ?></a>
-                        </li>
-
-                        <li>
-                            <a href="<?php echo e(url('shop')); ?>" class="<?php echo e(isActiveMenu('shop')); ?>"><?php echo e(__('All Products')); ?></a>
-                        </li>
-
-                        <li>
-                            <a href="<?php echo e(url('shop')); ?>" class="<?php echo e(isActiveMenu('shop')); ?>"><?php echo e(__('All Products')); ?></a>
-                        </li>
-                        <li>
-                            <a href="<?php echo e(url('shop')); ?>" class="<?php echo e(isActiveMenu('shop')); ?>"><?php echo e(__('All Products')); ?></a>
-                        </li>
-
-
 
 
 

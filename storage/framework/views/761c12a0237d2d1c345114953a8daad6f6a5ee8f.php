@@ -10,6 +10,55 @@
     .fa-1x {
         font-size: 22px;
     }
+    /* Top bar */
+    .top-bar {
+        height: 40px;
+        background: black;
+    }
+
+    /* Social wrapper */
+    .top-social {
+        display: flex;
+        align-items: center;
+        list-style: none;
+        margin: 0;
+        padding-left: 375px;
+    }
+
+    /* SINGLE separator between items */
+    .top-social li {
+        padding: 0 12px;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Add | before, between, and after */
+    .top-social li {
+        border-left: 1px solid #ccc;
+    }
+
+    .top-social li:last-child {
+        border-right: 1px solid #ccc;
+    }
+
+    /* Social icon */
+    .top-social-link {
+        width: 34px;
+        height: 34px;
+        background: #ffffff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #000;
+        text-decoration: none;
+    }
+
+    .fa-1x {
+        font-size: 22px;
+    }
+
+
 </style>
 <div class="top-bar">
     <div class="container">
@@ -17,7 +66,7 @@
             <div class="col-sm-7">
                 <div class="top-bar-left">
                     <ul>
-                        <li style="background: white; height: 40px;">
+                        <li style="background: white; height: 35px;">
                             <a href="#">
                                             <span class="icon">
 											<svg viewBox="0 0 473.806 473.806" style="fill: var(--color-orange); height: 45px"><path d="M374.456,293.506c-9.7-10.1-21.4-15.5-33.8-15.5c-12.3,0-24.1,5.3-34.2,15.4l-31.6,31.5c-2.6-1.4-5.2-2.7-7.7-4
@@ -46,7 +95,7 @@
                             </a>
                         </li>
                         <?php if(maanHeader('enable_tracking_order')): ?>
-                            <li style="background: white; height: 40px;">
+                            <li style="background: white; height: 35px;">
                                 <a href="<?php echo e(route('customer.order')); ?>">
                                             <span class="icon">
 											<svg  viewBox="0 0 512 512" style="fill: var(--color-orange); height: 45px"><path d="M386.689,304.403c-35.587,0-64.538,28.951-64.538,64.538s28.951,64.538,64.538,64.538
@@ -72,20 +121,17 @@
             </div>
             <div class="col-sm-5">
                 <div class="top-bar-right">
-                    <ul class="">
-                        <li class="">
-                            <div class="top-social-links">
-                                <a href="<?php echo e(maanAppearance('facebook_link')); ?>">
-                                    <i class="fa-brands fa-facebook-f text-white fa-1x"></i>
-                                </a>
-                            </div>
+                    <ul class="top-social">
+                        <li>
+                            <a href="<?php echo e(maanAppearance('facebook_link')); ?>" class="top-social-link">
+                                <i class="fa-brands fa-facebook-f"></i>
+                            </a>
                         </li>
-                        <li class="">
-                            <div class="top-social-links">
-                                <a href="<?php echo e(maanAppearance('youtube_link')); ?>">
-                                    <i class="fab fa-youtube text-white fa-1x"></i>
-                                </a>
-                            </div>
+
+                        <li>
+                            <a href="<?php echo e(maanAppearance('youtube_link')); ?>" class="top-social-link">
+                                <i class="fab fa-youtube"></i>
+                            </a>
                         </li>
                         
                         <?php if(maanHeader('show_language')): ?>

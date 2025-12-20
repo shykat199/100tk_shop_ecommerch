@@ -48,6 +48,29 @@
                 </select>
             </div>
         </div>
+    <?php else: ?>
+
+        <div class="col-lg-3">
+            <p><?php echo e(__('Ordering Number')); ?></p>
+        </div>
+
+        <?php
+            $orderCount = \App\Models\Backend\Category::whereNull('category_id')->count() + 1;
+        ?>
+        <div class="col-lg-7">
+            <div class="overflow-visible">
+                <select name="cat_order" class="parent form-select form-control">
+                    <option value="">Select Order</option>
+                    <?php for($i = 1; $i <= $orderCount; $i++): ?>
+                        <option value="<?php echo e($i); ?>">
+                            <?php echo e($i); ?>
+
+                        </option>
+                    <?php endfor; ?>
+                </select>
+            </div>
+        </div>
+
     <?php endif; ?>
     <div class="col-lg-3">
         <p><?php echo e(__('Slug')); ?> <span class="text-red">*</span></p>
@@ -55,17 +78,6 @@
     <div class="col-lg-7">
         <div class="input-group">
             <input id="slug" type="text" class="form-control" name="slug" value="<?php echo e($category->slug); ?>" required="" placeholder="Slug" autofocus="">
-        </div>
-    </div>
-    <div class="col-lg-3">
-        <p><?php echo e(('Ordering Number')); ?></p>
-    </div>
-    <div class="col-lg-7">
-        <div class="sm-title-group">
-            <div class="oder-input">
-                <input name="order" min="0" max="1000" type="number" class="form-control" placeholder="Order Level" value="<?php if($category->order): ?><?php echo e($category->order); ?><?php else: ?><?php echo e(old('order')); ?><?php endif; ?>">
-            </div>
-            <span class="sm-text"><?php echo e(__('Higher number has high priority')); ?></span>
         </div>
     </div>
 
