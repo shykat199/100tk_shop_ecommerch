@@ -82,6 +82,7 @@
         }
 
     </style>
+    <?php echo $__env->yieldPushContent('custom-css'); ?>
 </head>
 
 <body>

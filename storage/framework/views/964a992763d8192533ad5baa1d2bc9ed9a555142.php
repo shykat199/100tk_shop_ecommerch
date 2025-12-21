@@ -3,7 +3,7 @@
 <?php $__env->startSection('content'); ?>
 
     <!-- Breadcrumb Start -->
-    <nav class="breadcrumb-manu maan-shop-breadcrumb" Area-label="breadcrumb" data-background="<?php echo e(asset('frontend/img/breadcrumb.png')); ?>">
+    <nav class="breadcrumb-manu maan-shop-breadcrumb" area-label="breadcrumb" data-background="<?php echo e(asset('frontend/img/breadcrumb.png')); ?>">
         <h3><?php echo e($title ?? 'Shop'); ?></h3>
     </nav>
     <!-- Breadcrumb End -->

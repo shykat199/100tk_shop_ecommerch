@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Mail\OrderPending;
 use App\Models\Frontend\CouponUsage;
 use App\Models\Productstock;
+use DB;
 use Illuminate\Http\Request;
 use App\Helpers\NotifyHelper;
 use App\Models\Frontend\Order;
@@ -63,41 +64,57 @@ class GuestBuyNowController extends Controller
             'product_id' => 'required|integer',
             'mobile' => 'required|string|max:15',
             'billing_address' => 'required|string|max:250',
-            
+
         ]);
 
-        $product = Product::with('details')->find($request->product_id);
-        if (!$product) {
+        try {
+            DB::beginTransaction();
+
+                $product = Product::with('details')->find($request->product_id);
+                if (!$product) {
+                    return response()->json([
+                        'message' => __('Product not found please try again from the scratch.'),
+                    ], 404);
+                }
+                $user = User::updateOrCreate([
+                    'mobile' => $request->mobile
+                ],
+                    [
+                        'first_name' => $request->first_name,
+                        'address' => $request->billing_address,
+                        'username' => $request->mobile,
+                    ]);
+                $user_id = User::where('mobile', $request->mobile)->value('id');
+                $request['user_id'] = $user_id;
+
+                app(ShippingAddressController::class)->store($request);
+
+                app(UserBillingInfoController::class)->store($request);
+
+                //$request['payment_by'] = $request->payment_method;
+                $request['payment_by'] = 'COD';
+                $this->orderStore($request, $product);
+
+                session()->put('user_id', $user_id);
+                session()->put('customer_mobile', $request->mobile);
+
+            DB::commit();
+
             return response()->json([
-                'message' => __('Product not found please try again from the scratch.'),
-            ], 404);
+                    'message' => __('Order place successfully.'),
+                    'redirect' => route('customer.order-success')
+                ]);
+
+
+        }catch (\Exception $exception){
+
+            DB::rollBack();
+
+            return response()->json([
+                'message' => __('Something went wrong. Please try again.'),
+            ], 500);
+
         }
-        $user = User::updateOrCreate([
-            'mobile' => $request->mobile
-        ],
-        [
-            'first_name' => $request->first_name,
-            'address' => $request->billing_address,
-            'username' => $request->mobile,
-        ]);
-        $user_id = User::where('mobile', $request->mobile)->value('id');
-        $request['user_id'] = $user_id;
-
-        app(ShippingAddressController::class)->store($request);
-
-        app(UserBillingInfoController::class)->store($request);
-
-        //$request['payment_by'] = $request->payment_method;
-        $request['payment_by'] = 'COD';
-        $this->orderStore($request, $product);
-
-        session()->put('user_id', $user_id);
-        session()->put('customer_mobile', $request->mobile);
-
-        return response()->json([
-            'message' => __('Order place successfully.'),
-            'redirect' => route('customer.order-success')
-        ]);
     }
 
     public function orderStore(Request $request, $product)
@@ -110,6 +127,7 @@ class GuestBuyNowController extends Controller
         $order_no = 'INV' . ($order_no + 1);
         $subTotal = session('qty') * $product->sale_price;
         $total_discount = $product->unit_price - $product->sale_price;
+//        dd($product);
 
         if ($product->details->is_free_shipping){
             $shipping_cost = 0;
@@ -119,6 +137,7 @@ class GuestBuyNowController extends Controller
         }
 
         $shipping_days = session('area') == 'inside' ? optional($product->details)->inside_shipping_days : optional($product->details)->outside_shipping_days;
+
         $grand_total = $subTotal + $shipping_cost;
 
         if ($request->get('email') != null) {
@@ -133,9 +152,10 @@ class GuestBuyNowController extends Controller
         $data = [
             'order_no' => $order_no,
             'discount' => $total_discount,
+            'order_status'=>1,
             'coupon_discount' => Cookie::get('coupon_discount'), // Should be change
             'shipping_cost' => $shipping_cost,
-            'total_price' => $subTotal,
+            'total_price' => $subTotal + ($shipping_cost ?? 0),
             'coupon_id' => Cookie::get('coupon_id'), // Should be change
             'shipping_name' => $name,
             'shipping_address_1' => $request->billing_address,
@@ -219,6 +239,8 @@ class GuestBuyNowController extends Controller
         Cookie::queue(Cookie::forget('coupon_discount'));
         Cookie::queue(Cookie::forget('total_vat'));
         Cookie::queue(Cookie::forget('shipping'));
+        session()->forget('shipping');
+        session()->forget('cart');
         return $order;
     }
 }

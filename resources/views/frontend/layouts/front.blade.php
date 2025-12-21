@@ -82,6 +82,7 @@
         }
 
     </style>
+    @stack('custom-css')
 </head>
 
 <body>

@@ -189,7 +189,7 @@ Tags:
                 .parent(".table-quantity form ,.product-quantity form")
                 .find(".input-number");
 
-            $n.val(Number($n.val()) + 1);
+            // $n.val(Number($n.val()) + 1);
         });
 
         let incrementMinus = $(".minus").on('click',function() {
@@ -199,7 +199,7 @@ Tags:
                 .find(".input-number");
             let amount = Number($n.val());
             if (amount > 1) {
-                $n.val(amount - 1);
+                // $n.val(amount - 1);
             }
         });
     }

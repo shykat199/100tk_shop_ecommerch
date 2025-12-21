@@ -14,9 +14,13 @@
 
 @section('meta_color', 'Black')
 
+@push('custom-css')
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.15/dist/sweetalert2.min.css" rel="stylesheet">
+@endpush
+
 @section('content')
     <!-- Breadcrumb Start -->
-    <nav class="breadcrumb-manu" Area-label="breadcrumb">
+    <nav class="breadcrumb-manu" area-label="breadcrumb">
         <div class="container">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ url('/') }}">{{ __('Home') }}</a></li>
@@ -168,13 +172,21 @@
                             </div> --}}
                             <div class="new-quantity-item">
                                 <h5>{{ __('Total Price:') }}</h5>
-                                <h5>{{ userCurrency('symbol') }}<span id="total_price">
+                                <h5>{{ userCurrency('symbol') }}
+                                    <span id="total_price" data-unit-price="
+                                            @if (hasPromotion($product->id))
+                                                {{ promotionPrice($product->id) }}
+                                            @else
+                                                {{ userCurrency('exchange_rate') * $product->sale_price }}
+                                            @endif
+                                          ">
                                         @if (hasPromotion($product->id))
                                             {{ promotionPrice($product->id) }}
                                         @else
                                             {{ number_format(userCurrency('exchange_rate') * $product->sale_price) }}
                                         @endif
-                                    </span></h5>
+                                    </span>
+                                </h5>
                                 <small>{{ $product->unit }}</small>
                             </div>
                         </div>
@@ -458,67 +470,93 @@
 @stop
 
 @push('script')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.15/dist/sweetalert2.all.min.js"></script>
     <script>
-        $(document).ready(function() {
-            $('.color-vAreation').on('click', function () {
+        $(document).ready(function () {
 
-                let color = $(this).data('variantimage');
-                let variantQty = parseInt($(this).data('color_qty'));
+            let selectedVariantStock = null;
 
-                let path = `{{ asset('/uploads/products/galleries') }}/${color}`;
-                $('#show-img, #big-img').attr('src', path);
+            $(document).off('click', '.color-vAreation').on('click', '.color-vAreation', function () {
 
-                selectedVariantStock = variantQty; // 🔥 IMPORTANT
+                    let color = $(this).data('variantimage');
+                    let variantQty = parseInt($(this).data('color_qty'));
 
-                if (variantQty > 0) {
-                    $('#stock_value').text(variantQty);
-                    $('#stock_qty').removeClass('text-danger').addClass('text-success');
-                    $('.plus').prop('disabled', false);
-                } else {
-                    $('#stock_value').text('{{ __("Out of Stock") }}');
-                    $('#stock_qty').removeClass('text-success').addClass('text-danger');
-                    $('.plus').prop('disabled', true);
-                }
+                    let path = `{{ asset('/uploads/products/galleries') }}/${color}`;
+                    $('#show-img, #big-img').attr('src', path);
 
-                $('.input-number').val(1);
-            });
+                    selectedVariantStock = variantQty;
 
-            $('.plus').on('click', function () {
+                    if (variantQty > 0) {
+                        $('#stock_value').text(variantQty);
+                        $('#stock_qty').removeClass('text-danger').addClass('text-success');
+                        $('.plus').prop('disabled', false);
+                    } else {
+                        $('#stock_value').text('{{ __("Out of Stock") }}');
+                        $('#stock_qty').removeClass('text-success').addClass('text-danger');
+                        $('.plus').prop('disabled', true);
+                    }
 
-                let input = $('.input-number');
-                let currentQty = parseInt(input.val());
+                    $('.input-number').val(1);
+                });
 
-                if (selectedVariantStock !== null && currentQty >= selectedVariantStock) {
-                    $(this).prop('disabled', true);
-                    return false;
-                }
+            // PLUS BUTTON
+            $(document).off('click', '.plus').on('click', '.plus', function (e) {
+                    e.preventDefault();
 
-                input.val(currentQty + 1);
-            });
+                    let input = $('.input-number');
+                    let currentQty = parseInt(input.val());
 
-            $('.minus').on('click', function () {
-                let input = $('.input-number');
-                let currentQty = parseInt(input.val());
+                    if (selectedVariantStock !== null && currentQty >= selectedVariantStock) {
+                        $(this).prop('disabled', true);
+                        return;
+                    }
 
-                if (currentQty > 1) {
-                    input.val(currentQty - 1);
-                    $('.plus').prop('disabled', false);
-                }
-            });
+                    // currentQty++
+                    input.val(currentQty + 1);
+                    currentQty++
+                    updateTotalPrice(currentQty);
+                });
 
-            $('.input-number').on('input', function () {
-                let val = parseInt($(this).val());
+            // MINUS BUTTON
+            $(document).off('click', '.minus').on('click', '.minus', function (e) {
+                    e.preventDefault();
 
-                if (selectedVariantStock !== null && val > selectedVariantStock) {
-                    $(this).val(selectedVariantStock);
-                }
+                    let input = $('.input-number');
+                    let currentQty = parseInt(input.val());
 
-                if (val < 1 || isNaN(val)) {
-                    $(this).val(1);
-                }
-            });
+                    if (currentQty > 1) {
+                        input.val(currentQty - 1);
+                        $('.plus').prop('disabled', false);
 
-        })
+                        currentQty++
+                        updateTotalPrice(currentQty);
+                    }
+                });
+
+            // MANUAL INPUT
+            $(document).off('input', '.input-number').on('input', '.input-number', function () {
+
+                    let val = parseInt($(this).val());
+
+                    if (selectedVariantStock !== null && val > selectedVariantStock) {
+                        $(this).val(selectedVariantStock);
+                    }
+
+                    if (val < 1 || isNaN(val)) {
+                        $(this).val(1);
+                    }
+                    val++
+                    updateTotalPrice(val);
+                });
+
+            function updateTotalPrice(qty) {
+                let unitPrice = parseFloat($('#total_price').data('unit-price'));
+                let total = unitPrice * qty;
+
+                $('#total_price').text(total.toLocaleString());
+            }
+
+        });
         $('.buynow-btn').on('click', function() {
             let size = $('.size-vAreation').val();
             let size_id = $('.size-vAreation').data('size_id');
@@ -529,13 +567,21 @@
             let area = $('[name="delivery_charge"]:checked').val();
             if (color) {
                 if ($("input[name='color']:checked").length == 0) {
-                    swal("{{ __('Please select a color') }}");
+                    Swal.fire({
+                        icon: 'warning',
+                        text: "{{ __('Please select a color') }}"
+                    });
+
                     return false;
                 }
             }
             if (size) {
                 if ($("input[name='size']:checked").length == 0) {
-                    swal("{{ __('Please select a size') }}");
+                    Swal.fire({
+                        icon: 'warning',
+                        text: "{{ __('Please select a size') }}"
+                    });
+
                     return false;
                 }
             }
@@ -553,20 +599,24 @@
             let color = $('.color-vAreation').val();
             if (color) {
                 if ($("input[name='color']:checked").length == 0) {
-                    swal("{{ __(' Please select a color') }}");
+                    Swal.fire({
+                        icon: 'warning',
+                        text: "{{ __('Please select a color') }}"
+                    });
+
                     return false;
                 }
             }
             if (size) {
                 if ($("input[name='size']:checked").length == 0) {
-                    swal("{{ __(' Please select a size') }}");
+                    Swal.fire({
+                        icon: 'warning',
+                        text: "{{ __('Please select a size') }}"
+                    });
+
                     return false;
                 }
             }
-            /*if($("input[name='delivery_charge']:checked").length == 0){
-                swal("{{ __('Please select delivery charge') }}");
-                return false;
-            }*/
 
         });
     </script>
