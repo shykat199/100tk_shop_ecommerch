@@ -2,12 +2,12 @@
 Theme Name: My Bazar Ecommerce HTML5 Template
 Theme URI: https://maantheme.com/my-bazar
 Author: Maan Theme
-Author URI: https://maantheme.com 
+Author URI: https://maantheme.com
 Desing by: Maan Theme
-Developed by: Abdullah Al Numan 
+Developed by: Abdullah Al Numan
 Version: 2.0
-License: 
-Tags: 
+License:
+Tags:
 */
 
 
@@ -40,7 +40,7 @@ Tags:
         7 Shop Details
 
         8 Quantity
-        
+
         9 Nice Select Option
 
         10 Form Animation
@@ -259,7 +259,7 @@ Tags:
                 .parent(".table-quantity form ,.product-quantity form")
                 .find(".input-number");
 
-            $n.val(Number($n.val()) + 1);
+            // $n.val(Number($n.val()) + 1);
         });
 
         let incrementMinus = $(".minus").click(function() {
@@ -269,7 +269,7 @@ Tags:
                 .find(".input-number");
             let amount = Number($n.val());
             if (amount > 1) {
-                $n.val(amount - 1);
+                // $n.val(amount - 1);
             }
         });
     }
@@ -313,7 +313,7 @@ Tags:
                 myPass.type = "password";
             }
         });
-        
+
         $(".newpass .show-pass").click(function() {
             $(this).toggleClass("eye-open");
             let myPass = document.getElementById("newPass");

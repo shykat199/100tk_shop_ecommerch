@@ -528,7 +528,7 @@
                         input.val(currentQty - 1);
                         $('.plus').prop('disabled', false);
 
-                        currentQty++
+                        currentQty--
                         updateTotalPrice(currentQty);
                     }
                 });
