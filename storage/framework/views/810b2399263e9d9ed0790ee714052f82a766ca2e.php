@@ -35,272 +35,6 @@
 <?php $__env->stopPush(); ?>
 <?php $__env->startSection('content'); ?>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <div class="row mt-2">
     <div class="col-12">
         <div class="page-title-box">
@@ -418,42 +152,45 @@ unset($__errorArgs, $__bag); ?>
                                            class="form-control mb-3" value="<?php echo e($order->shipping_name); ?>"
                                            placeholder="Shipping Name">
 
-                                    <input type="text" name="first_name"
-                                           class="form-control mb-3" value="<?php echo e($order->customer->first_name); ?>"
-                                           placeholder="Customer First Name" required>
-                                    <?php $__errorArgs = ['first_name'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                                    <span class="invalid-feedback" role="alert">
-                                             <strong><?php echo e($message); ?></strong>
-                                            </span>
-                                    <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
 
-                                    <input type="text" name="last_name"
-                                           class="form-control mb-3" value="<?php echo e($order->customer->last_name); ?>"
-                                           placeholder="Customer Last Name" required>
-                                    <?php $__errorArgs = ['last_name'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                                    <span class="invalid-feedback" role="alert">
-                                             <strong><?php echo e($message); ?></strong>
-                                            </span>
-                                    <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                                     <input type="text" name="customer_number"
                                            class="form-control mb-3" value="<?php echo e($order->customer->mobile); ?>"
                                            placeholder="Customer Number" required>
                                     <?php $__errorArgs = ['customer_number'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <span class="invalid-feedback" role="alert">
+                                             <strong><?php echo e($message); ?></strong>
+                                            </span>
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+
+                                    <textarea name="address"
+                                              class="form-control mb-3"
+                                              rows="3"
+                                              placeholder="Address"><?php echo $order->shipping_address_1; ?></textarea>
+                                    <?php $__errorArgs = ['address'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -473,23 +210,6 @@ unset($__errorArgs, $__bag); ?>
                                             <option data-charge = <?php echo e($area->charge); ?> value="<?php echo e($area->id); ?>"><?php echo e($area->name); ?> - charge <?php echo e($area->charge); ?></option>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
-
-                                    <textarea name="address"
-                                              class="form-control mb-3"
-                                              rows="3"
-                                              placeholder="Address"><?php echo $order->shipping_address_1; ?></textarea>
-                                    <?php $__errorArgs = ['address'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                                    <span class="invalid-feedback" role="alert">
-                                             <strong><?php echo e($message); ?></strong>
-                                            </span>
-                                    <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
                                 </div>
 
                                 <!-- Order Summary -->

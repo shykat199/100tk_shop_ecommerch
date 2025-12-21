@@ -2073,8 +2073,6 @@ class OrderController extends Controller
     // edit order
     public function edit(string $order_no)
     {
-
-
         $products = \App\Modules\Backend\ProductManagement\Entities\Product::with(['images'])->select('id','name','discount','unit_price','sale_price','sku','minimum_qty','quantity')->where(['is_active'=>1])->get();
         $order = Order::with(['details.product.images','customer'])->where('order_no', $order_no)->get()->first();
         $countries = DB::table('countries')->get();
