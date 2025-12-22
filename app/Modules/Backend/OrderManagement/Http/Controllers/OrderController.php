@@ -231,8 +231,6 @@ class OrderController extends Controller
     public function updateCustomOrder(Request $request, $orderId)
     {
         $request->validate([
-            'first_name' => 'required',
-            'last_name' => 'required',
             'customer_number' => 'required',
             'address' => 'required',
         ]);
